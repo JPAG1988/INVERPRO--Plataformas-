@@ -6,6 +6,8 @@ Código fuente de las herramientas web de INVERPRO COL S.A.S. (NIT 901.006.761-2
 |---|---|---|
 | `ganaderia/` | INVERPRO Ganadería: rotación, ceba, suplementación, finanzas, asesor con IA y monitoreo satelital de potreros | inverpro-ganaderia.netlify.app |
 | `monitor-predial/` | Monitor Predial: seguimiento satelital para agricultores y empresas con obligaciones de siembra | Artifact de Claude |
+| `radar-secop/` | Radar SECOP, Ojo al contrato, Preparar oferta y Agente de oportunidades (solo frontend; ver LEEME) | radar-secop.netlify.app |
+| `diagnostico-predial/` | Diagnóstico Predial: Módulo 1 del Kit de Ganadería Regenerativa (app y formato Word) | Sin publicar |
 | `datos/las-marias/` | KML de la finca y scripts que descargan y procesan Sentinel-2 | — |
 
 ## Reglas
