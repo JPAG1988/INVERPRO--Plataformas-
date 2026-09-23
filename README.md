@@ -6,7 +6,7 @@ Código fuente de las herramientas web de INVERPRO COL S.A.S. (NIT 901.006.761-2
 |---|---|---|
 | `ganaderia/` | INVERPRO Ganadería: rotación, ceba, suplementación, finanzas, asesor con IA y monitoreo satelital de potreros | inverpro-ganaderia.netlify.app |
 | `monitor-predial/` | Monitor Predial: seguimiento satelital para agricultores y empresas con obligaciones de siembra | Artifact de Claude |
-| `radar-secop/` | Radar SECOP, Ojo al contrato, Preparar oferta y Agente de oportunidades (solo frontend; ver LEEME) | radar-secop.netlify.app |
+| `radar-secop/` | Radar SECOP, Ojo al contrato, Preparar oferta y Agente de oportunidades, con sus funciones de servidor | radar-secop.netlify.app |
 | `diagnostico-predial/` | Diagnóstico Predial: Módulo 1 del Kit de Ganadería Regenerativa (app y formato Word) | Sin publicar |
 | `datos/las-marias/` | KML de la finca y scripts que descargan y procesan Sentinel-2 | — |
 
@@ -19,4 +19,5 @@ Código fuente de las herramientas web de INVERPRO COL S.A.S. (NIT 901.006.761-2
 ## Netlify
 
 - Proyecto `inverpro-ganaderia`: carpeta base `ganaderia/`, publicación `.`, funciones `netlify/functions`.
+- Proyecto `radar-secop`: carpeta base `radar-secop/`, publicación `public`, funciones `netlify/functions` y funciones de borde `netlify/edge-functions`.
 - En el plan gratuito, cada publicación gasta créditos; conviene agrupar los cambios.

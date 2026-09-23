@@ -1,0 +1,11 @@
+{
+  "name": "radar-secop",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "latest"
+  },
+  "devDependencies": {
+    "@netlify/edge-functions": "latest"
+  }
+}
