@@ -1,0 +1,9 @@
+{
+  "name": "inverpro-ganaderia",
+  "private": true,
+  "version": "1.0.0",
+  "description": "INVERPRO Ganadería — plataforma de gestión ganadera. Desarrollado por INVERPRO COL S.A.S.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>INVERPRO Ganadería · Plataforma de gestión ganadera</title>
+<meta name="description" content="Rotación de potreros, ceba, suplementación, finanzas y un asesor con IA para tu finca. Desarrollado por INVERPRO." />
+<meta name="theme-color" content="#1E2A22" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Instrument Sans', system-ui, sans-serif; }
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .leaflet-container { font-family: inherit; }
+  #carga-inicial { min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #5A6B5E; font-family: 'Instrument Sans', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"><div id="carga-inicial">Cargando INVERPRO…</div></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+  // Se carga y compila app.jsx explícitamente, forzando el runtime "clásico"
+  // de React (React.createElement) en vez del automático, que requiere
+  // módulos ES y no funciona en este montaje sin empaquetador.
+  fetch("app.jsx?v=3")
+    .then(function (r) {
+      if (!r.ok) throw new Error("No se pudo descargar app.jsx (HTTP " + r.status + ")");
+      return r.text();
+    })
+    .then(function (codigoFuente) {
+      var compilado = Babel.transform(codigoFuente, {
+        presets: [["react", { runtime: "classic" }]],
+        filename: "app.jsx",
+      }).code;
+      var script = document.createElement("script");
+      script.text = compilado;
+      document.body.appendChild(script);
+    })
+    .catch(function (err) {
+      console.error("Error al iniciar INVERPRO:", err);
+      document.getElementById("root").innerHTML =
+        '<div style="max-width:480px;margin:60px auto;padding:24px;font-family:system-ui,sans-serif;background:#FDF6E7;border:1px solid #C99A3C;border-radius:12px;color:#1E2A22">' +
+        "<b>No se pudo cargar la aplicación.</b><br/><br/>" +
+        (err && err.message ? err.message : "Error desconocido") +
+        "<br/><br/>Intenta recargar la página. Si el problema sigue, avísale al equipo de INVERPRO." +
+        "</div>";
+    });
+</script>
+</body>
+</html>

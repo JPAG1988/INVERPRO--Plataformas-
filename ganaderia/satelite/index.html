@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Vigor de cada potrero con imágenes Copernicus Sentinel-2, procesadas por INVERPRO.">
+<title>Monitoreo satelital · INVERPRO Ganadería</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>window.INV_MODE = 'ganaderia';</script>
+<style>
+:root{
+  --bg:#EEF1EE; --surface:#FFFFFF; --surface-2:#F4F6F4; --ink:#141B1A; --ink-2:#495654; --ink-3:#6F7C79;
+  --line:#D5DCD8; --line-2:#E5EAE7;
+  --brand:#E24A4C; --brand-soft:#FBE6E5;
+  --accent:#0C6573; --accent-soft:#DCEBED; --accent-ink:#FFFFFF;
+  --ok:#2A7543; --ok-bg:#E1F0E5; --warn:#976007; --warn-bg:#F7ECD6; --crit:#A9322A; --crit-bg:#F6E0DC;
+  --idle:#5B6866; --idle-bg:#E7ECEA; --info:#0C6573; --info-bg:#DCEBED;
+  --chart-fill:rgba(12,101,115,.10); --grid:#E3E8E5; --ref:#9AA6A3;
+  --logo-light:block; --logo-dark:none;
+  --f-disp:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-body:'Source Sans 3',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0D1413; --surface:#141D1B; --surface-2:#19241F; --ink:#E4ECE8; --ink-2:#A2B2AD; --ink-3:#7E8E89;
+    --line:#29373A; --line-2:#212D2B;
+    --brand:#F0605F; --brand-soft:#3A1B1B;
+    --accent:#5BB8C6; --accent-soft:#16323A; --accent-ink:#061A1E;
+    --ok:#6CC08A; --ok-bg:#173022; --warn:#E3A84D; --warn-bg:#35280F; --crit:#EE7D6B; --crit-bg:#3A1C17;
+    --idle:#A2B2AD; --idle-bg:#22302C; --info:#5BB8C6; --info-bg:#16323A;
+    --chart-fill:rgba(91,184,198,.12); --grid:#223030; --ref:#61726D;
+    --logo-light:none; --logo-dark:block;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1413; --surface:#141D1B; --surface-2:#19241F; --ink:#E4ECE8; --ink-2:#A2B2AD; --ink-3:#7E8E89;
+  --line:#29373A; --line-2:#212D2B;
+  --brand:#F0605F; --brand-soft:#3A1B1B;
+  --accent:#5BB8C6; --accent-soft:#16323A; --accent-ink:#061A1E;
+  --ok:#6CC08A; --ok-bg:#173022; --warn:#E3A84D; --warn-bg:#35280F; --crit:#EE7D6B; --crit-bg:#3A1C17;
+  --idle:#A2B2AD; --idle-bg:#22302C; --info:#5BB8C6; --info-bg:#16323A;
+  --chart-fill:rgba(91,184,198,.12); --grid:#223030; --ref:#61726D;
+  --logo-light:none; --logo-dark:block;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;padding-inline:clamp(16px,3vw,32px)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-3);font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sel-text{user-select:all}
+.logo-l{display:var(--logo-light)} .logo-d{display:var(--logo-dark)}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:12px 22px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand img{height:26px;width:auto}
+.brand .prod{border-left:1px solid var(--line);padding-left:12px;font-family:var(--f-disp);font-stretch:82%;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);line-height:1.15}
+.brand .prod small{display:block;font-weight:600;letter-spacing:.08em;color:var(--ink-3);font-size:10.5px}
+.profiles{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;overflow-x:auto;max-width:100%}
+.profiles button{border:0;background:transparent;padding:7px 12px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--ink-2);white-space:nowrap;display:flex;align-items:center;gap:7px}
+.profiles button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08),0 0 0 1px var(--line)}
+.top .ver{margin-left:auto;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+.backlink{font-weight:600;text-decoration:none;font-size:14px}
+
+/* Predio bar */
+.pbar .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;padding-block:22px 6px}
+.pbar h1{margin:0;font-family:var(--f-disp);font-stretch:88%;font-weight:700;font-size:clamp(24px,3.2vw,34px);line-height:1.05;letter-spacing:-.01em;text-wrap:balance}
+.eyebrow{font-family:var(--f-disp);font-stretch:80%;font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.pbar .meta{color:var(--ink-2);margin-top:6px;display:flex;gap:6px 14px;flex-wrap:wrap}
+.pbar .meta span+span::before{content:"·";margin-right:14px;color:var(--ink-3)}
+.pbar-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sat{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.sat .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-bg);flex:none}
+.sat.pending .dot{background:var(--warn);box-shadow:0 0 0 3px var(--warn-bg)}
+.sat b{color:var(--ink);font-weight:600}
+.predsel{padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);max-width:260px}
+
+/* Tabs */
+.tabs{border-bottom:1px solid var(--line);margin-top:10px}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:12px 14px 11px;cursor:pointer;font-weight:600;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand)}
+.tabs button .n{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);margin-left:6px}
+
+main{padding-block:22px 40px}
+.view{display:grid;gap:18px}
+.view>*,.panel-grid>*,.panel-grid2>*,.reg-grid>*,.bit-grid>*{min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card h2,.card h3{margin:0;font-family:var(--f-disp);font-stretch:92%;font-weight:700;letter-spacing:-.005em}
+.card h2{font-size:20px} .card h3{font-size:16px}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin-bottom:12px}
+.card-h small{color:var(--ink-3);font-size:13px}
+
+.panel-grid,.panel-grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start}
+.side{display:grid;gap:18px;min-width:0}
+@media (max-width:980px){.panel-grid,.panel-grid2{grid-template-columns:minmax(0,1fr)}}
+
+/* Map */
+.map-card{padding:12px}
+.map-tools{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:5px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.map{position:relative;width:100%;aspect-ratio:4/3;max-width:100%;border-radius:9px;overflow:hidden;background:#27302D;touch-action:manipulation}
+.map canvas,.map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map.drawing svg{cursor:crosshair}
+.map .chipbar{position:absolute;left:10px;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.map .mchip{font-family:var(--f-mono);font-size:11px;color:#F2F5F1;background:rgba(10,16,15,.74);padding:3px 8px;border-radius:6px}
+.map .attr{position:absolute;right:8px;bottom:6px;font-family:var(--f-mono);font-size:9.5px;color:rgba(255,255,255,.85);background:rgba(10,16,15,.55);padding:1px 6px;border-radius:4px;pointer-events:none;max-width:70%;text-align:right}
+.map .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#F2F5F1;padding:24px;font-weight:600;pointer-events:none}
+.map path.lot{fill:rgba(255,255,255,0);stroke:rgba(255,255,255,.92);stroke-width:1.5;cursor:pointer}
+.map path.lot:hover{fill:rgba(255,255,255,.10)}
+.map path.lot.sel{stroke:#FFD965;stroke-width:3}
+.map .lab{font-family:var(--f-disp);font-weight:700;font-size:12px;fill:#fff;paint-order:stroke;stroke:rgba(8,14,12,.85);stroke-width:3px;pointer-events:none}
+.map .lab.sm{font-family:var(--f-mono);font-weight:600;font-size:10.5px}
+.timebar{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.timebar input[type=range]{flex:1;min-width:140px;accent-color:var(--accent)}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;flex:none}
+.date-lab{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.date-lab b{color:var(--ink);font-weight:600}
+.legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--ink-2);flex-wrap:wrap}
+.legend .bar{height:10px;border-radius:3px}
+.legend .ends{display:flex;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:11px}
+.legend-body{flex:1;min-width:160px;display:grid;gap:3px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.kpi{background:var(--surface);padding:12px 14px;min-width:0}
+.kpi .v{font-family:var(--f-disp);font-stretch:90%;font-weight:700;font-size:25px;line-height:1.1;font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--ink-2);margin-left:3px;font-family:var(--f-body)}
+.kpi .s{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+
+/* Chips */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 9px 2px 8px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip.ok{background:var(--ok-bg);color:var(--ok)} .chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.crit{background:var(--crit-bg);color:var(--crit)} .chip.idle{background:var(--idle-bg);color:var(--idle)}
+.chip.info{background:var(--info-bg);color:var(--info)}
+
+/* Lots */
+.lots{display:grid}
+.lotrow{display:grid;grid-template-columns:minmax(0,1fr) 84px auto;align-items:center;gap:6px 12px;padding:10px 8px;border-radius:8px;cursor:pointer;border:0;background:none;text-align:left;width:100%}
+.lotrow+.lotrow{border-top:1px solid var(--line-2)}
+.lotrow:hover{background:var(--surface-2)}
+.lotrow.sel{background:var(--accent-soft)}
+.lotrow .nm{font-weight:700}
+.lotrow .sub{font-size:12.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lotrow .val{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);text-align:right;margin-top:4px}
+.lotrow .chipcell{grid-column:3;justify-self:end;text-align:right}
+@media (max-width:420px){.lotrow{grid-template-columns:minmax(0,1fr) auto}.lotrow .spark{display:none}.lotrow .chipcell{grid-column:2}}
+
+/* Rows & callouts */
+.rows{display:grid;gap:10px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center}
+.prow .t{font-weight:600} .prow .d{font-size:12.5px;color:var(--ink-3);grid-column:1/-1}
+.callout{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:12px}
+.callout .big{font-family:var(--f-disp);font-stretch:90%;font-weight:700;font-size:19px;line-height:1.2;margin:4px 0 2px}
+.range{position:relative;height:30px;margin:14px 4px 4px}
+.range .track{position:absolute;left:0;right:0;top:12px;height:6px;border-radius:3px}
+.range .mk{position:absolute;top:0;transform:translateX(-50%);text-align:center;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2)}
+.range .mk i{display:block;width:2px;height:18px;margin:0 auto;background:var(--ink)}
+.range .mk.cur i{width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);margin-top:9px}
+.range-lab{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-3)}
+.steps{display:grid;margin-top:6px}
+.step{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;position:relative;padding-bottom:12px}
+.step:last-child{padding-bottom:0}
+.step::before{content:"";position:absolute;left:8px;top:16px;bottom:-2px;width:2px;background:var(--line)}
+.step:last-child::before{display:none}
+.step .b{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--surface);margin-top:1px;position:relative;z-index:1}
+.step.now .b{border-color:var(--accent);box-shadow:inset 0 0 0 3px var(--surface),inset 0 0 0 9px var(--accent)}
+.step.hold .b{border-color:var(--warn);border-style:dashed}
+.step .st{font-weight:600} .step .sd{font-size:12.5px;color:var(--ink-3)}
+
+/* Chart */
+.chart-wrap{position:relative;width:100%}
+.chart-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-wrap text{font-family:var(--f-mono);font-size:10.5px;fill:var(--ink-3)}
+.chart-wrap .ax{stroke:var(--line)} .chart-wrap .gl{stroke:var(--grid)}
+.chart-wrap .ln{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.chart-wrap .ref{fill:none;stroke:var(--ref);stroke-width:1.5;stroke-dasharray:4 4}
+.chart-wrap .ar{fill:var(--chart-fill)}
+.chart-wrap .pt{fill:var(--surface);stroke:var(--accent);stroke-width:1.5}
+.chart-wrap .pt.cur{fill:var(--accent)}
+.chart-wrap .cl{fill:var(--ink-3);opacity:.4}
+.chart-wrap .cur-l{stroke:var(--ink-2);stroke-width:1}
+.chart-wrap .season{fill:var(--warn-bg);opacity:.7}
+.chart-wrap .ev{fill:var(--warn);stroke:var(--surface);stroke-width:1.5}
+.chart-wrap .tipbg{fill:var(--ink)} .chart-wrap .tiptx{fill:var(--bg);font-weight:600}
+.chart-wrap .hit{fill:transparent;cursor:pointer}
+.chart-foot{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:6px}
+.chart-foot span{display:inline-flex;align-items:center;gap:6px}
+.chart-foot i{display:inline-block;width:14px;height:0;border-top:2px solid var(--accent)}
+
+/* Alerts */
+.alerts{display:grid;gap:10px}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;padding:12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-2)}
+.alert .ic{width:10px;height:10px;border-radius:50%;margin-top:6px}
+.alert.crit .ic{background:var(--crit);box-shadow:0 0 0 4px var(--crit-bg)}
+.alert.warn .ic{background:var(--warn);box-shadow:0 0 0 4px var(--warn-bg)}
+.alert.ok .ic{background:var(--ok);box-shadow:0 0 0 4px var(--ok-bg)}
+.alert.info .ic,.alert.idle .ic{background:var(--info);box-shadow:0 0 0 4px var(--info-bg)}
+.alert .at{font-weight:700;line-height:1.3}
+.alert .ab{color:var(--ink-2);font-size:14px;grid-column:2}
+.alert .aa{grid-column:2;font-size:13px;font-weight:600;color:var(--accent);margin-top:2px}
+.alert .aa::before{content:"→ "}
+
+/* Forms */
+.reg-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px;align-items:start}
+.bit-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:18px;align-items:start}
+@media (max-width:980px){.reg-grid,.bit-grid{grid-template-columns:minmax(0,1fr)}}
+fieldset{border:0;padding:0;margin:0 0 20px;display:grid;gap:12px}
+legend{padding:0;margin-bottom:10px;font-family:var(--f-disp);font-stretch:90%;font-weight:700;font-size:15.5px;display:flex;gap:8px;align-items:center}
+legend .k{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:12px;font-family:var(--f-mono)}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:520px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+.f{display:grid;gap:4px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label,.f .lbl{font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.f input,.f select,.f textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.f textarea{min-height:70px;resize:vertical}
+.hint{font-size:12px;color:var(--ink-3)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink-2)}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface-2);padding:8px 13px;border-radius:8px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:14px}
+.btn:hover{border-color:var(--ink-3)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.pri{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.btn.ghost{background:none}
+.btn input[type=file]{display:none}
+.drawbox{border:1px dashed var(--accent);background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.msg{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.msg.ok{background:var(--ok-bg);color:var(--ok)} .msg.err{background:var(--crit-bg);color:var(--crit)}
+.result{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:12px}
+.result .big{font-family:var(--f-disp);font-stretch:90%;font-weight:700;font-size:24px;font-variant-numeric:tabular-nums}
+details{font-size:13.5px;color:var(--ink-2)}
+details summary{cursor:pointer;font-weight:600;color:var(--accent)}
+details ul{margin:6px 0 0;padding-left:18px}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line-2);vertical-align:top}
+td.r,th.r{text-align:right}
+.linkbtn{border:0;background:none;color:var(--crit);cursor:pointer;font-size:13px;font-weight:600;padding:0}
+
+.evlist{display:grid}
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--line-2)}
+.ev:first-child{border-top:0}
+.ev .dt{font-family:var(--f-mono);font-size:12px;color:var(--ink-3);line-height:1.3}
+.ev .dt b{display:block;font-family:var(--f-disp);font-stretch:90%;font-size:20px;color:var(--ink);font-weight:700}
+.ev .ty{font-weight:700} .ev .lt{font-size:12.5px;color:var(--accent);font-weight:600}
+.ev .nt{color:var(--ink-2);font-size:14px;margin-top:2px}
+.ev img{margin-top:8px;max-width:180px;border-radius:8px;border:1px solid var(--line)}
+
+/* Documents (reporte, datos) */
+.doc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:clamp(18px,4vw,44px);max-width:920px;margin:0 auto;width:100%}
+.doc .rh{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:14px;align-items:flex-end}
+.doc .rh img{height:40px;width:auto}
+.doc h2{font-family:var(--f-disp);font-stretch:90%;font-size:clamp(24px,3vw,32px);margin:10px 0 0;line-height:1.1;text-wrap:balance}
+.doc h3{font-family:var(--f-disp);font-stretch:90%;font-size:17px;margin:28px 0 10px}
+.doc dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px 24px;margin:18px 0 0}
+.doc dt{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.doc dd{margin:2px 0 0;font-weight:600}
+.doc p,.doc li{color:var(--ink-2);max-width:72ch}
+.doc ul,.doc ol{padding-left:20px}
+.doc li{margin-bottom:6px}
+.doc li b,.doc p b{color:var(--ink)}
+.doc code{font-family:var(--f-mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+.doc .rf{margin-top:32px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
+.note{font-size:13px;background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink-2);padding:10px 12px;border-radius:8px;margin-top:14px}
+.toc{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:13.5px;margin-top:14px}
+
+footer{border-top:1px solid var(--line);color:var(--ink-3);font-size:12.5px}
+footer .wrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px 24px;padding-block:20px;align-items:start}
+footer img{height:54px;width:auto}
+footer p{margin:0 0 6px;max-width:90ch}
+footer b{color:var(--ink-2)}
+@media (max-width:620px){footer .wrap{grid-template-columns:minmax(0,1fr)}}
+.loading{padding:40px;text-align:center;color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body style="margin:0">
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <img class="logo-l" src="/marca/lockup-light.webp" alt="Inverpro" width="136" height="26">
+      <img class="logo-d" src="/marca/lockup-dark.webp" alt="Inverpro" width="136" height="26">
+      <div class="prod" id="prodname">Monitor Predial<small>Seguimiento satelital</small></div>
+    </div>
+    <nav class="profiles" role="group" aria-label="Tipo de cliente" id="profiles"></nav>
+    <a class="backlink" id="backlink" href="/" hidden>← Volver a INVERPRO Ganadería</a>
+    <span class="ver">v2.0 · 23 sep 2026</span>
+  </div>
+</header>
+
+<section class="pbar"><div class="wrap" id="pbar"></div></section>
+<nav class="tabs" aria-label="Secciones"><div class="wrap" role="tablist" id="tabs"></div></nav>
+
+<main class="wrap">
+  <section class="view" id="v-panel">
+    <div class="panel-grid">
+      <div class="card map-card">
+        <div class="map-tools">
+          <div class="seg" id="idx-seg" role="group" aria-label="Índice"></div>
+          <div class="seg" id="view-seg" role="group" aria-label="Vista"></div>
+        </div>
+        <div class="map" id="map-panel"></div>
+        <div class="timebar" id="timebar">
+          <button type="button" class="iconbtn" id="play" aria-label="Reproducir la serie de imágenes"></button>
+          <input type="range" id="date-r" min="0" max="1" step="1" aria-label="Fecha de la imagen">
+          <div class="date-lab" id="date-lab"></div>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="side">
+        <div class="kpis" id="kpis"></div>
+        <div class="card" id="profile-card"></div>
+      </div>
+    </div>
+    <div class="panel-grid2">
+      <div class="card" id="chart-card"></div>
+      <div class="side">
+        <div class="card" id="lots-card"></div>
+        <div class="card" id="alerts-card"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-reg" hidden>
+    <div class="reg-grid">
+      <form class="card" id="reg-form" novalidate></form>
+      <div class="card">
+        <div class="card-h"><h3>Lindero y lotes</h3><small>Clic en un lote para seleccionarlo</small></div>
+        <div class="map" id="map-reg"></div>
+        <div id="reg-lots" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-bit" hidden>
+    <div class="bit-grid">
+      <form class="card" id="ev-form" novalidate></form>
+      <div class="card" id="ev-card"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-rep" hidden><div id="report"></div></section>
+  <section class="view" id="v-dat" hidden><div id="datos"></div></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <img class="logo-l" src="/marca/logo-light.webp" alt="Inverpro — Acciones con visión" width="72" height="54">
+      <img class="logo-d" src="/marca/logo-dark.webp" alt="Inverpro — Acciones con visión" width="72" height="54">
+    </div>
+    <div>
+      <p><b>INVERPRO COL S.A.S.</b> · NIT 901.006.761-2 · Yopal, Casanare · <span class="sel-text">gerencia.inverpro@gmail.com</span></p>
+      <p>Contiene datos modificados de Copernicus Sentinel (2025–2026), procesados por INVERPRO. Los índices son indicativos y no reemplazan la verificación en campo ni constituyen cartografía oficial o prueba de cumplimiento ante autoridades. Tratamiento de datos personales conforme a la Ley 1581 de 2012. Ver la pestaña «Datos y uso».</p>
+      <p>© 2026 INVERPRO COL S.A.S. Todos los derechos reservados sobre el software y los productos derivados.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+const MODE = window.INV_MODE === 'ganaderia' ? 'ganaderia' : 'monitor';
+const DATA_URL = 'las-marias-s2.json';
+const GAN_URL = 'https://inverpro-ganaderia.netlify.app/';
+const $=(s,r=document)=>r.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nf=(v,d=0)=>Number(v).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sgn=(v,d=2)=>{const r=Number(Math.abs(v).toFixed(d));return r===0?nf(0,d):(v>0?'+':'−')+nf(r,d);};
+
+/* ---------- Fechas ---------- */
+const DAY0=Date.UTC(2025,0,1);
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const T=s=>Math.round((Date.parse(s+'T00:00:00Z')-DAY0)/864e5);
+const tDate=t=>new Date(DAY0+t*864e5);
+const fD=t=>{const d=tDate(t);return d.getUTCDate()+' '+MES[d.getUTCMonth()];};
+const fDY=t=>fD(t)+' '+tDate(t).getUTCFullYear();
+const iso=t=>tDate(t).toISOString().slice(0,10);
+const TODAY=T('2026-09-23');
+
+/* ---------- Rampas e índices ---------- */
+function ramp(stops){const s=stops.map(([p,h])=>[p,parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]);const f=x=>{x=clamp(x,0,1);let i=1;while(i<s.length-1&&x>s[i][0])i++;const a=s[i-1],b=s[i];const u=(x-a[0])/((b[0]-a[0])||1);return[a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u,a[3]+(b[3]-a[3])*u];};f.css='linear-gradient(90deg,'+stops.map(([p,h])=>h+' '+(p*100)+'%').join(',')+')';return f;}
+const RV=ramp([[0,'#7a4a24'],[.22,'#b98a4b'],[.4,'#dcc56e'],[.55,'#a6c25a'],[.7,'#5e9d40'],[.85,'#2b6d30'],[1,'#164a22']]);
+const RW=ramp([[0,'#7a4a24'],[.3,'#d3bf8a'],[.5,'#e8eee8'],[.72,'#79b7cc'],[1,'#1d5a86']]);
+const IDX={
+  ndvi:{lab:'NDVI',desc:'Vigor de la vegetación',f:'(B8 − B4) / (B8 + B4)',dom:[.15,.8],cdom:[.2,.8],ticks:[.2,.3,.4,.5,.6,.7,.8],r:RV,lo:'Suelo o pasto seco',hi:'Vegetación vigorosa'},
+  ndre:{lab:'NDRE',desc:'Clorofila y nitrógeno',f:'(B8 − B5) / (B8 + B5)',dom:[.05,.5],cdom:[.1,.5],ticks:[.1,.2,.3,.4,.5],r:RV,lo:'Baja clorofila',hi:'Alta clorofila'},
+  ndmi:{lab:'NDMI',desc:'Humedad de la vegetación',f:'(B8 − B11) / (B8 + B11)',dom:[-.3,.25],cdom:[-.3,.2],ticks:[-.3,-.2,-.1,0,.1,.2],r:RW,lo:'Seco',hi:'Húmedo'}
+};
+const fmtI=v=>v==null||isNaN(v)?'—':nf(v,2);
+
+/* ---------- Geometría ---------- */
+function areaHa(p){let a=0;for(let i=0,j=p.length-1;i<p.length;j=i++)a+=(p[j][0]+p[i][0])*(p[j][1]-p[i][1]);return Math.abs(a/2)/1e4;}
+function pip(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const xi=p[i][0],yi=p[i][1],xj=p[j][0],yj=p[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
+function bbox(pts){let a=1e15,b=1e15,c=-1e15,d=-1e15;for(const[x,y]of pts){if(x<a)a=x;if(y<b)b=y;if(x>c)c=x;if(y>d)d=y;}return[a,b,c,d];}
+function centroid(p){let a=0,cx=0,cy=0;for(let i=0,j=p.length-1;i<p.length;j=i++){const f=p[j][0]*p[i][1]-p[i][0]*p[j][1];a+=f;cx+=(p[j][0]+p[i][0])*f;cy+=(p[j][1]+p[i][1])*f;}if(Math.abs(a)<1e-9){const b=bbox(p);return[(b[0]+b[2])/2,(b[1]+b[3])/2];}return[cx/(3*a),cy/(3*a)];}
+function localProj(o){const kx=111320*Math.cos(o[1]*Math.PI/180),ky=110574;return{m:([lon,lat])=>[(lon-o[0])*kx,(lat-o[1])*ky],ll:([x,y])=>[o[0]+x/kx,o[1]+y/ky]};}
+function b64u8(s){const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+
+/* ---------- Datos satelitales reales ---------- */
+const SAT={state:'loading',err:'',j:null};
+let SCENES=[],CLEAR=[];
+function prepSat(j){
+  const g=j.grid;const idx=new Uint32Array(b64u8(g.idx).buffer);
+  const n=idx.length,px=new Float64Array(n),py=new Float64Array(n);
+  for(let i=0;i<n;i++){const r=Math.floor(idx[i]/g.nx),c=idx[i]%g.nx;px[i]=g.x0+5+10*c;py[i]=g.y1-5-10*r;}
+  const R=j.meta.ranges;
+  SCENES=j.scenes.map(s=>{const o={t:T(s.d),d:s.d,cloud:s.cloud,ok:!!s.ok,lots:s.lots||{},all:s.all||null,g:s.g||null,_v:{}};return o;});
+  SCENES.forEach(s=>{s.val=k=>{if(!s.g)return null;if(!s._v[k]){const u=b64u8(s.g[k]);const lo=R[k][0],hi=R[k][1];const f=new Float32Array(u.length);for(let i=0;i<u.length;i++)f[i]=u[i]?lo+(u[i]-1)/254*(hi-lo):NaN;s._v[k]=f;}return s._v[k];};});
+  CLEAR=SCENES.filter(s=>s.ok);
+  SAT.j=j;SAT.px=px;SAT.py=py;SAT.n=n;SAT.grid=g;
+  const img=new Image();img.onload=()=>{SAT.img=img;if(MP)MP.queue();if(MR)MR.queue();};img.src='data:image/png;base64,'+j.tci;
+}
+
+/* ---------- Predios ---------- */
+let LID=1,EID=1;
+const PREDIOS={agricultor:[],empresa:[]};
+function lasMarias(){const j=SAT.j;const F=n=>j.feat.find(f=>f.name===n);
+  const lind=F('Las Marias');
+  const defs=[['p1','Potrero 1','P1'],['p2','Potrero 2','P2'],['p3','Potrero 3','P3'],['p4','Potrero 4','P4'],['rec','Potrero recepción','PR']];
+  const lots=defs.map(([k,n,s])=>{const f=F(n);return{id:'lm-'+k,k,name:n,short:s,m:f.utm,ll:f.ll,ha:f.ha,info:{uso:'Potrero',pasto:'Guaratara (sabana nativa)'}};});
+  const sumHa=lots.reduce((a,l)=>a+l.ha,0);
+  lots.push({id:'lm-resto',k:'resto',name:'Resto del predio',short:'Resto',m:null,virtual:true,ha:lind.ha-sumHa,info:{uso:'Sabana y bosque de galería'}});
+  // píxeles por lote
+  const pix={};lots.forEach(l=>pix[l.k]=[]);
+  for(let i=0;i<SAT.n;i++){let k='resto';for(const l of lots){if(l.m&&pip(SAT.px[i],SAT.py[i],l.m)){k=l.k;break;}}pix[k].push(i);}
+  lots.forEach(l=>{l.pix=Int32Array.from(pix[l.k]);});
+  const pts=['corral','Casa y Luz','Pozo y Tanque aéreo agua'].map(n=>{const f=F(n);return f?{name:n.replace('Casa y Luz','Casa y luz').replace('Pozo y Tanque aéreo agua','Pozo y tanque'),m:f.utm[0]}:null;}).filter(Boolean);
+  const via=F('vía acceso servidumbre');
+  return{id:'las-marias',profile:'agricultor',real:true,name:'Finca Las Marías',owner:'AgroInnova',doc:'',muni:'Maní',vereda:'',contact:'',
+    boundary:lind.utm,bha:lind.ha,lots,points:pts,lines:via?[{name:'Vía de acceso (servidumbre)',m:via.utm}]:[],events:[],gv:1,sat:true,
+    note:'Geometría del archivo Las_Marias.kml entregado por el cliente'};}
+
+/* ---------- Estado ---------- */
+const S={profile:'agricultor',tab:'panel',pid:{agricultor:'las-marias',empresa:null},idx:'ndvi',view:'predio',layer:'indice',di:0,sel:{},draw:null,filter:'all',play:null,regMsg:null,emp:{tam:'Grande',empleados:''}};
+const PROFS=MODE==='ganaderia'?{agricultor:{lab:'Ganadería',unit:'Potrero',units:'Potreros'}}:{agricultor:{lab:'Agricultor',unit:'Lote',units:'Lotes'},empresa:{lab:'Empresa con obligaciones',unit:'Área',units:'Áreas'}};
+const P=()=>PREDIOS[S.profile].find(p=>p.id===S.pid[S.profile])||null;
+const sc=()=>CLEAR[S.di];
+const curT=()=>CLEAR.length?CLEAR[S.di].t:TODAY;
+function selLot(){const p=P();if(!p)return null;return p.lots.find(l=>l.id===S.sel[p.id])||p.lots[0]||null;}
+const unitOf=p=>p&&p.real?'Potrero':PROFS[S.profile].unit;
+
+/* ---------- Estadística sobre datos reales ---------- */
+function lotVal(l,s,k){if(!s||!s.ok)return null;const o=s.lots[l.k];return o?o[k]:null;}
+function allVal(s,k){return s&&s.all?s.all[k]:null;}
+function series(l,k){return CLEAR.map(s=>({t:s.t,v:lotVal(l,s,k)}));}
+function prevClear(i,maxGap){for(let j=i-1;j>=0;j--){if(CLEAR[i].t-CLEAR[j].t>maxGap)return null;return j;}return null;}
+function nearestBefore(t,gap){let b=null;for(let j=0;j<CLEAR.length;j++){if(CLEAR[j].t<=t-gap)b=j;}return b;}
+function nearestTo(t,tol){let b=null,bd=1e9;CLEAR.forEach((s,j)=>{const d=Math.abs(s.t-t);if(d<bd){bd=d;b=j;}});return bd<=tol?b:null;}
+function lowZone(l,s){ // píxeles del lote con NDVI < media − 0,10
+  if(!l.pix||l.virtual||!s.ok)return null;const v=s.val('ndvi');const m=lotVal(l,s,'ndvi');if(m==null)return null;
+  let n=0,sx=0,sy=0;const xs=[];for(const i of l.pix){const x=v[i];if(!isNaN(x)&&x<m-.10){n++;sx+=SAT.px[i];sy+=SAT.py[i];xs.push(i);}}
+  const ha=n*.01;if(ha<.3||n<l.pix.length*.08)return null;const cx=sx/n,cy=sy/n;let r2=0;for(const i of xs)r2=Math.max(r2,Math.hypot(SAT.px[i]-cx,SAT.py[i]-cy));
+  return{ha,cx,cy,r:Math.min(r2,90)+10};}
+function statusLot(p,l,i){
+  if(!p.sat)return{c:'idle',lab:'Pendiente'};const s=CLEAR[i];const v=lotVal(l,s,'ndvi'),a=allVal(s,'ndvi');
+  if(v==null)return{c:'idle',lab:'Sin dato'};const d=v-a;
+  if(l.virtual)return{c:'info',lab:'Referencia'};
+  if(d<=-.05)return{c:'warn',lab:'Bajo el promedio'};
+  if(d>=.05)return{c:'ok',lab:'Sobre el promedio'};
+  return{c:'ok',lab:'En el promedio'};}
+function persistence(l,i){let n=0,m=0;for(let j=Math.max(0,i-4);j<=i;j++){const v=lotVal(l,CLEAR[j],'ndvi'),a=allVal(CLEAR[j],'ndvi');if(v==null)continue;m++;if(v-a<=-.04)n++;}return{n,m};}
+function seasonStats(){let mn=null,mx=null;CLEAR.forEach(s=>{const v=allVal(s,'ndvi');if(v==null)return;if(!mn||v<mn.v)mn={v,t:s.t};if(!mx||v>mx.v)mx={v,t:s.t};});return{mn,mx};}
+
+function alerts(p,i){const A=[];if(!p)return A;
+  if(!p.sat){A.push({c:'info',title:'Monitoreo satelital pendiente de activación',body:'La geometría quedó registrada. INVERPRO descarga el historial Sentinel-2 del predio (hasta 12 meses), calcula los índices por lote y los publica en esta cuenta.',act:'Escriba a gerencia.inverpro@gmail.com con el nombre del predio para activarlo.'});return A;}
+  const s=CLEAR[i];const a=allVal(s,'ndvi');const U=unitOf(p).toLowerCase();
+  const lots=p.lots.filter(l=>!l.virtual);
+  for(const l of lots){const v=lotVal(l,s,'ndvi');if(v==null)continue;const d=v-a;
+    if(d<=-.05){const ps=persistence(l,i);A.push({c:ps.n>=3?'crit':'warn',lot:l,title:l.name+': vigor por debajo del predio',body:'NDVI '+fmtI(v)+' frente a '+fmtI(a)+' del predio ('+sgn(d)+').'+(ps.m>=3?' Se repite en '+ps.n+' de las últimas '+ps.m+' imágenes útiles.':''),
+      act:MODE==='ganaderia'||p.real?'Revisar carga, días de descanso, cobertura y suelo desnudo; confirmar con un aforo.':'Revisar en campo: riego, fertilización, plagas o suelo.'});}
+    const j=prevClear(i,35);if(j!=null){const pv=lotVal(l,CLEAR[j],'ndvi');if(pv!=null&&v-pv<=-.06)A.push({c:'warn',lot:l,title:l.name+': caída de vigor',body:'NDVI bajó de '+fmtI(pv)+' ('+fD(CLEAR[j].t)+') a '+fmtI(v)+' ('+fD(s.t)+').',act:p.real?'Verificar si coincide con pastoreo reciente; si no, revisar en campo.':'Verificar en campo la causa de la caída.'});}
+    const z=lowZone(l,s);if(z)A.push({c:'info',lot:l,zone:z,title:l.name+': zona de menor vigor',body:'~'+nf(z.ha,1)+' ha del '+U+' con NDVI más de 0,10 por debajo de su propio promedio. Está marcada en el mapa.',act:'Visitar ese sector: calvas, encharcamiento, malezas o compactación.'});}
+  if(p.real&&MODE==='ganaderia'){const r=lots.map(l=>({l,v:lotVal(l,s,'ndvi')})).filter(x=>x.v!=null).sort((x,y)=>y.v-x.v);
+    if(r.length>1)A.push({c:'ok',lot:r[0].l,title:'Mayor vigor relativo: '+r[0].l.name,body:'Orden por NDVI al '+fD(s.t)+': '+r.map(x=>x.l.short+' '+fmtI(x.v)).join(' · ')+'.',act:'Candidato para la próxima entrada. Confirmar con aforo y días de descanso en INVERPRO Ganadería.'});}
+  const k=nearestTo(s.t-365,25);if(k!=null&&k<i){const v0=allVal(CLEAR[k],'ndvi');A.push({c:'info',title:'Predio frente a hace un año',body:'NDVI del predio '+fmtI(a)+' ('+fD(s.t)+') frente a '+fmtI(v0)+' ('+fDY(CLEAR[k].t)+'): '+sgn(a-v0)+'.',act:'Útil para comparar temporadas; el clima de cada año influye.'});}
+  const last=CLEAR[CLEAR.length-1];const gap=TODAY-last.t;
+  if(i===CLEAR.length-1&&gap>10)A.push({c:'idle',title:'Última imagen útil hace '+gap+' días',body:'Las imágenes posteriores al '+fD(last.t)+' llegaron con nubes sobre el predio. Sentinel-2 pasa cada 2 a 5 días; en lluvias es normal que varias salgan nubladas.',act:'El panel se actualiza con la siguiente imagen despejada.'});
+  const ord={crit:0,warn:1,info:2,ok:3,idle:4};return A.sort((x,y)=>ord[x.c]-ord[y.c]);}
+
+/* ---------- Empresa: Ley 2173 ---------- */
+function obligation(){const e=S.emp;const obl=e.tam==='Mediana'||e.tam==='Grande';const n=parseInt(e.empleados,10)||0;return{obl,n,trees:obl?2*n:0};}
+function oblHtml(){const o=obligation();if(!o.obl)return'<div class="eyebrow">Resultado</div><div class="big">No obligada</div><div class="muted">La Ley 2173 de 2021 obliga a medianas y grandes empresas. Una micro o pequeña empresa puede sembrar de forma voluntaria.</div>';
+  if(!o.n)return'<div class="eyebrow">Resultado</div><div class="big">Ingrese el número de empleados</div><div class="muted">Empleados con contrato laboral vigente al 31 de diciembre del año anterior.</div>';
+  return'<div class="eyebrow">Resultado</div><div class="big">'+nf(o.trees)+' árboles por año</div><div class="muted">'+nf(o.n)+' empleados × 2. A 3 × 3 m (1.111 árboles/ha) equivale a unas '+nf(o.trees/1111,2)+' ha, solo como referencia: la densidad final la define el diseño florístico aprobado.</div>';}
+
+/* ---------- Mapa ---------- */
+class MapView{
+  constructor(el,opts){this.el=el;this.o=opts;el.innerHTML='<canvas></canvas><canvas></canvas><svg xmlns="http://www.w3.org/2000/svg"></svg><div class="chipbar"></div><div class="attr"></div>';
+    [this.cb,this.ci]=el.querySelectorAll('canvas');this.svg=el.querySelector('svg');this.chips=el.querySelector('.chipbar');this.attr=el.querySelector('.attr');this.raf=0;
+    new ResizeObserver(()=>this.queue()).observe(el);this.svg.addEventListener('click',e=>this.click(e));}
+  queue(){cancelAnimationFrame(this.raf);this.raf=requestAnimationFrame(()=>this.render());}
+  fit(p,W,H){let pts=[];if(p){const useLots=this.o.index&&S.view==='lotes'&&p.lots.some(l=>l.m);
+      if(useLots)p.lots.forEach(l=>{if(l.m)pts=pts.concat(l.m);});
+      else{if(p.boundary)pts=pts.concat(p.boundary);p.lots.forEach(l=>{if(l.m)pts=pts.concat(l.m);});}}
+    if(S.draw&&S.draw.pts.length&&(!p||(!p.boundary&&!p.lots.length)))pts=pts.concat(S.draw.pts);
+    if(pts.length<2){const c=p&&p.center||[0,0];pts=[[c[0]-500,c[1]-400],[c[0]+500,c[1]+400]];}
+    const b=bbox(pts);const bw=Math.max(b[2]-b[0],150),bh=Math.max(b[3]-b[1],120);this.cx=(b[0]+b[2])/2;this.cy=(b[1]+b[3])/2;
+    this.s=Math.min(W/(bw*1.18),H/(bh*1.18));this.W=W;this.H=H;}
+  sx(x){return this.W/2+(x-this.cx)*this.s;} sy(y){return this.H/2-(y-this.cy)*this.s;}
+  wx(px){return(px-this.W/2)/this.s+this.cx;} wy(py){return this.cy-(py-this.H/2)/this.s;}
+  render(){const W=Math.round(this.el.clientWidth),H=Math.round(this.el.clientHeight);if(W<20||H<20)return;const p=P();
+    const key=(p?p.id+'|'+p.gv:'none')+'|'+(this.o.index?S.view:'');
+    if(this.fk!==key||this.W!==W||this.H!==H){if(!(S.draw&&this.fk===key&&this.W===W&&this.H===H))this.fit(p,W,H);this.fk=key;}
+    this.renderBase(p,W,H);this.renderIdx(p,W,H);this.renderSvg(p,W,H);this.renderChips(p);this.el.classList.toggle('drawing',!!(this.o.edit&&S.draw));}
+  renderBase(p,W,H){const c=this.cb,dpr=Math.min(2,window.devicePixelRatio||1);c.width=W*dpr;c.height=H*dpr;const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.fillStyle='#27302D';ctx.fillRect(0,0,W,H);
+    if(p&&p.sat&&SAT.img){const g=SAT.grid;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(SAT.img,this.sx(g.x0),this.sy(g.y1),(g.x1-g.x0)*this.s,(g.y1-g.y0)*this.s);
+      this.attr.textContent='Fondo: Copernicus Sentinel-2, color verdadero, mediana jun–sep 2026';}
+    else{ // cuadrícula de 100 m
+      ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;const step=100;const x0=Math.floor(this.wx(0)/step)*step,x1=this.wx(W),y0=Math.floor(this.wy(H)/step)*step,y1=this.wy(0);
+      ctx.beginPath();for(let x=x0;x<=x1;x+=step){const X=Math.round(this.sx(x))+.5;ctx.moveTo(X,0);ctx.lineTo(X,H);}for(let y=y0;y<=y1;y+=step){const Y=Math.round(this.sy(y))+.5;ctx.moveTo(0,Y);ctx.lineTo(W,Y);}ctx.stroke();
+      this.attr.textContent=p?'Sin imagen: monitoreo pendiente de activación':'';}}
+  renderIdx(p,W,H){const c=this.ci,dpr=Math.min(2,window.devicePixelRatio||1);c.width=W*dpr;c.height=H*dpr;const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    if(!this.o.index||!p||!p.sat||S.layer!=='indice'||!CLEAR.length)return;const s=sc(),I=IDX[S.idx],v=s.val(S.idx);if(!v)return;const cs=10*this.s+.6;
+    const lo=I.dom[0],span=I.dom[1]-I.dom[0];
+    for(let i=0;i<SAT.n;i++){const x=v[i];if(isNaN(x))continue;const col=I.r((x-lo)/span);ctx.fillStyle='rgb('+(col[0]|0)+','+(col[1]|0)+','+(col[2]|0)+')';ctx.fillRect(this.sx(SAT.px[i]-5),this.sy(SAT.py[i]+5),cs,cs);}}
+  path(pts,close){return pts.map(([x,y],i)=>(i?'L':'M')+this.sx(x).toFixed(1)+' '+this.sy(y).toFixed(1)).join('')+(close?'Z':'');}
+  renderSvg(p,W,H){const sel=selLot();let h='';this.svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    if(p){
+      if(p.boundary)h+='<path d="'+this.path(p.boundary,true)+'" fill="none" stroke="'+(sel&&sel.virtual?'#FFD965':'rgba(255,255,255,.95)')+'" stroke-width="'+(sel&&sel.virtual?2.6:1.8)+'" stroke-dasharray="8 5"/>';
+      (p.lines||[]).forEach(L=>{h+='<path d="'+this.path(L.m,true)+'" fill="rgba(255,255,255,.35)" stroke="rgba(255,255,255,.7)" stroke-width="1" pointer-events="none"><title>'+esc(L.name)+'</title></path>';});
+      for(const l of p.lots){if(!l.m)continue;h+='<path class="lot'+(sel&&sel.id===l.id?' sel':'')+'" data-lot="'+l.id+'" d="'+this.path(l.m,true)+'"><title>'+esc(l.name)+' · '+nf(l.ha,2)+' ha</title></path>';}
+      if(this.o.index&&p.sat&&CLEAR.length){const s=sc();for(const l of p.lots){const z=lowZone(l,s);if(!z)continue;const X=this.sx(z.cx),Y=this.sy(z.cy),r=z.r*this.s;h+='<circle cx="'+X+'" cy="'+Y+'" r="'+r+'" fill="none" stroke="#FFD965" stroke-width="2" stroke-dasharray="5 4" pointer-events="none"/><text class="lab sm" x="'+X+'" y="'+(Y-r-5)+'" text-anchor="middle">Revisar</text>';}}
+      for(const l of p.lots){if(!l.m)continue;const c=centroid(l.m);h+='<text class="lab" x="'+this.sx(c[0])+'" y="'+(this.sy(c[1])+4)+'" text-anchor="middle">'+esc(l.short||l.name)+'</text>';}
+      (p.points||[]).forEach(q=>{const X=this.sx(q.m[0]),Y=this.sy(q.m[1]);h+='<circle cx="'+X+'" cy="'+Y+'" r="3.5" fill="#E24A4C" stroke="#fff" stroke-width="1.3" pointer-events="none"><title>'+esc(q.name)+'</title></circle>';});
+      if(S.view==='lotes'&&p.points&&p.points.length){const q=p.points[0];h+='<text class="lab sm" x="'+(this.sx(q.m[0])+7)+'" y="'+(this.sy(q.m[1])-6)+'">Casa, corral y pozo</text>';}
+    }
+    if(this.o.edit&&S.draw){const pts=S.draw.pts;if(pts.length){h+='<path d="'+this.path(pts,false)+'" fill="rgba(255,217,101,.18)" stroke="#FFD965" stroke-width="2"/>';pts.forEach((q,i)=>{h+='<circle cx="'+this.sx(q[0])+'" cy="'+this.sy(q[1])+'" r="'+(i?4:7)+'" fill="'+(i?'#FFD965':'#E24A4C')+'" stroke="#fff" stroke-width="1.5"/>';});}}
+    const opts=[20,50,100,200,250,500,1000,2000];let m=opts[0];for(const o of opts)if(o*this.s<=W*.2)m=o;const Lp=m*this.s;
+    h+='<g transform="translate(12,'+(H-16)+')"><rect x="-4" y="-16" width="'+(Lp+50)+'" height="24" rx="5" fill="rgba(10,16,15,.72)"/><path d="M0 0H'+Lp+'M0 -4V0M'+Lp+' -4V0" stroke="#fff" stroke-width="1.5"/><text class="lab sm" x="'+(Lp+6)+'" y="3">'+(m>=1000?m/1000+' km':m+' m')+'</text></g>';
+    h+='<g transform="translate('+(W-22)+',36)"><path d="M0 -12L6 6L0 2L-6 6Z" fill="#fff" stroke="rgba(8,14,12,.8)"/><text class="lab sm" x="0" y="20" text-anchor="middle">N</text></g>';
+    this.svg.innerHTML=h;
+    let e=this.el.querySelector('.empty');const empty=!p||(!p.boundary&&!p.lots.length&&!(S.draw&&S.draw.pts.length));
+    if(empty){if(!e){e=document.createElement('div');e.className='empty';this.el.appendChild(e);}e.textContent=this.o.edit?'Dibuje el lindero o importe un KML/KMZ':'Sin predio registrado. Regístrelo en «Registrar predio».';}else if(e)e.remove();}
+  renderChips(p){let c='';
+    if(this.o.index&&p&&p.sat&&CLEAR.length){const s=sc();c='<span class="mchip">Sentinel-2 L2A · 10 m/píxel · '+fDY(s.t)+(s.cloud?' · nubes '+s.cloud+' %':'')+'</span>';if(S.layer!=='indice')c='<span class="mchip">Color verdadero · mediana jun–sep 2026</span>';}
+    else if(this.o.edit&&S.draw)c='<span class="mchip">'+(S.draw.kind==='lindero'?'Dibujando lindero':'Dibujando '+unitOf(p).toLowerCase())+' · '+S.draw.pts.length+' vértices</span>';
+    this.chips.innerHTML=c;}
+  click(e){const r=this.svg.getBoundingClientRect();const px=(e.clientX-r.left)*(this.W/r.width),py=(e.clientY-r.top)*(this.H/r.height);
+    if(this.o.edit&&S.draw){const pts=S.draw.pts;if(pts.length>=3){const f=pts[0];if(Math.hypot(this.sx(f[0])-px,this.sy(f[1])-py)<12){finishDraw();return;}}pts.push([this.wx(px),this.wy(py)]);this.render();renderDrawBox();return;}
+    const id=e.target&&e.target.getAttribute&&e.target.getAttribute('data-lot');const p=P();if(id&&p){S.sel[p.id]=id;if(S.tab==='panel')renderPanel();else if(MR)MR.render();}}
+}
+
+/* ---------- Encabezado ---------- */
+function renderTop(){
+  if(MODE==='ganaderia'){$('#profiles').hidden=true;$('#backlink').hidden=false;$('#prodname').innerHTML='Ganadería<small>Monitoreo satelital de potreros</small>';}
+  else $('#profiles').innerHTML=Object.keys(PROFS).map(k=>'<button type="button" data-prof="'+k+'" aria-pressed="'+(S.profile===k)+'">'+esc(PROFS[k].lab)+'</button>').join('');
+  const p=P(),list=PREDIOS[S.profile];let h='';
+  if(!p&&SAT.state==='loading'&&S.profile==='agricultor'){h='<div><div class="eyebrow">Cargando</div><h1>Finca Las Marías</h1><div class="meta"><span>Leyendo imágenes Sentinel-2…</span></div></div>';}
+  else if(!p){h='<div><div class="eyebrow">'+esc(PROFS[S.profile].lab)+'</div><h1>'+(S.profile==='empresa'?'Obligaciones de siembra y compensación':'Sin predio registrado')+'</h1><div class="meta"><span>Registre un predio o importe su KML/KMZ para empezar</span></div></div>';}
+  else{const tot=p.bha!=null?p.bha:(p.boundary?areaHa(p.boundary):p.lots.reduce((a,l)=>a+l.ha,0));const nl=p.lots.filter(l=>!l.virtual).length;
+    h='<div><div class="eyebrow">'+esc(PROFS[S.profile].lab)+(p.real?' · datos satelitales reales':' · monitoreo pendiente')+'</div><h1>'+esc(p.name)+'</h1><div class="meta">'+(p.owner?'<span>'+esc(p.owner)+'</span>':'')+'<span>'+esc(p.muni||'—')+', Casanare</span><span class="num">'+nf(tot,1)+' ha</span><span>'+nl+' '+(p.real?'potreros':PROFS[S.profile].units.toLowerCase())+'</span></div></div>';}
+  h+='<div class="pbar-r">';
+  if(list.length>1||(list.length&&MODE!=='ganaderia'))h+='<label class="sr" for="predsel">Predio</label><select id="predsel" class="predsel">'+list.map(q=>'<option value="'+q.id+'"'+(p&&q.id===p.id?' selected':'')+'>'+esc(q.name)+'</option>').join('')+'</select>';
+  if(p&&p.sat&&CLEAR.length){const last=CLEAR[CLEAR.length-1];h+='<div class="sat"><span class="dot" aria-hidden="true"></span><span>Última imagen útil <b class="mono">'+fD(last.t)+'</b> · '+CLEAR.length+' de '+SCENES.length+' en 12 meses</span></div>';}
+  else if(p)h+='<div class="sat pending"><span class="dot" aria-hidden="true"></span><span>Monitoreo satelital <b>pendiente de activación</b></span></div>';
+  h+='</div>';$('#pbar').innerHTML=h;
+  const tabs=MODE==='ganaderia'?[['panel','Panel'],['rep','Reporte'],['dat','Datos y uso']]:[['panel','Panel'],['reg','Registrar predio'],['bit','Bitácora',p?p.events.length:0],['rep','Reporte'],['dat','Datos y uso']];
+  $('#tabs').innerHTML=tabs.map(([k,l,n])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(S.tab===k)+'">'+l+(n!=null?'<span class="n">'+n+'</span>':'')+'</button>').join('');}
+
+/* ---------- Panel ---------- */
+let MP=null,MR=null;
+function kpi(l,v,u,s){return'<div class="kpi"><div class="eyebrow">'+l+'</div><div class="v">'+v+(u?'<small>'+u+'</small>':'')+'</div>'+(s?'<div class="s">'+s+'</div>':'')+'</div>';}
+function renderPanel(){const p=P();const hasSat=!!(p&&p.sat&&CLEAR.length);
+  $('#idx-seg').innerHTML=hasSat?Object.keys(IDX).map(k=>'<button type="button" data-idx="'+k+'" aria-pressed="'+(k===S.idx)+'" title="'+esc(IDX[k].desc)+'">'+IDX[k].lab+'</button>').join(''):'<button type="button" aria-pressed="true" disabled>Geometría</button>';
+  let vs='';if(hasSat)vs+='<button type="button" data-layer="indice" aria-pressed="'+(S.layer==='indice')+'">Índice</button><button type="button" data-layer="color" aria-pressed="'+(S.layer==='color')+'">Color real</button>';
+  if(p&&p.boundary&&p.lots.some(l=>l.m))vs+='<button type="button" data-view="predio" aria-pressed="'+(S.view==='predio')+'">Predio</button><button type="button" data-view="lotes" aria-pressed="'+(S.view==='lotes')+'">'+esc(p.real?'Potreros':PROFS[S.profile].units)+'</button>';
+  $('#view-seg').innerHTML=vs;$('#view-seg').hidden=!vs;$('#idx-seg').hidden=!hasSat;
+  $('#timebar').hidden=!hasSat;
+  if(hasSat){const r=$('#date-r');r.max=CLEAR.length-1;r.value=S.di;const s=sc();$('#date-lab').innerHTML='<b>'+fDY(s.t)+'</b> · imagen '+(S.di+1)+' de '+CLEAR.length+' útiles';
+    $('#play').innerHTML=S.play?'<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="3" height="10" fill="currentColor"/><rect x="8" y="2" width="3" height="10" fill="currentColor"/></svg>':'<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 2l8 5-8 5z" fill="currentColor"/></svg>';
+    const I=IDX[S.idx];$('#legend').innerHTML=S.layer==='indice'?'<span><b>'+I.lab+'</b> · '+esc(I.desc)+'</span><div class="legend-body"><div class="bar" style="background:'+I.r.css+'"></div><div class="ends"><span>'+nf(I.dom[0],2)+' · '+esc(I.lo)+'</span><span>'+esc(I.hi)+' · '+nf(I.dom[1],2)+'</span></div></div>':'<span class="muted">Mediana de 7 imágenes Sentinel-2 sin nubes (19 may – 16 sep 2026), 10 m por píxel.</span>';}
+  else $('#legend').innerHTML=p?'<span class="muted">Geometría registrada. El índice aparece cuando se activa el monitoreo satelital del predio.</span>':'';
+  renderKpis(p);renderProfileCard(p);renderLots(p);renderChart(p);renderAlerts(p);if(MP)MP.queue();}
+function renderKpis(p){let h='';
+  if(S.profile==='empresa'&&!p){const o=obligation();h=kpi('Obligación Ley 2173',o.obl?(o.n?nf(o.trees):'—'):'No obligada',o.obl&&o.n?'árboles/año':'',o.obl?(o.n?nf(o.n)+' empleados × 2':'Ingrese empleados'):'Aplica a medianas y grandes')+kpi('Tamaño de empresa',esc(S.emp.tam),'','Ley 590 de 2000 y 905 de 2004')+kpi('Áreas registradas','0','','Registre o importe KML/KMZ')+kpi('Estado normativo','Formular','','Res. 0358 de 2026');}
+  else if(!p){h=kpi('Predios','0','','')+kpi('Área','—','','')+kpi('Lotes','—','','')+kpi('Imágenes','—','','');}
+  else if(!p.sat){const tot=p.boundary?areaHa(p.boundary):p.lots.reduce((a,l)=>a+l.ha,0);h=kpi('Área registrada',nf(tot,1),'ha','Planar, calculada en el navegador')+kpi(PROFS[S.profile].units,p.lots.length,'',nf(p.lots.reduce((a,l)=>a+l.ha,0),1)+' ha')+kpi('Imágenes','Pendiente','','Activación por INVERPRO')+kpi('Bitácora',p.events.length,'','registros');}
+  else{const s=sc(),a=allVal(s,S.idx),I=IDX[S.idx];const j=nearestBefore(s.t,25);const d=j!=null?a-allVal(CLEAR[j],S.idx):null;
+    const pot=p.lots.filter(l=>!l.virtual);const pha=pot.reduce((x,l)=>x+l.ha,0);
+    h=kpi('Área del predio',nf(p.bha,1),'ha','Geodésica, lindero del KML')+kpi('Potreros mapeados',pot.length,'',nf(pha,1)+' ha · resto '+nf(p.bha-pha,1)+' ha')+kpi(I.lab+' del predio',fmtI(a),'',fD(s.t)+(d!=null?' · '+sgn(d)+' vs '+fD(CLEAR[j].t):''))+kpi('Imágenes útiles',CLEAR.length,'de '+SCENES.length,'sep 2025 – sep 2026; resto con nubes');}
+  $('#kpis').innerHTML=h;}
+function renderProfileCard(p){let h='';
+  if(S.profile==='empresa'){h='<div class="card-h"><h3>Obligaciones</h3><small>estado normativo al 23 sep 2026</small></div>'+
+    '<div class="fgrid" style="margin-bottom:12px"><div class="f"><label for="k-tam">Tamaño de la empresa</label><select id="k-tam">'+['Micro','Pequeña','Mediana','Grande'].map(x=>'<option'+(x===S.emp.tam?' selected':'')+'>'+x+'</option>').join('')+'</select></div><div class="f"><label for="k-emp">Empleados al 31 dic. del año anterior</label><input id="k-emp" type="number" min="0" inputmode="numeric" value="'+esc(S.emp.empleados)+'" placeholder="Ej.: 420"></div></div>'+
+    '<div class="result" id="k-res">'+oblHtml()+'</div>'+
+    '<details style="margin-top:10px"><summary>Quiénes no cuentan (Res. 1491 de 2025, art. 12)</summary><ul><li>Menores de edad con contrato laboral o de aprendizaje</li><li>Trabajadores en período de prueba</li><li>Contratos temporales, ocasionales o accidentales</li><li>Contratistas independientes</li><li>Trabajadores enviados por empresas de servicios temporales</li></ul></details>'+
+    '<div class="steps" style="margin-top:14px">'+
+    '<div class="step now"><span class="b"></span><div><div class="st">Formular el programa de siembra</div><div class="sd">Exigible hoy: la Res. 0358 de 2026 aplazó el campo, no la formulación.</div></div></div>'+
+    '<div class="step hold"><span class="b"></span><div><div class="st">Radicar ante la autoridad ambiental municipal o distrital</div><div class="sd">Suspendida hasta que el municipio delimite y publique las Áreas de Vida (plazo de 18 meses).</div></div></div>'+
+    '<div class="step hold"><span class="b"></span><div><div class="st">Sembrar</div><div class="sd">Dentro del año siguiente a la aprobación, en temporada de lluvias.</div></div></div>'+
+    '<div class="step"><span class="b"></span><div><div class="st">Mantener 2 años y reportar</div><div class="sd">Reporte en la plataforma Proyectos de Restauración del Minambiente.</div></div></div>'+
+    '<div class="step"><span class="b"></span><div><div class="st">Certificado Siembra Vida Empresarial</div><div class="sd">Lo expide la autoridad ambiental municipal o distrital.</div></div></div></div>'+
+    '<p class="muted" style="margin:12px 0 0">También aplica para compensaciones forestales, por pérdida de biodiversidad, inversión forzosa del 1 % y medidas por levantamiento de veda: registre cada área para su seguimiento satelital.</p>';}
+  else if(p&&p.sat){const{mn,mx}=seasonStats();const s=sc(),a=allVal(s,'ndvi');const lo=Math.min(mn.v,a)-.03,hi=Math.max(mx.v,a)+.03;const X=v=>((v-lo)/(hi-lo)*100).toFixed(1)+'%';
+    h='<div class="card-h"><h3>Temporada del predio</h3><small>NDVI promedio, 12 meses</small></div>'+
+      '<div class="range" aria-hidden="true"><div class="track" style="background:'+RV.css+';opacity:.8"></div>'+
+      '<div class="mk" style="left:'+X(mn.v)+'"><i></i></div><div class="mk" style="left:'+X(mx.v)+'"><i></i></div><div class="mk cur" style="left:'+X(a)+'"><i></i></div></div>'+
+      '<div class="range-lab"><span>Mínimo <b class="mono">'+fmtI(mn.v)+'</b> · '+fD(mn.t)+' (sequía)</span><span>Actual <b class="mono">'+fmtI(a)+'</b> · '+fD(s.t)+'</span><span>Máximo <b class="mono">'+fmtI(mx.v)+'</b> · '+fD(mx.t)+'</span></div>'+
+      '<p class="muted" style="margin:12px 0 0">La sabana de guaratara baja de vigor en la sequía (diciembre a marzo) y se recupera con las lluvias. Compare cada potrero contra el promedio del predio en la misma fecha, no contra otra temporada.</p>';
+    if(MODE==='monitor')h+='<div class="callout" style="margin-top:12px"><div class="eyebrow">Uso ganadero</div><div style="margin-top:4px">La rotación, el forraje y los días de descanso de estos potreros se gestionan en <a href="'+GAN_URL+'" target="_blank" rel="noopener">INVERPRO Ganadería</a>, que usa este mismo monitoreo satelital.</div></div>';}
+  else if(p){h='<div class="card-h"><h3>Activación del monitoreo</h3></div><div class="steps">'+
+    '<div class="step now"><span class="b"></span><div><div class="st">Geometría registrada</div><div class="sd">'+(p.boundary?'Lindero y ':'')+p.lots.length+' '+PROFS[S.profile].units.toLowerCase()+'.</div></div></div>'+
+    '<div class="step"><span class="b"></span><div><div class="st">Procesamiento del historial</div><div class="sd">INVERPRO descarga hasta 12 meses de imágenes Sentinel-2 y calcula NDVI, NDRE y NDMI por '+PROFS[S.profile].unit.toLowerCase()+'.</div></div></div>'+
+    '<div class="step"><span class="b"></span><div><div class="st">Seguimiento continuo</div><div class="sd">Cada imagen despejada actualiza el panel, las alertas y el reporte mensual.</div></div></div></div>'+
+    '<p class="muted" style="margin:12px 0 0">Para activarlo escriba a <span class="sel-text">gerencia.inverpro@gmail.com</span> con el nombre del predio.</p>';}
+  else h='<div class="card-h"><h3>Empiece por el predio</h3></div><p class="muted" style="margin:0">Dibuje el lindero o importe el KML/KMZ en «Registrar predio».</p>';
+  $('#profile-card').innerHTML=h;}
+function spark(l){const s=series(l,S.idx),I=IDX[S.idx];const W=84,H=26;const pts=[];s.forEach((q,i)=>{if(q.v!=null)pts.push([i/(s.length-1)*W,H-2-clamp((q.v-I.cdom[0])/(I.cdom[1]-I.cdom[0]),0,1)*(H-4)]);});if(pts.length<2)return'<span></span>';
+  const c=pts[Math.min(S.di,pts.length-1)];return'<svg class="spark" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true"><path d="'+pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join('')+'" fill="none" stroke="var(--accent)" stroke-width="1.5"/><circle cx="'+c[0]+'" cy="'+c[1]+'" r="2.5" fill="var(--accent)"/></svg>';}
+function renderLots(p){const U=p&&p.real?'Potreros y resto del predio':PROFS[S.profile].units;let h='<div class="card-h"><h3>'+U+'</h3><small>'+(p&&p.sat&&CLEAR.length?IDX[S.idx].lab+' al '+fD(sc().t):'')+'</small></div>';
+  if(!p||!p.lots.length){h+='<p class="muted" style="margin:0">'+(S.profile==='empresa'?'Registre las áreas de siembra, compensación o restauración para seguirlas con imágenes satelitales.':'Todavía no hay lotes. Dibújelos o impórtelos en «Registrar predio».')+'</p>';$('#lots-card').innerHTML=h;return;}
+  const sel=selLot();h+='<div class="lots">';
+  for(const l of p.lots){const st=statusLot(p,l,S.di);let sub=nf(l.ha,2)+' ha · '+(l.info.uso||'')+(l.info.pasto?' · '+l.info.pasto.split(' (')[0]:'')+(l.info.crop?' · '+l.info.crop:'')+(l.info.obl?' · '+l.info.obl.split(' — ')[0]:'');
+    let val='';if(p.sat&&CLEAR.length){const v=lotVal(l,sc(),S.idx),a=allVal(sc(),S.idx);val=fmtI(v)+(v!=null&&!l.virtual?' <span style="color:var(--ink-3)">('+sgn(v-a)+')</span>':'');}
+    h+='<button type="button" class="lotrow'+(sel&&sel.id===l.id?' sel':'')+'" data-lotrow="'+l.id+'"><div><div class="nm">'+esc(l.name)+'</div><div class="sub">'+esc(sub)+'</div></div>'+(p.sat?spark(l):'<span></span>')+'<div class="chipcell"><span class="chip '+st.c+'">'+st.lab+'</span><div class="val">'+val+'</div></div></button>';}
+  h+='</div>';if(p.sat)h+='<p class="muted" style="margin:10px 0 0">Entre paréntesis: diferencia frente al promedio del predio en la misma imagen.</p>';$('#lots-card').innerHTML=h;}
+function renderChart(p){const box=$('#chart-card');const l=selLot();
+  if(!p||!p.sat||!CLEAR.length||!l){box.innerHTML='<div class="card-h"><h3>Serie de tiempo</h3></div><p class="muted" style="margin:0">'+(p?'La serie aparece cuando se activa el monitoreo satelital del predio.':'Registre un predio para ver su historial satelital.')+'</p>';return;}
+  const I=IDX[S.idx];const W=Math.max(300,Math.round((box.clientWidth||700)-32)),H=250,m={l:44,r:16,t:22,b:42};
+  const x0=T('2025-09-01'),x1=T('2026-09-30');const X=t=>m.l+(t-x0)/(x1-x0)*(W-m.l-m.r);const Y=v=>m.t+(1-(clamp(v,I.cdom[0],I.cdom[1])-I.cdom[0])/(I.cdom[1]-I.cdom[0]))*(H-m.t-m.b);
+  let g='';
+  // temporada seca aproximada (dic–mar)
+  g+='<rect class="season" x="'+X(T('2025-12-01'))+'" y="'+m.t+'" width="'+(X(T('2026-04-01'))-X(T('2025-12-01')))+'" height="'+(H-m.t-m.b)+'"/><text x="'+(X(T('2025-12-01'))+4)+'" y="'+(m.t+12)+'" style="fill:var(--warn)">temporada seca</text>';
+  for(const v of I.ticks){g+='<line class="gl" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(m.l-8)+'" y="'+(Y(v)+3.5)+'" text-anchor="end">'+nf(v,1)+'</text>';}
+  for(let k=0;k<13;k++){const y=2025+Math.floor((8+k)/12),mo=(8+k)%12;const tt=T(y+'-'+String(mo+1).padStart(2,'0')+'-01');if(tt>x1)break;g+='<line class="ax" x1="'+X(tt)+'" x2="'+X(tt)+'" y1="'+(H-m.b)+'" y2="'+(H-m.b+4)+'"/><text x="'+(X(tt)+3)+'" y="'+(H-m.b+16)+'">'+MES[mo]+(mo===0?' '+String(y).slice(2):'')+'</text>';}
+  g+='<line class="ax" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+(H-m.b)+'" y2="'+(H-m.b)+'"/>';
+  SCENES.forEach(s=>{if(!s.ok)g+='<rect class="cl" x="'+(X(s.t)-1.2)+'" y="'+(H-m.b+24)+'" width="2.4" height="7" rx="1"><title>'+fD(s.t)+' · nubes '+s.cloud+' %</title></rect>';});
+  const ref=CLEAR.map(s=>[X(s.t),allVal(s,S.idx)]).filter(q=>q[1]!=null);
+  if(!l.virtual&&ref.length)g+='<path class="ref" d="'+ref.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+Y(q[1]).toFixed(1)).join('')+'"/>';
+  const pts=[];CLEAR.forEach((s,i)=>{const v=lotVal(l,s,S.idx);if(v!=null)pts.push([X(s.t),Y(v),i,v]);});
+  if(pts.length){const d=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join('');g+='<path class="ar" d="'+d+'L'+pts[pts.length-1][0].toFixed(1)+' '+(H-m.b)+'L'+pts[0][0].toFixed(1)+' '+(H-m.b)+'Z"/><path class="ln" d="'+d+'"/>';}
+  const ct=sc().t;g+='<line class="cur-l" x1="'+X(ct)+'" x2="'+X(ct)+'" y1="'+m.t+'" y2="'+(H-m.b)+'"/>';
+  pts.forEach(q=>{const cur=q[2]===S.di;g+='<circle class="pt'+(cur?' cur':'')+'" cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="'+(cur?4.5:2.8)+'"/>';});
+  const cv=lotVal(l,sc(),S.idx);if(cv!=null)g+='<text x="'+Math.min(X(ct)+8,W-m.r-40)+'" y="'+(Y(cv)-10)+'" style="fill:var(--ink);font-weight:600">'+fmtI(cv)+'</text>';
+  p.events.filter(e=>e.lot===l.id&&e.t>=x0&&e.t<=x1).forEach(e=>{const ex=X(e.t);g+='<path class="ev" d="M'+ex+' '+(m.t-12)+'l5 5-5 5-5-5z"><title>'+esc(fD(e.t)+' · '+e.type+(e.val?' · '+e.val:''))+'</title></path>';});
+  g+='<g id="tip" visibility="hidden"><rect class="tipbg" rx="4" height="20"/><text class="tiptx" y="14"></text></g><rect class="hit" x="'+m.l+'" y="'+m.t+'" width="'+(W-m.l-m.r)+'" height="'+(H-m.t-m.b)+'"/>';
+  box.innerHTML='<div class="card-h"><div><div class="eyebrow">'+esc(l.name)+' · '+nf(l.ha,2)+' ha</div><h3>'+I.lab+' · septiembre 2025 a septiembre 2026</h3></div><small>'+esc(I.desc)+'</small></div>'+
+    '<div class="chart-wrap"><svg id="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Serie de '+I.lab+' de '+esc(l.name)+'">'+g+'</svg></div>'+
+    '<div class="chart-foot"><span><i></i>'+esc(l.name)+'</span>'+(l.virtual?'':'<span><i style="border-top:2px dashed var(--ref)"></i>Promedio del predio</span>')+'<span><i style="width:3px;height:8px;border:0;background:var(--ink-3);opacity:.4"></i>Imagen descartada por nubes</span><span>Clic en la serie para ver esa fecha en el mapa</span></div>';
+  const svg=$('#chart'),tip=svg.querySelector('#tip'),hit=svg.querySelector('.hit');
+  const near=ev=>{const r=svg.getBoundingClientRect();const px=(ev.clientX-r.left)*(W/r.width);let b=null,bd=1e9;for(const q of pts){const d=Math.abs(q[0]-px);if(d<bd){bd=d;b=q;}}return b;};
+  hit.addEventListener('pointermove',ev=>{const q=near(ev);if(!q)return;const s=CLEAR[q[2]];const a=allVal(s,S.idx);const txt=fD(s.t)+' · '+fmtI(q[3])+(l.virtual||a==null?'':' (predio '+fmtI(a)+')');const tx=tip.querySelector('text');tx.textContent=txt;const w=txt.length*6.5+14;tip.setAttribute('transform','translate('+clamp(q[0]-w/2,0,W-w)+','+Math.max(0,q[1]-30)+')');tip.querySelector('rect').setAttribute('width',w);tx.setAttribute('x',7);tip.setAttribute('visibility','visible');});
+  hit.addEventListener('pointerleave',()=>tip.setAttribute('visibility','hidden'));
+  hit.addEventListener('click',ev=>{const q=near(ev);if(q){S.di=q[2];renderPanel();}});}
+function renderAlerts(p){const box=$('#alerts-card');if(S.profile==='empresa'&&!p){box.innerHTML='<div class="card-h"><h3>Siguiente paso</h3></div><div class="alerts"><div class="alert info"><span class="ic"></span><div class="at">Registre las áreas de la obligación</div><div class="ab">Con el lindero de cada área se construye la línea base satelital antes de sembrar y el seguimiento de cobertura después.</div><div class="aa">Ir a «Registrar predio»</div></div></div>';return;}
+  const A=p&&(p.sat?CLEAR.length:true)?alerts(p,S.di):[];let h='<div class="card-h"><h3>Alertas y recomendaciones</h3><small>'+(p&&p.sat&&CLEAR.length?A.length+' al '+fD(sc().t):'')+'</small></div>';
+  h+=A.length?'<div class="alerts">'+A.map(a=>'<div class="alert '+a.c+'"><span class="ic" aria-hidden="true"></span><div class="at">'+esc(a.title)+'</div><div class="ab">'+esc(a.body)+'</div>'+(a.act?'<div class="aa">'+esc(a.act)+'</div>':'')+'</div>').join('')+'</div>':'<p class="muted" style="margin:0">Sin novedades para esta fecha.</p>';
+  box.innerHTML=h;}
+
+/* ---------- Registro ---------- */
+const CROPS=['Arroz riego','Arroz secano','Maíz','Soya','Palma de aceite','Cacao','Plátano','Pastura','Otro'];
+const OBLIG=['Ley 2173 de 2021 — Áreas de Vida','Compensación por aprovechamiento forestal','Compensación por pérdida de biodiversidad','Inversión forzosa del 1 %','Medida por levantamiento de veda','Siembra voluntaria / RSE'];
+const AUTH=['Corporinoquia','Secretaría ambiental municipal','ANLA','Otra'];
+const MUNIS=['Yopal','Aguazul','Maní','Tauramena','Villanueva','Monterrey','Paz de Ariporo','Orocué','Pore','Trinidad','Hato Corozal','Nunchía','San Luis de Palenque','Sabanalarga','Recetor','Chámeza','Támara','La Salina','Sácama','Otro'];
+function opt(list,v){return list.map(x=>'<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>').join('');}
+function newPredio(name){const pr=S.profile;const base=PREDIOS.agricultor.find(q=>q.real);const o=base?[-72.0155,4.6505]:[-72.0,4.6];
+  return{id:'p'+Date.now(),profile:pr,real:false,name:name||'Predio nuevo',owner:'',doc:'',muni:'Yopal',vereda:'',contact:'',boundary:null,lots:[],points:[],lines:[],events:[],gv:1,sat:false,proj:localProj(o),center:[0,0]};}
+function renderReg(){const p=P(),pr=S.profile,U=PROFS[pr].unit;const locked=p&&p.real;
+  let h='<div class="card-h"><div><div class="eyebrow">'+esc(PROFS[pr].lab)+'</div><h2>Registrar predio</h2></div></div><p class="muted" style="margin:-4px 0 18px">Solo el lindero es obligatorio. Puede dibujarlo aquí o importar el archivo KML/KMZ de Google Earth.</p>';
+  if(locked)h+='<div class="note" style="margin:0 0 18px">'+esc(p.name)+' tiene monitoreo activo y su geometría viene del KML del cliente; no se edita desde aquí. Para registrar otro predio use «Nuevo predio».</div>';
+  h+='<div class="btns" style="margin-bottom:18px"><button type="button" class="btn" data-act="new">Nuevo predio</button></div>';
+  if(p&&!locked){
+  h+='<fieldset><legend><span class="k">1</span>'+(pr==='empresa'?'Empresa y proyecto':'Titular y predio')+'</legend><div class="fgrid">'+
+    '<div class="f"><label for="r-owner">'+(pr==='empresa'?'Razón social':'Nombre del titular')+'</label><input id="r-owner" value="'+esc(p.owner)+'"></div>'+
+    '<div class="f"><label for="r-doc">'+(pr==='empresa'?'NIT':'Documento')+'</label><input id="r-doc" value="'+esc(p.doc)+'"></div>'+
+    '<div class="f"><label for="r-name">'+(pr==='empresa'?'Nombre del proyecto':'Nombre del predio')+'</label><input id="r-name" value="'+esc(p.name)+'"></div>'+
+    '<div class="f"><label for="r-muni">Municipio (Casanare)</label><select id="r-muni">'+opt(MUNIS,p.muni)+'</select></div>'+
+    '<div class="f"><label for="r-ver">Vereda</label><input id="r-ver" value="'+esc(p.vereda)+'"></div>'+
+    '<div class="f"><label for="r-contact">Correo o celular</label><input id="r-contact" value="'+esc(p.contact)+'" placeholder="Para alertas y reportes"></div></div></fieldset>';
+  h+='<fieldset><legend><span class="k">2</span>Lindero y '+PROFS[pr].units.toLowerCase()+'</legend>'+
+    '<div class="btns"><button type="button" class="btn'+(S.draw&&S.draw.kind==='lindero'?' on':'')+'" data-draw="lindero">Dibujar lindero</button><button type="button" class="btn'+(S.draw&&S.draw.kind==='lote'?' on':'')+'" data-draw="lote">Dibujar '+U.toLowerCase()+'</button><label class="btn">Importar KML / KMZ<input type="file" id="r-file" accept=".kml,.kmz,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz"></label></div>'+
+    '<div id="drawbox"></div><div class="fgrid"><div class="f"><label for="n-name">Nombre del nuevo '+(pr==='empresa'?'área':U.toLowerCase())+'</label><input id="n-name" value="'+esc(U+' '+(p.lots.length+1))+'"></div>';
+  if(pr==='agricultor')h+='<div class="f"><label for="n-crop">Cultivo o uso</label><select id="n-crop">'+opt(CROPS,'Arroz riego')+'</select></div><div class="f"><label for="n-date">Fecha de siembra</label><input type="date" id="n-date"></div>';
+  else h+='<div class="f"><label for="n-obl">Tipo de obligación</label><select id="n-obl">'+opt(OBLIG,OBLIG[0])+'</select></div><div class="f"><label for="n-auth">Autoridad ambiental</label><select id="n-auth">'+opt(AUTH,AUTH[0])+'</select></div><div class="f"><label for="n-acto">Acto administrativo</label><input id="n-acto" placeholder="Resolución que impone la obligación"></div><div class="f"><label for="n-date">Fecha de siembra</label><input type="date" id="n-date"></div>';
+  h+='</div></fieldset>';
+  h+='<fieldset><legend><span class="k">3</span>Autorización</legend><label class="check"><input type="checkbox" id="r-auth"'+(p.auth?' checked':'')+'><span>Autorizo a INVERPRO COL S.A.S. a tratar mis datos personales y los del predio para prestar el servicio de monitoreo, conforme a la Ley 1581 de 2012 y a la política descrita en «Datos y uso».</span></label></fieldset>';
+  h+='<div id="reg-msg"></div><div class="btns"><button type="submit" class="btn pri">Guardar y ver el panel</button></div>';}
+  else if(!p)h+='<p class="muted">Pulse «Nuevo predio» para empezar.</p>';
+  $('#reg-form').innerHTML=h;renderDrawBox();renderRegLots();if(MR)MR.queue();}
+function renderDrawBox(){const b=$('#drawbox');if(!b)return;if(!S.draw){b.innerHTML=S.regMsg?'<div class="msg '+S.regMsg.c+'">'+esc(S.regMsg.t)+'</div>':'';return;}
+  const n=S.draw.pts.length;b.innerHTML='<div class="drawbox"><b>'+(S.draw.kind==='lindero'?'Dibujando el lindero':'Dibujando '+PROFS[S.profile].unit.toLowerCase())+'.</b> Toque el mapa en cada vértice ('+n+' hasta ahora). Cierre tocando el primer vértice o con «Cerrar polígono».<div class="btns" style="margin-top:8px"><button type="button" class="btn pri" data-act="close"'+(n<3?' disabled':'')+'>Cerrar polígono</button><button type="button" class="btn" data-act="undo"'+(n?'':' disabled')+'>Deshacer vértice</button><button type="button" class="btn ghost" data-act="cancel">Cancelar</button></div></div>';}
+function renderRegLots(){const p=P();const box=$('#reg-lots');if(!p){box.innerHTML='';return;}const U=unitOf(p);
+  let h='<div class="tbl-wrap"><table><thead><tr><th>'+U+'</th><th class="r">Área (ha)</th><th>'+(S.profile==='empresa'?'Obligación':'Uso')+'</th><th></th></tr></thead><tbody>';
+  if(p.boundary)h+='<tr><td><b>Lindero del predio</b></td><td class="r mono">'+nf(p.bha!=null?p.bha:areaHa(p.boundary),2)+'</td><td class="muted">'+p.boundary.length+' vértices</td><td></td></tr>';
+  for(const l of p.lots)h+='<tr><td>'+esc(l.name)+'</td><td class="r mono">'+nf(l.ha,2)+'</td><td>'+esc(l.info.obl||l.info.crop||l.info.uso||'')+(l.info.siembra?' · '+esc(l.info.siembra):'')+'</td><td class="r">'+(p.real?'':'<button type="button" class="linkbtn" data-del="'+l.id+'">Quitar</button>')+'</td></tr>';
+  if(!p.boundary&&!p.lots.length)h+='<tr><td colspan="4" class="muted">Sin geometrías todavía.</td></tr>';
+  h+='</tbody></table></div>';if(p.real)h+='<p class="muted" style="margin:8px 0 0">Áreas geodésicas (WGS84). La herramienta de Google Earth puede mostrar una cifra ligeramente distinta según su método de cálculo.</p>';box.innerHTML=h;}
+function startDraw(kind){S.draw={kind,pts:[]};S.regMsg=null;renderReg();}
+function finishDraw(){const p=P();const d=S.draw;if(!p||!d||d.pts.length<3)return;
+  if(d.kind==='lindero'){p.boundary=d.pts.slice();S.regMsg={c:'ok',t:'Lindero guardado: '+nf(areaHa(p.boundary),2)+' ha.'};}
+  else{const l=newLot(p,d.pts.slice(),($('#n-name')||{}).value);p.lots.push(l);S.sel[p.id]=l.id;S.regMsg={c:'ok',t:l.name+' guardado: '+nf(l.ha,2)+' ha.'};}
+  S.draw=null;p.gv++;renderTop();renderReg();}
+function newLot(p,m,name){const U=PROFS[S.profile].unit;const nm=(name&&name.trim())||U+' '+(p.lots.length+1);const short=(S.profile==='empresa'?'A':'L')+(p.lots.length+1);
+  const info=S.profile==='empresa'?{obl:($('#n-obl')||{}).value||OBLIG[0],auth:($('#n-auth')||{}).value||AUTH[0],acto:($('#n-acto')||{}).value||'',siembra:($('#n-date')||{}).value||''}:{crop:($('#n-crop')||{}).value||'',siembra:($('#n-date')||{}).value||''};
+  return{id:'l'+(LID++),name:nm,short,m,ha:areaHa(m),info};}
+async function importFile(f){let p=P();try{let text;
+    if(/\.kmz$/i.test(f.name)){if(!window.JSZip)throw new Error('No se pudo cargar el lector de KMZ. Pruebe con el archivo .kml.');const z=await JSZip.loadAsync(f);const kn=Object.keys(z.files).find(n=>/\.kml$/i.test(n));if(!kn)throw new Error('El KMZ no contiene un archivo KML.');text=await z.file(kn).async('string');}
+    else text=await f.text();
+    const doc=new DOMParser().parseFromString(text,'application/xml');if(doc.getElementsByTagName('parsererror').length)throw new Error('El archivo no es un KML válido.');
+    const polys=[];for(const pm of Array.from(doc.getElementsByTagName('Placemark'))){const ne=pm.getElementsByTagName('name')[0];const nm=ne?ne.textContent.trim():'';
+      for(const pg of Array.from(pm.getElementsByTagName('Polygon'))){const ob=pg.getElementsByTagName('outerBoundaryIs')[0]||pg;const co=ob.getElementsByTagName('coordinates')[0];if(!co)continue;
+        let pts=co.textContent.trim().split(/\s+/).map(s=>s.split(',').map(Number)).filter(a=>a.length>=2&&isFinite(a[0])&&isFinite(a[1])).map(a=>[a[0],a[1]]);
+        if(pts.length>3){const a=pts[0],b=pts[pts.length-1];if(a[0]===b[0]&&a[1]===b[1])pts.pop();}if(pts.length>=3)polys.push({nm,pts});}}
+    if(!polys.length)throw new Error('No hay polígonos en el archivo. Revise que el lindero esté dibujado como polígono y no como línea.');
+    let all=[];polys.forEach(q=>all=all.concat(q.pts));const b=bbox(all);const o=[(b[0]+b[2])/2,(b[1]+b[3])/2];
+    if(Math.abs(o[1])>40||Math.abs(o[0])>180)throw new Error('Las coordenadas no parecen geográficas (WGS84).');
+    const pj=localProj(o);const pa=polys.map(q=>({q,m:q.pts.map(pj.m)})).map(x=>Object.assign(x,{ha:areaHa(x.m)})).sort((x,y)=>y.ha-x.ha);
+    if(!p||p.real){p=newPredio(f.name.replace(/\.(kml|kmz)$/i,''));PREDIOS[S.profile].push(p);S.pid[S.profile]=p.id;}
+    p.proj=pj;p.boundary=pa[0].m;p.lots=[];pa.slice(1).forEach((x,i)=>{const l=newLot(p,x.m,x.q.nm||PROFS[S.profile].unit+' '+(i+1));p.lots.push(l);});p.gv++;
+    S.draw=null;S.regMsg={c:'ok',t:'Importado: lindero de '+nf(pa[0].ha,2)+' ha'+(p.lots.length?' y '+p.lots.length+' '+PROFS[S.profile].units.toLowerCase():'')+'.'};renderTop();renderReg();}
+  catch(err){S.regMsg={c:'err',t:err.message||'No se pudo leer el archivo.'};renderDrawBox();}}
+
+/* ---------- Bitácora (se guarda en este dispositivo) ---------- */
+const EVT={agricultor:['Siembra','Fertilización','Riego / lámina de agua','Aplicación fitosanitaria','Observación de plaga o enfermedad','Aforo o muestreo','Entrada de animales','Salida de animales','Visita de campo','Cosecha'],empresa:['Siembra','Resiembra / reposición','Mantenimiento (plateo, fertilización)','Parcela de monitoreo','Aislamiento / cercado','Visita de autoridad ambiental','Caracterización de línea base']};
+function saveEvents(p){try{localStorage.setItem('monitor-predial:ev:'+p.id,JSON.stringify(p.events.map(e=>Object.assign({},e,{img:null}))));}catch(e){}}
+function loadEvents(p){try{const v=localStorage.getItem('monitor-predial:ev:'+p.id);if(v)p.events=JSON.parse(v)||[];}catch(e){}}
+function renderBit(){const p=P();if(!p){$('#ev-form').innerHTML='<p class="muted">Registre un predio para llevar su bitácora.</p>';$('#ev-card').innerHTML='';return;}const types=EVT[S.profile];const sl=selLot();
+  $('#ev-form').innerHTML='<div class="card-h"><div><div class="eyebrow">Registro de campo</div><h2>Nuevo registro</h2></div></div>'+
+    '<div class="fgrid"><div class="f"><label for="e-date">Fecha</label><input type="date" id="e-date" value="'+iso(TODAY)+'"></div><div class="f"><label for="e-lot">'+unitOf(p)+'</label><select id="e-lot"><option value="">Todo el predio</option>'+p.lots.map(l=>'<option value="'+l.id+'"'+(sl&&sl.id===l.id?' selected':'')+'>'+esc(l.name)+'</option>').join('')+'</select></div>'+
+    '<div class="f"><label for="e-type">Tipo</label><select id="e-type">'+opt(types,types[0])+'</select></div><div class="f"><label for="e-val">Valor</label><input id="e-val" placeholder="Ej.: 1.800 kg MS/ha, 38 mm, 120 árboles"></div>'+
+    '<div class="f full"><label for="e-note">Observación</label><textarea id="e-note" placeholder="Qué se vio en campo"></textarea></div><div class="f full"><label for="e-img">Foto</label><input type="file" id="e-img" accept="image/*"></div></div>'+
+    '<div id="e-msg" style="margin:12px 0"></div><button type="submit" class="btn pri">Agregar a la bitácora</button>'+
+    '<p class="muted" style="margin:16px 0 0">Los registros de campo confirman o descartan lo que muestra el satélite y permiten calibrar los índices con datos del propio predio. En esta versión se guardan en este dispositivo.</p>';
+  renderEvList();}
+function renderEvList(){const p=P();const f=S.filter;const list=p.events.filter(e=>f==='all'||e.lot===f).sort((a,b)=>b.t-a.t);
+  let h='<div class="card-h"><h3>Registros</h3><div class="f" style="min-width:180px"><label for="e-filter" class="sr">Filtrar</label><select id="e-filter"><option value="all">Todo el predio</option>'+p.lots.map(l=>'<option value="'+l.id+'"'+(f===l.id?' selected':'')+'>'+esc(l.name)+'</option>').join('')+'</select></div></div>';
+  h+=list.length?'<div class="evlist">'+list.map(e=>{const l=p.lots.find(x=>x.id===e.lot);const d=tDate(e.t);return'<div class="ev"><div class="dt"><b>'+d.getUTCDate()+'</b>'+MES[d.getUTCMonth()]+' '+d.getUTCFullYear()+'</div><div><div class="ty">'+esc(e.type)+(e.val?' · <span class="mono" style="font-weight:600">'+esc(e.val)+'</span>':'')+'</div><div class="lt">'+esc(l?l.name:'Todo el predio')+'</div>'+(e.note?'<div class="nt">'+esc(e.note)+'</div>':'')+(e.img?'<img src="'+e.img+'" alt="Foto del registro">':'')+'</div></div>';}).join('')+'</div>':'<p class="muted" style="margin:0">Todavía no hay registros. Anote aquí aforos, rotaciones, lluvias, fertilizaciones y visitas de campo.</p>';
+  $('#ev-card').innerHTML=h;}
+
+/* ---------- Reporte ---------- */
+function renderRep(){const box=$('#report');const p=P();
+  if(!p||!p.sat||!CLEAR.length){box.innerHTML='<article class="doc"><div class="rh"><div><img class="logo-l" src="/marca/lockup-light.webp" alt="Inverpro"><img class="logo-d" src="/marca/lockup-dark.webp" alt="Inverpro"><h2>Reporte de seguimiento satelital</h2></div></div><p style="margin-top:18px">El reporte mensual se genera cuando el predio tiene monitoreo satelital activo.</p></article>';return;}
+  const s=sc(),t=s.t,mo=tDate(t).getUTCMonth(),yr=tDate(t).getUTCFullYear();const m0=T(yr+'-'+String(mo+1).padStart(2,'0')+'-01');
+  const inM=SCENES.filter(x=>x.t>=m0&&x.t<=t),okM=inM.filter(x=>x.ok).length;const j=nearestBefore(t,25);const prev=j!=null?CLEAR[j]:null;const A=alerts(p,S.di);
+  const a=allVal(s,'ndvi');const{mn,mx}=seasonStats();const U=unitOf(p);
+  let h='<article class="doc"><div class="rh"><div><img class="logo-l" src="/marca/lockup-light.webp" alt="Inverpro"><img class="logo-d" src="/marca/lockup-dark.webp" alt="Inverpro"><h2>Reporte de seguimiento satelital — '+MESL[mo]+' '+yr+'</h2></div><div class="muted mono" style="text-align:right">Imagen de corte: '+fDY(t)+'<br>Emitido: '+fDY(TODAY)+'</div></div>';
+  h+='<dl><div><dt>Predio</dt><dd>'+esc(p.name)+'</dd></div><div><dt>Ubicación</dt><dd>'+esc(p.muni)+', Casanare</dd></div><div><dt>Área (lindero)</dt><dd class="num">'+nf(p.bha,1)+' ha</dd></div><div><dt>'+U+'s mapeados</dt><dd class="num">'+p.lots.filter(l=>!l.virtual).length+' · '+nf(p.lots.filter(l=>!l.virtual).reduce((x,l)=>x+l.ha,0),1)+' ha</dd></div><div><dt>Imágenes del mes</dt><dd class="num">'+okM+' útiles de '+inM.length+'</dd></div></dl>';
+  const crit=A.filter(x=>x.c==='crit').length,warn=A.filter(x=>x.c==='warn').length;
+  h+='<h3>Resumen</h3><p>El NDVI promedio del predio fue <b>'+fmtI(a)+'</b> en la imagen del '+fD(t)+(prev?' ('+sgn(a-allVal(prev,'ndvi'))+' frente al '+fD(prev.t)+')':'')+'. En los últimos 12 meses varió entre '+fmtI(mn.v)+' ('+fDY(mn.t)+', temporada seca) y '+fmtI(mx.v)+' ('+fDY(mx.t)+'). '+(crit+warn?'Hay '+(crit?crit+' alerta'+(crit>1?'s':'')+' persistente'+(crit>1?'s':''):'')+(crit&&warn?' y ':'')+(warn?warn+' punto'+(warn>1?'s':'')+' de atención':'')+' que conviene verificar en campo.':'No hay alertas de vigor para esta fecha.')+'</p>';
+  h+='<div class="tbl-wrap"><table><thead><tr><th>'+U+'</th><th class="r">Área (ha)</th><th class="r">NDVI</th><th class="r">NDRE</th><th class="r">NDMI</th><th class="r">Δ NDVI 30 d</th><th class="r">vs predio</th><th>Estado</th></tr></thead><tbody>';
+  for(const l of p.lots){const v=lotVal(l,s,'ndvi');const pv=prev?lotVal(l,prev,'ndvi'):null;const st=statusLot(p,l,S.di);
+    h+='<tr><td>'+esc(l.name)+'</td><td class="r mono">'+nf(l.ha,2)+'</td><td class="r mono">'+fmtI(v)+'</td><td class="r mono">'+fmtI(lotVal(l,s,'ndre'))+'</td><td class="r mono">'+fmtI(lotVal(l,s,'ndmi'))+'</td><td class="r mono">'+(v!=null&&pv!=null?sgn(v-pv):'—')+'</td><td class="r mono">'+(v!=null&&!l.virtual?sgn(v-a):'—')+'</td><td><span class="chip '+st.c+'">'+st.lab+'</span></td></tr>';}
+  h+='</tbody></table></div>';
+  h+='<h3>Alertas y acciones recomendadas</h3>'+(A.length?'<ul>'+A.map(x=>'<li><b>'+esc(x.title)+'.</b> '+esc(x.body)+(x.act?' <i>'+esc(x.act)+'</i>':'')+'</li>').join('')+'</ul>':'<p>Sin alertas.</p>');
+  const evs=p.events.filter(e=>e.t>=m0&&e.t<=TODAY).sort((x,y)=>x.t-y.t);
+  h+='<h3>Bitácora del periodo</h3>'+(evs.length?'<ul>'+evs.map(e=>{const l=p.lots.find(x=>x.id===e.lot);return'<li><b>'+fD(e.t)+' · '+esc(e.type)+'</b> — '+esc(l?l.name:'Todo el predio')+(e.val?' · '+esc(e.val):'')+(e.note?'. '+esc(e.note):'')+'</li>';}).join('')+'</ul>':'<p>Sin registros de campo en el periodo.</p>');
+  h+='<h3>Método</h3><p>Índices calculados por INVERPRO sobre imágenes Copernicus Sentinel-2 nivel 2A (reflectancia de superficie), tesela 18NZL, 10 m por píxel (B5 y B11 de 20 m remuestreadas). Se enmascaran nubes, sombras y píxeles sin clasificar con la capa SCL; una imagen se usa si al menos el 60 % del predio está despejado. Promedios por '+U.toLowerCase()+' calculados sobre los píxeles cuyo centro cae dentro del polígono. Geometría: archivo KML entregado por el cliente.</p>';
+  h+='<div class="note">Contiene datos modificados de Copernicus Sentinel (2025–2026), procesados por INVERPRO. Los resultados son indicativos, no reemplazan la verificación en campo y no constituyen cartografía oficial ni prueba de cumplimiento ante autoridades.</div>';
+  h+='<div class="rf"><span><b>INVERPRO COL S.A.S.</b> · NIT 901.006.761-2 · Yopal, Casanare</span><span class="sel-text">gerencia.inverpro@gmail.com</span></div></article>';
+  box.innerHTML=h;}
+
+/* ---------- Datos y uso ---------- */
+function renderDat(){const j=SAT.j;const m=j?j.meta:null;
+  let h='<article class="doc"><div class="rh"><div><img class="logo-l" src="/marca/lockup-light.webp" alt="Inverpro"><img class="logo-d" src="/marca/lockup-dark.webp" alt="Inverpro"><h2>Origen de los datos, alcance y condiciones de uso</h2></div><div class="muted mono" style="text-align:right">Versión 2.0<br>Vigente desde 23 sep 2026</div></div>';
+  h+='<nav class="toc" aria-label="Contenido"><a href="#d-origen">Origen</a><a href="#d-metodo">Índices y método</a><a href="#d-geom">Geometría</a><a href="#d-alcance">Alcance y limitaciones</a><a href="#d-recom">Recomendaciones</a><a href="#d-norma">Referencias normativas</a><a href="#d-datos">Datos personales</a><a href="#d-prop">Propiedad y licencias</a></nav>';
+  h+='<h3 id="d-origen">1. Origen de los datos</h3><ul>'+
+    '<li><b>Imágenes satelitales:</b> misión Copernicus Sentinel-2 de la Unión Europea, operada por la Agencia Espacial Europea (ESA). Producto nivel 2A (reflectancia de superficie con corrección atmosférica).</li>'+
+    '<li><b>Acceso:</b> catálogo público Earth Search de Element 84, sobre el Registro de Datos Abiertos de Amazon Web Services (AWS).</li>'+
+    (m?'<li><b>Las Marías:</b> tesela '+esc(m.tile)+', '+m.total+' imágenes entre el '+fDY(T(m.from))+' y el '+fDY(T(m.to))+'; '+m.usable+' útiles tras el filtro de nubes. Procesado el '+fDY(T(m.processed))+'.</li>':'')+
+    '<li><b>Fondo en color verdadero:</b> mediana de 7 imágenes Sentinel-2 sin nubes entre el 19 de mayo y el 16 de septiembre de 2026.</li>'+
+    '<li><b>Atribución obligatoria:</b> «Contiene datos modificados de Copernicus Sentinel (2025–2026), procesados por INVERPRO». Los datos Sentinel son de acceso libre, completo y abierto, y se entregan sin garantía de calidad o idoneidad para un fin determinado.</li></ul>';
+  h+='<h3 id="d-metodo">2. Índices y método</h3><div class="tbl-wrap"><table><thead><tr><th>Índice</th><th>Fórmula (bandas Sentinel-2)</th><th>Qué indica</th></tr></thead><tbody>'+
+    Object.values(IDX).map(I=>'<tr><td><b>'+I.lab+'</b></td><td class="mono">'+I.f+'</td><td>'+esc(I.desc)+'</td></tr>').join('')+'</tbody></table></div>'+
+    '<ul><li>Resolución de 10 m por píxel (100 m²). B5 y B11 se toman a 20 m y se remuestrean a 10 m.</li><li>Máscara de nubes con la capa de clasificación de escena (SCL): se conservan vegetación, suelo desnudo y agua; se descartan nubes, sombras, cirros y píxeles sin clasificar.</li><li>Una imagen se usa si al menos el 60 % del predio queda despejado; los píxeles nublados de esa imagen se excluyen.</li><li>El promedio de cada lote o potrero usa los píxeles cuyo centro cae dentro del polígono, y se informa solo si al menos el 60 % de ellos es válido.</li><li>Las alertas comparan cada lote contra el promedio del predio en la misma imagen, contra su imagen útil anterior y contra sus propios píxeles; son reglas de apoyo, no diagnósticos.</li></ul>';
+  h+='<h3 id="d-geom">3. Geometría del predio</h3><p>Los linderos y lotes provienen del archivo KML o KMZ entregado por el cliente, o se dibujan en esta herramienta. <b>No son cartografía oficial ni linderos catastrales</b>: la información catastral oficial la administran el IGAC y los gestores catastrales habilitados. Las áreas de Las Marías son geodésicas sobre el elipsoide WGS84; otras herramientas pueden reportar cifras algo distintas según su método de cálculo.</p>';
+  h+='<h3 id="d-alcance">4. Alcance y limitaciones</h3><ul>'+
+    '<li>Los índices son <b>indicativos</b>: señalan dónde mirar. No reemplazan la verificación en campo, el análisis de suelo ni la asesoría agronómica o zootécnica.</li>'+
+    '<li>En temporada de lluvias muchas imágenes llegan nubladas; puede haber semanas sin dato. En Las Marías, 23 de 108 imágenes fueron útiles en 12 meses.</li>'+
+    '<li>A 10 m por píxel, los lotes menores de 0,5 ha y los bordes de cada polígono tienen menos precisión: los píxeles del borde mezclan lo que hay a ambos lados de la cerca.</li>'+
+    '<li>Las cifras de forraje, cosecha o cobertura derivadas del índice requieren calibración con aforos, rendimientos o parcelas de monitoreo del propio predio.</li>'+
+    '<li>Los resultados <b>no constituyen prueba de cumplimiento</b> ante autoridades ambientales. Sirven como soporte técnico complementario a los informes que exija cada acto administrativo.</li>'+
+    '<li>La información normativa de esta herramienta refleja las normas vigentes al 23 de septiembre de 2026 y no es asesoría jurídica.</li>'+
+    '<li>INVERPRO no responde por decisiones tomadas únicamente con base en estos indicadores.</li></ul>';
+  h+='<h3 id="d-recom">5. Recomendaciones de uso</h3><ol>'+
+    '<li>Confirme cada alerta con una visita al sector marcado y regístrela en la bitácora (con foto, si es posible).</li>'+
+    '<li>Haga al menos 3 aforos o muestreos por temporada en lotes representativos: permiten convertir el índice en kilos de forraje o en rendimiento esperado.</li>'+
+    '<li>Compare lotes entre sí en la misma fecha y contra la misma temporada del año anterior, no entre temporadas distintas.</li>'+
+    '<li>Mantenga el KML actualizado cuando divida o fusione lotes o potreros.</li>'+
+    '<li>Para obligaciones ambientales, conserve la línea base satelital antes de sembrar y complemente con parcelas de monitoreo en campo.</li></ol>';
+  h+='<h3 id="d-norma">6. Referencias normativas</h3><ul>'+
+    '<li><b>Ley 2173 de 2021</b> (Áreas de Vida): medianas y grandes empresas deben sembrar mínimo dos árboles por cada empleado.</li>'+
+    '<li><b>Resolución 1491 de 2025</b> del Minambiente: reglamenta la ley. Cálculo con empleados con contrato laboral vigente al 31 de diciembre del año anterior (art. 12), contenido del programa (art. 13), aprobación por la autoridad ambiental municipal o distrital (art. 14), mantenimiento de 2 años y Certificado Siembra Vida Empresarial.</li>'+
+    '<li><b>Resolución 0358 de 2026</b> del Minambiente: amplía a 18 meses el plazo municipal para delimitar las Áreas de Vida y suspende la radicación y la siembra hasta que estén disponibles, sin perjuicio de la formulación de los programas.</li>'+
+    '<li><b>Ley 1581 de 2012</b> y <b>Decreto 1377 de 2013</b>, compilado en el Decreto 1074 de 2015: protección de datos personales.</li></ul>';
+  h+='<h3 id="d-datos">7. Tratamiento de datos personales</h3><p><b>Responsable:</b> INVERPRO COL S.A.S., NIT 901.006.761-2, Yopal (Casanare). Canal de atención: <span class="sel-text">gerencia.inverpro@gmail.com</span>.</p><ul>'+
+    '<li><b>Datos que se tratan:</b> nombre o razón social, documento o NIT, datos de contacto, ubicación y geometría del predio, registros de campo y fotografías que usted cargue.</li>'+
+    '<li><b>Finalidades:</b> prestar el servicio de monitoreo, generar alertas y reportes, enviarle comunicaciones sobre el servicio y mejorar los modelos con datos agregados y anonimizados.</li>'+
+    '<li><b>Sus derechos</b> (Ley 1581 de 2012, art. 8): conocer, actualizar y rectificar sus datos; pedir prueba de la autorización; ser informado sobre su uso; presentar quejas ante la Superintendencia de Industria y Comercio; revocar la autorización o pedir la supresión cuando proceda; y acceder gratis a sus datos.</li>'+
+    '<li>La información de su predio no se comparte con terceros sin su autorización, salvo requerimiento de autoridad competente.</li>'+
+    '<li>Las consultas se atienden en máximo 10 días hábiles y los reclamos en máximo 15 días hábiles, según los plazos de la Ley 1581 de 2012.</li></ul>';
+  h+='<h3 id="d-prop">8. Propiedad y licencias</h3><ul><li>El software, los métodos de procesamiento, los reportes y la marca son de INVERPRO COL S.A.S.</li><li>Los datos Copernicus Sentinel se usan bajo su licencia de acceso libre, completo y abierto, con la atribución indicada en el numeral 1.</li><li>Los datos del predio y los registros de campo pertenecen a su titular.</li></ul>';
+  h+='<div class="rf"><span><b>INVERPRO COL S.A.S.</b> · NIT 901.006.761-2 · Yopal, Casanare</span><span>© 2026 · Monitor Predial v2.0</span></div></article>';
+  $('#datos').innerHTML=h;}
+
+/* ---------- Orquestación ---------- */
+function show(){['panel','reg','bit','rep','dat'].forEach(k=>{$('#v-'+k).hidden=S.tab!==k;});renderTop();
+  if(S.tab==='panel')renderPanel();else if(S.tab==='reg')renderReg();else if(S.tab==='bit')renderBit();else if(S.tab==='rep')renderRep();else renderDat();}
+function stopPlay(){if(S.play){clearInterval(S.play);S.play=null;}}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.prof){stopPlay();S.profile=d.prof;S.draw=null;S.regMsg=null;S.filter='all';show();return;}
+  if(d.tab){S.tab=d.tab;if(S.tab!=='reg')S.draw=null;show();return;}
+  if(d.idx){S.idx=d.idx;renderPanel();return;}
+  if(d.layer){S.layer=d.layer;renderPanel();return;}
+  if(d.view){S.view=d.view;renderPanel();return;}
+  if(d.lotrow){const p=P();S.sel[p.id]=d.lotrow;renderPanel();return;}
+  if(d.draw){if(S.draw&&S.draw.kind===d.draw){S.draw=null;renderReg();}else startDraw(d.draw);return;}
+  if(d.del){const p=P();p.lots=p.lots.filter(l=>l.id!==d.del);p.events=p.events.filter(x=>x.lot!==d.del);p.gv++;renderTop();renderReg();return;}
+  if(d.act==='close'){finishDraw();return;}
+  if(d.act==='undo'){if(S.draw){S.draw.pts.pop();MR.render();renderDrawBox();}return;}
+  if(d.act==='cancel'){S.draw=null;renderReg();return;}
+  if(d.act==='new'){const p=newPredio('Predio nuevo');PREDIOS[S.profile].push(p);S.pid[S.profile]=p.id;S.regMsg={c:'ok',t:'Predio nuevo creado. Empiece por el lindero.'};startDraw('lindero');renderTop();return;}
+  if(b.id==='play'){if(S.play){stopPlay();renderPanel();return;}if(S.di>=CLEAR.length-1)S.di=0;S.play=setInterval(()=>{if(S.di>=CLEAR.length-1){stopPlay();renderPanel();return;}S.di++;renderPanel();},700);renderPanel();return;}
+});
+document.addEventListener('input',e=>{const id=e.target.id;
+  if(id==='date-r'){stopPlay();S.di=+e.target.value;renderPanel();}
+  if(id==='k-emp'){S.emp.empleados=e.target.value;$('#k-res').innerHTML=oblHtml();renderKpis(P());}});
+document.addEventListener('change',e=>{const id=e.target.id;
+  if(id==='r-file'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value='';}
+  if(id==='e-filter'){S.filter=e.target.value;renderEvList();}
+  if(id==='predsel'){S.pid[S.profile]=e.target.value;S.draw=null;show();}
+  if(id==='k-tam'){S.emp.tam=e.target.value;$('#k-res').innerHTML=oblHtml();renderKpis(P());}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.draw){S.draw=null;renderReg();}});
+document.addEventListener('submit',e=>{e.preventDefault();const p=P();if(!p)return;
+  if(e.target.id==='reg-form'){p.owner=$('#r-owner').value.trim();p.doc=$('#r-doc').value.trim();p.name=$('#r-name').value.trim()||p.name;p.muni=$('#r-muni').value;p.vereda=$('#r-ver').value.trim();p.contact=$('#r-contact').value.trim();p.auth=$('#r-auth').checked;
+    const msg=t=>{$('#reg-msg').innerHTML='<div class="msg err" style="margin-bottom:10px">'+esc(t)+'</div>';};
+    if(!p.boundary&&!p.lots.length){msg('Falta el lindero: dibújelo en el mapa o importe un KML/KMZ.');return;}
+    if(!p.auth){msg('Para guardar el predio se requiere la autorización de tratamiento de datos.');return;}
+    S.draw=null;S.tab='panel';show();window.scrollTo({top:0,behavior:'smooth'});return;}
+  if(e.target.id==='ev-form'){const dv=$('#e-date').value;if(!dv){$('#e-msg').innerHTML='<div class="msg err">Indique la fecha del registro.</div>';return;}
+    const ev={id:'e'+(EID++)+'-'+Date.now(),t:T(dv),lot:$('#e-lot').value||null,type:$('#e-type').value,val:$('#e-val').value.trim(),note:$('#e-note').value.trim(),img:null};
+    const f=$('#e-img').files[0];const done=()=>{p.events.push(ev);saveEvents(p);renderTop();renderBit();$('#e-msg').innerHTML='<div class="msg ok">Registro agregado. También aparece en la serie de tiempo del '+unitOf(p).toLowerCase()+'.</div>';};
+    if(f){const r=new FileReader();r.onload=()=>{ev.img=r.result;done();};r.onerror=done;r.readAsDataURL(f);}else done();}});
+
+MP=new MapView($('#map-panel'),{index:true});
+MR=MODE==='monitor'?new MapView($('#map-reg'),{edit:true}):null;
+let rw=0;new ResizeObserver(()=>{const w=$('#chart-card').clientWidth;if(S.tab==='panel'&&Math.abs(w-rw)>8){rw=w;renderChart(P());}}).observe($('#chart-card'));
+if(MODE==='ganaderia')S.view='lotes';
+
+// Carga de datos reales
+$('#chart-card').innerHTML='<div class="loading">Cargando imágenes satelitales de Las Marías…</div>';
+renderTop();
+fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{
+  prepSat(j);const lm=lasMarias();loadEvents(lm);PREDIOS.agricultor.unshift(lm);S.pid.agricultor='las-marias';S.di=CLEAR.length-1;S.sel[lm.id]='lm-p4';SAT.state='ok';show();
+}).catch(err=>{SAT.state='err';SAT.err=String(err&&err.message||err);show();
+  $('#chart-card').innerHTML='<div class="card-h"><h3>No se pudieron cargar los datos satelitales</h3></div><p class="muted" style="margin:0">Revise la conexión y recargue la página. Detalle: '+esc(SAT.err)+'</p>';});
+})();
+</script>
+
+</body>
+</html>
