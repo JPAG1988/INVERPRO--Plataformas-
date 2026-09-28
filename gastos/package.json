@@ -1,0 +1,13 @@
+{
+  "name": "mis-gastos",
+  "private": true,
+  "type": "module",
+  "description": "Mis Gastos: control de gastos que se registra solo desde los SMS del banco, Apple Pay y la voz. Desarrollado por INVERPRO COL S.A.S.",
+  "scripts": {
+    "test": "node --test pruebas/*.test.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@netlify/blobs": "^11.1.1"
+  }
+}
