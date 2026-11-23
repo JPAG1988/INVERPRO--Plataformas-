@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ojo al contrato · Veeduría a la contratación pública de Casanare</title>
-<meta name="description" content="Revisa en vivo los contratos públicos de Casanare con datos abiertos de SECOP: un solo oferente, posible fraccionamiento, adiciones, prórrogas y contratistas sancionados.">
-<meta property="og:title" content="Ojo al contrato: veeduría a la contratación pública de Casanare">
-<meta property="og:description" content="Contratos públicos de Casanare con señales que vale la pena revisar, calculadas en vivo con datos de SECOP.">
+<title>Ojo al contrato · Veeduría ciudadana a la contratación pública en Colombia</title>
+<meta name="description" content="Veeduría ciudadana a la contratación pública de cualquier departamento de Colombia, con datos abiertos del SECOP: un solo oferente, fraccionamiento, adiciones, inhabilidades, conflictos de interés declarados y empresas de reciente creación.">
+<meta property="og:title" content="Ojo al contrato: veeduría ciudadana a la contratación pública en Colombia">
+<meta property="og:description" content="Contratos públicos con señales que vale la pena revisar, calculadas en vivo con datos abiertos del SECOP. Acceso libre desde cualquier país.">
 <meta name="theme-color" content="#15223B">
 <meta name="author" content="INVERPRO COL S.A.S.">
 <meta name="version" content="2.1">
@@ -174,6 +174,23 @@ h3{font:700 1.12rem/1.3 var(--display);letter-spacing:-.01em;margin:26px 0 10px}
 .prose p,.prose li{color:var(--ink)}
 .prose h3{margin-top:30px;scroll-margin-top:64px}
 .prose .def{border-left:3px solid var(--rule);padding:2px 0 2px 14px;margin:14px 0}
+.prose h4{margin:26px 0 8px;font-size:1rem;scroll-margin-top:64px}
+.cruces{font-size:.88rem;color:var(--ink-3);margin-top:10px}
+.cruces.err{color:var(--alarm,#b4341f)}
+.prose ol{padding-left:22px}
+.prose ol li{margin:8px 0}
+.tabla-marco{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+.tabla-marco th,.tabla-marco td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--rule)}
+.tabla-marco th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);font-weight:600;border-bottom-width:2px}
+.tabla-marco td:first-child{font-weight:600;width:24%}
+.tabla-marco td:last-child{white-space:nowrap;color:var(--ink-3);font-variant-numeric:tabular-nums;width:14%}
+.tabla-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){
+  .tabla-marco{font-size:.86rem}
+  .tabla-marco th,.tabla-marco td{padding:8px 8px}
+  .tabla-marco td:first-child{width:auto}
+  .tabla-marco{min-width:560px}
+}
 .prose .def b{display:block;font-family:var(--display);font-size:1.02rem}
 .prose ol li,.prose ul li{margin:6px 0}
 
@@ -230,6 +247,11 @@ footer.site p{margin:0 0 8px;max-width:52em}
   .row-val{font-size:.95rem}
 }
 @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+.prueba{border:1px solid var(--alarm,#b4341f);border-left-width:4px;border-radius:6px;padding:12px 14px;margin:18px 0 6px;background:var(--alarm-soft,rgba(180,52,31,.07))}
+.prueba p{margin:0 0 7px}
+.prueba p:last-child{margin-bottom:0}
+.prueba b{color:var(--alarm,#b4341f)}
+
 </style>
 </head>
 <body>
@@ -239,8 +261,10 @@ footer.site p{margin:0 0 8px;max-width:52em}
     <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 24C9 12 16 7 24 7s15 5 21 17c-6 12-13 17-21 17S9 36 3 24z" fill="var(--ink)"/><circle cx="24" cy="24" r="9.5" fill="var(--marker)"/><circle cx="24" cy="24" r="4.2" fill="var(--ink)"/></svg>
     <h1>Ojo al contrato</h1>
   </div>
-  <p class="lede">Veeduría ciudadana a la contratación pública de Casanare. Revisa, con datos abiertos de SECOP consultados en vivo, qué contratos tienen señales que vale la pena mirar de cerca.</p>
+  <p class="lede">Veeduría ciudadana a la contratación pública en Colombia. Elige el departamento y revisa, con datos abiertos del SECOP consultados en vivo, qué contratos tienen señales que vale la pena mirar de cerca. El acceso es libre y gratuito, desde cualquier país, sin registro.</p>
   <div class="controls">
+    <label for="depto">Departamento</label>
+    <select id="depto" class="select"></select>
     <label for="periodo">Periodo</label>
     <select id="periodo" class="select"></select>
     <button id="refrescar" class="btn small" type="button">Actualizar datos</button>
@@ -248,7 +272,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
 </header>
 
 <section class="wrap summary" aria-live="polite">
-  <div id="resumen"><p>Cargando la contratación de Casanare desde datos.gov.co…</p></div>
+  <div id="resumen"><p>Cargando la contratación desde datos.gov.co…</p></div>
   <ul class="status" id="estado"></ul>
   <div class="meta-line" id="metaLine"></div>
 </section>
@@ -259,6 +283,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
     <a href="#entidades" data-tab="entidades">Entidades<span class="n" id="nEntidades"></span></a>
     <a href="#contratistas" data-tab="contratistas">Contratistas</a>
     <a href="#metodo" data-tab="metodo">Cómo funciona</a>
+    <a href="#legal" data-tab="legal">Marco legal</a>
   </div>
 </nav>
 
@@ -297,8 +322,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
 
   <!-- Entidades -->
   <section class="view" id="v-entidades" hidden aria-labelledby="t-entidades">
-    <h2 id="t-entidades">Entidades con sede en Casanare</h2>
-    <p class="intro">Cuánto contrató cada entidad en el periodo, qué parte fue por contratación directa y cuántos contratos tienen señales. Abre una entidad para ver su ficha. Están los 19 municipios de Casanare y la Gobernación, además de concejos, personerías, hospitales, institutos y colegios. En SECOP las alcaldías figuran como “Municipio de…”, pero puedes buscarlas como “Alcaldía de…”.</p>
+    <h2 id="t-entidades">Entidades del departamento</h2>
+    <p class="intro">Cuánto contrató cada entidad en el periodo, qué parte fue por contratación directa y cuántos contratos tienen señales. Abre una entidad para ver su ficha. Aparecen la gobernación y los municipios del departamento elegido, además de concejos, personerías, contralorías, hospitales, institutos y colegios. En SECOP las alcaldías figuran como “Municipio de…”, pero puedes buscarlas como “Alcaldía de…”.</p>
     <div class="filters">
       <div><label for="eQ">Buscar entidad</label><input id="eQ" class="input" type="search" placeholder="Ej.: Tauramena, hospital, Gobernación" autocomplete="off"></div>
       <div><label for="eSede">Municipio sede</label><select id="eSede" class="select"></select></div>
@@ -319,7 +344,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
   <!-- Contratistas -->
   <section class="view" id="v-contratistas" hidden aria-labelledby="t-contratistas">
     <h2 id="t-contratistas">Contratistas</h2>
-    <p class="intro">Busca por nombre, NIT o cédula para ver todos los contratos de una persona o empresa con entidades de Casanare en el periodo, y si tiene multas o sanciones registradas en SECOP. Por privacidad, el número de documento de las personas naturales se muestra incompleto.</p>
+    <p class="intro">Busca por nombre, NIT o cédula para ver todos los contratos de una persona o empresa con entidades del departamento elegido en el periodo, y si tiene multas, sanciones o inhabilidades registradas. Por privacidad, el número de documento de las personas naturales se muestra incompleto.</p>
     <div class="filters">
       <div class="full"><label for="cQ">Nombre, NIT o cédula</label><input id="cQ" class="input" type="search" placeholder="Ej.: nombre de la empresa o 900123456" autocomplete="off"></div>
     </div>
@@ -333,7 +358,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
   <!-- Metodología -->
   <section class="view prose" id="v-metodo" hidden aria-labelledby="t-metodo">
     <h2 id="t-metodo">Cómo funciona</h2>
-    <p>La página descarga directamente de <a href="https://www.datos.gov.co" target="_blank" rel="noopener">datos.gov.co</a> los contratos que firmaron las entidades con sede en Casanare durante el periodo elegido, los cruza con otros registros de SECOP y marca los que cumplen alguna de las señales de abajo. Todo el cálculo ocurre en tu navegador; no hay una base de datos intermedia ni nadie edita los resultados.</p>
+    <p>La página descarga directamente de <a href="https://www.datos.gov.co" target="_blank" rel="noopener">datos.gov.co</a> los contratos que firmaron las entidades con sede en el departamento elegido durante el periodo, los cruza con otros registros de SECOP y marca los que cumplen alguna de las señales de abajo. Todo el cálculo ocurre en tu navegador; no hay una base de datos intermedia ni nadie edita los resultados.</p>
     <p><b>Una señal no es una acusación.</b> Muchas tienen explicaciones legítimas y los datos que publican las entidades a veces tienen errores. Las señales sirven para decidir qué revisar primero y qué preguntar.</p>
 
     <h3>Las señales</h3>
@@ -349,6 +374,20 @@ footer.site p{margin:0 0 8px;max-width:52em}
     <div class="def"><b>Firmado antes de Ley de Garantías</b>Convenios interadministrativos de entidades territoriales firmados en los 14 días previos al 8 de noviembre de 2025, y contratos directos con empresas desde $100 millones firmados en los 14 días previos al 31 de enero de 2026. Firmar antes de la restricción es legal (Colombia Compra Eficiente, concepto C-1622 de 2025), pero una concentración de firmas justo antes puede indicar que se aceleró la contratación por el calendario electoral.</div>
     <div class="def"><b>Valor fuera de rango</b>Contratos registrados como mínima cuantía por más de 150 salarios mínimos (el máximo posible de 100, más un 50 % de adiciones), o con valores imposibles. Suele ser un error de registro, que también afecta la transparencia.</div>
 
+    <h3>Señales que vienen de cruzar con otros registros</h3>
+    <p>Estas señales no salen del SECOP solo: cruzan cada contrato con otros registros públicos del Estado, por número de documento o NIT. Se calculan después de las anteriores, así que aparecen unos segundos más tarde. Cada una dice de dónde sale y qué conviene verificar.</p>
+    <div class="def"><b>Plazo muy corto para presentar ofertas</b>Días entre la publicación del proceso y el cierre para recibir ofertas. No se usa un tope legal fijo, porque varía por modalidad: se marca cuando el plazo es menor o igual a la tercera parte de la mediana de su propia modalidad en el mismo periodo, o cuando un proceso competitivo por encima de mínima cuantía cierra en dos días o menos. Un plazo muy corto reduce de hecho el número de oferentes posibles. Es la alerta h) del riesgo 2 de la guía de competencia de la Superintendencia de Industria y Comercio de 2025, y las banderas rojas R003 y R014 de la Open Contracting Partnership.</div>
+    <div class="def"><b>Oferta pegada al presupuesto oficial</b>Procesos con dos o más oferentes en los que la adjudicación quedó entre el 99,5 % y el 100 % del presupuesto oficial, es decir prácticamente sin ahorro. Cuando hay competencia real suele haber descuento. Es la alerta g) del riesgo 1 de la guía de la Superintendencia de Industria y Comercio y la bandera roja R031. Los procesos con un solo oferente no se marcan aquí porque ya se explican en su propia señal.</div>
+    <div class="def"><b>Oferente que solo acompaña</b>Se toma la lista de quienes se presentaron a cada proceso y se compara con quién ganó. Se marca cuando un oferente perdió tres o más procesos y todos ante el mismo adjudicatario, sin haber ganado nunca frente a nadie más. Puede ser coincidencia en un mercado pequeño, o puede ser un acuerdo para simular competencia. Corresponde a las alertas a) del riesgo 1 y e) del riesgo 5 de la guía de la Superintendencia de Industria y Comercio, y a las banderas rojas R053, R025 y R057. Fuente: registro de proponentes por procedimiento de SECOP II, enlazado a cada contrato a través del identificador del proceso.</div>
+    <div class="def"><b>Contratista con inhabilidad al firmar</b>El documento del contratista aparece en los Antecedentes del SIRI de la Procuraduría con una sanción cuya inhabilidad, según la fecha de efectos jurídicos y la duración registrada, estaba corriendo el día en que se firmó el contrato. Es la señal de mayor peso de la herramienta. <b>El cruce es por número de documento y puede acertar sobre un homónimo:</b> el documento con valor legal es el certificado de antecedentes que expide la Procuraduría.</div>
+    <div class="def"><b>Contratista con sanción disciplinaria</b>Igual que la anterior, pero cuando no se pudo establecer que la inhabilidad estuviera vigente a la firma, porque el registro no trae la duración. Se marca solo para destituciones, suspensiones e inhabilidades, no para multas. Vale la misma advertencia sobre homónimos.</div>
+    <div class="def"><b>Empresa creada poco antes</b>La matrícula mercantil de la empresa en el RUES es de menos de un año antes de firmar el contrato, en contratos desde $50 millones. Una empresa nueva puede competir y ganar sin problema; lo que conviene revisar es cómo acreditó la experiencia y la capacidad financiera que exige el artículo 6 de la Ley 1150 de 2007. Pesa más si la matrícula es de menos de seis meses.</div>
+    <div class="def"><b>Matrícula mercantil cancelada o sin renovar</b>En el RUES la matrícula figura como cancelada, o su última renovación es de dos años o más antes del contrato. La existencia y representación legal es requisito habilitante, así que conviene verificar el certificado con fecha del contrato. También puede ser que la cancelación sea posterior al contrato: la señal lo advierte.</div>
+    <div class="def"><b>Conflicto de interés declarado</b>Quien ordenó el gasto o quien supervisa el contrato marcó, en el registro público de declaraciones que creó la Ley 2013 de 2019, que tiene parientes con posible conflicto, intereses directos en actuaciones o otros posibles conflictos. <b>Declarar es un deber legal y hacerlo es la conducta correcta, no la sospechosa.</b> La señal pesa más cuando la declaración es de la misma entidad que contrató. La participación en sociedades, en juntas o en actividad económica privada no genera alerta, porque es corriente y lícita: se muestra como contexto en la ficha. De estas declaraciones solo se usa si una casilla quedó marcada; nunca las cifras, que el artículo 5 de esa ley sí hace públicas pero que no dicen nada sobre un contrato.</div>
+    <div class="def"><b>Un supervisor concentra un contratista</b>La misma persona supervisa cinco o más contratos y al menos el 60 % de su carga del periodo corresponde a un solo contratista. La supervisión es un deber de vigilancia permanente (artículos 83 y 84 de la Ley 1474 de 2011) y su concentración en una sola relación debilita el control. Fuente: documento y nombre del supervisor registrados en el propio contrato en SECOP II.</div>
+
+    <p>En <a href="#legal-marco">Marco legal</a> está la tabla que relaciona cada señal con la norma o el estándar en que se apoya, y la lista de los riesgos que todavía no se pueden calcular con datos abiertos y por qué.</p>
+
     <h3>Indicadores de cada entidad</h3>
     <p>La ficha de cada entidad incluye indicadores del periodo elegido. <b>Sin competencia efectiva</b> suma la contratación directa, el régimen especial sin varias ofertas y los procesos competitivos con un solo oferente. El <b>descuento</b> compara lo adjudicado con el presupuesto oficial en procesos con uno y con varios oferentes. El <b>ahorro no obtenido</b> aplica a los procesos con un solo oferente el descuento que la entidad logró en la misma modalidad cuando hubo competencia (solo si hay al menos tres procesos con competencia para comparar); es una estimación, no un sobrecosto comprobado. También muestra la contratación directa mes a mes frente al calendario de la Ley de Garantías, la concentración en los mayores contratistas y la evolución de los contratos con personas naturales.</p>
     <p>Para ver un gobierno completo, elige <b>Periodo de gobierno 2024-2027</b> en el selector de periodo. Descarga más datos, así que la primera vez puede tardar un poco más.</p>
@@ -360,7 +399,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
 
     <h3>Qué cubre y qué no</h3>
     <ul>
-      <li>Contratos de SECOP II de entidades con sede en Casanare, y contratos de SECOP I tomados del conjunto SECOP Integrado. Varios municipios, como Trinidad, Orocué, Nunchía, Támara, Pore, Recetor, Chámeza, San Luis de Palenque y parte de Paz de Ariporo, todavía publican en SECOP I, que no trae el número de oferentes ni el historial de modificaciones. Para esas entidades solo se calculan fraccionamiento, sanciones, concentración y valor fuera de rango.</li>
+      <li>Contratos de SECOP II de entidades con sede en el departamento elegido, y contratos de SECOP I tomados del conjunto SECOP Integrado. Muchos municipios pequeños todavía publican en SECOP I, que no trae el número de oferentes ni el historial de modificaciones; para esas entidades solo se calculan fraccionamiento, sanciones, inhabilidades, concentración y valor fuera de rango.</li>
       <li>El municipio es la <b>sede de la entidad</b>, no el lugar donde se ejecuta el contrato. Un contrato de la Gobernación figura en Yopal aunque la obra sea en otro municipio.</li>
       <li>No incluye las órdenes de compra de la Tienda Virtual del Estado Colombiano.</li>
       <li>Los valores son los que registró cada entidad. Los salarios mínimos usados son: 2022 $1.000.000, 2023 $1.160.000, 2024 $1.300.000, 2025 $1.423.500 y 2026 $1.750.905.</li>
@@ -371,7 +410,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
       <li><b>Revisa el expediente.</b> Abre el proceso en SECOP con el enlace de cada contrato y mira estudios previos, pliego, ofertas, informe de evaluación, modificaciones e informes de supervisión.</li>
       <li><b>Pide información.</b> Usa el botón “Pedir información” de cada contrato: arma un derecho de petición con los documentos que corresponden a sus señales. La entidad tiene 10 días hábiles para entregar documentos (Ley 1755 de 2015, art. 14).</li>
       <li><b>Organízate.</b> Una veeduría ciudadana se constituye por acta y se inscribe ante la personería municipal o la cámara de comercio (Ley 850 de 2003).</li>
-      <li><b>Pon en conocimiento.</b> Si encuentras indicios concretos, acude a la personería municipal, la Contraloría Departamental de Casanare o la Contraloría General (según el origen de los recursos), la Procuraduría para faltas disciplinarias y la Fiscalía si puede haber un delito.</li>
+      <li><b>Pon en conocimiento.</b> Si encuentras indicios concretos, acude a la personería municipal, la contraloría territorial o la Contraloría General de la República (según el origen de los recursos), la Procuraduría para faltas disciplinarias y la Fiscalía si puede haber un delito.</li>
     </ol>
 
     <h3>Fuentes</h3>
@@ -382,19 +421,171 @@ footer.site p{margin:0 0 8px;max-width:52em}
       <li><a href="https://www.datos.gov.co/d/it5q-hg94" target="_blank" rel="noopener">SECOP II: Multas y Sanciones</a></li>
       <li><a href="https://www.datos.gov.co/d/4n4q-k399" target="_blank" rel="noopener">SECOP I: Multas y Sanciones</a></li>
       <li><a href="https://www.datos.gov.co/d/rpmr-utcd" target="_blank" rel="noopener">SECOP Integrado</a> (para los contratos de SECOP I)</li>
+      <li><a href="https://www.datos.gov.co/d/hgi6-6wh3" target="_blank" rel="noopener">SECOP II: Proponentes por proceso</a></li>
+      <li><a href="https://www.datos.gov.co/d/9sue-ezhx" target="_blank" rel="noopener">SECOP II: Plan Anual de Adquisiciones, detalle</a></li>
+      <li><a href="https://www.datos.gov.co/d/rgxm-mmea" target="_blank" rel="noopener">Tienda Virtual del Estado Colombiano</a></li>
+      <li><a href="https://www.datos.gov.co/d/iaeu-rcn6" target="_blank" rel="noopener">Antecedentes de SIRI</a>, Procuraduría General de la Nación</li>
+      <li><a href="https://www.datos.gov.co/d/c82u-588k" target="_blank" rel="noopener">RUES: personas naturales, jurídicas y entidades sin ánimo de lucro</a>, Confecámaras</li>
+      <li><a href="https://www.datos.gov.co/d/83qu-fqy5" target="_blank" rel="noopener">Declaraciones de conflictos de interés</a> y <a href="https://www.datos.gov.co/d/8tz7-h3eu" target="_blank" rel="noopener">declaración de activos de servidores públicos</a>, Ley 2013 de 2019</li>
     </ul>
       <h3 id="acerca">Acerca de esta herramienta</h3>
-    <p><b>Ojo al contrato, versión 2.1.</b> Desarrollada por INVERPRO (INVERPRO COL S.A.S., NIT 901.006.761-2), empresa de Casanare.</p>
+    <p><b>Ojo al contrato, versión 3.0.</b> Desarrollada por INVERPRO (INVERPRO COL S.A.S., NIT 901.006.761-2), empresa de Casanare. Cubre los 32 departamentos y Bogotá, y su uso es libre desde cualquier país. El <a href="#legal">marco legal y las condiciones de uso</a> están en su propia sección.</p>
     <div class="def"><b>Derechos y uso</b>INVERPRO conserva los derechos sobre el código, el diseño y la marca de la herramienta. Su uso es libre y gratuito para cualquier persona, veeduría, medio de comunicación u organización: puedes consultarla, compartir sus enlaces y usar sus resultados en derechos de petición, informes o denuncias, citando la fuente.</div>
     <div class="def"><b>Neutralidad</b>Las señales se calculan de forma automática, con las mismas reglas para todas las entidades y todos los contratistas. Nadie edita, excluye ni prioriza resultados a mano, y cualquiera puede comprobar cada señal en SECOP con el enlace del contrato.</div>
     <div class="def"><b>Privacidad</b>La página no pide registro y no usa cookies ni herramientas de analítica propias. Si usas el asistente, tus preguntas se envían a la API de Anthropic para responderlas. Para abrir más rápido, guarda una copia de los datos solo en tu navegador durante 6 horas. Por respeto a las personas naturales que contratan con el Estado, sus números de documento se muestran incompletos. Las fuentes tipográficas se cargan desde Google Fonts.</div>
     <div class="def"><b>Datos</b>Los datos de SECOP son publicados por la Agencia Nacional de Contratación Pública, Colombia Compra Eficiente, en datos.gov.co bajo licencia Creative Commons Atribución-CompartirIgual 4.0. La herramienta no modifica los registros; solo los cruza y los ordena.</div>
-    <div class="def"><b>Cómo citar</b>Ojo al contrato, versión 2.1. INVERPRO, con datos de SECOP de Colombia Compra Eficiente (datos.gov.co). Consultado el [fecha], en radar-secop.netlify.app/veeduria.</div>
+    <div class="def"><b>Cómo citar</b>Ojo al contrato, versión 3.0. INVERPRO COL S.A.S., con datos abiertos de SECOP (Colombia Compra Eficiente), Procuraduría General de la Nación, RUES y Función Pública, en datos.gov.co. Consultado el [fecha], en radar-secop.netlify.app/veeduria.</div>
   </section>
+
+  <!-- Marco legal -->
+  <section class="view prose" id="v-legal" hidden aria-labelledby="t-legal">
+    <h2 id="t-legal">Marco legal y uso de la información</h2>
+    <p class="intro">Esta herramienta publica información sobre contratación pública y sobre las personas y empresas que contratan con el Estado. Esta sección explica de dónde sale cada dato, con qué fundamento legal se muestra, qué no se muestra nunca, y cómo pedir una corrección. Si usas los resultados para un derecho de petición, un informe o una denuncia, conviene leerla primero.</p>
+
+    <h3 id="legal-arquitectura">Dónde se procesan los datos</h3>
+    <p>Es el punto más importante para entender el resto. <b>Esta página no tiene una base de datos de personas.</b> Cuando la abres, tu propio navegador consulta directamente los portales de datos abiertos del Estado, hace los cruces en tu equipo y muestra el resultado en pantalla. INVERPRO no recibe, no almacena y no puede modificar esa información: no hay un servidor intermedio donde queden guardados nombres, documentos ni contratos.</p>
+    <p>Lo único que se guarda, y solo en tu propio navegador, es una copia temporal de los datos durante seis horas para que la página vuelva a abrir rápido. Esa copia la puedes borrar en cualquier momento limpiando los datos del sitio. En los servidores de la herramienta solo hay un contador de visitas, que no guarda direcciones IP ni identifica a nadie.</p>
+    <p>En términos de la Ley 1581 de 2012, esto significa que INVERPRO no administra una base de datos personales con esta información: actúa como una capa de consulta y presentación sobre registros que el Estado ya publicó y de los que el Estado sigue siendo responsable.</p>
+
+    <h3 id="legal-fuentes">De dónde viene cada dato</h3>
+    <p>Todos los datos provienen de registros públicos oficiales, publicados por el propio Estado colombiano en <a href="https://www.datos.gov.co" target="_blank" rel="noopener">datos.gov.co</a> bajo licencia Creative Commons Atribución-CompartirIgual 4.0, que permite expresamente reutilizarlos y redistribuirlos citando la fuente. Ninguno se obtiene de redes sociales, de bases privadas, de filtraciones ni de rastreo de personas.</p>
+    <ul>
+      <li><b>Contratos, procesos, modificaciones, multas y sanciones.</b> SECOP I y SECOP II, publicados por la Agencia Nacional de Contratación Pública, Colombia Compra Eficiente.</li>
+      <li><b>Órdenes por catálogo.</b> Tienda Virtual del Estado Colombiano, de la misma agencia.</li>
+      <li><b>Plan Anual de Adquisiciones.</b> Publicado por cada entidad en el SECOP, por mandato del Decreto 1082 de 2015.</li>
+      <li><b>Oferentes por proceso.</b> Registro de proponentes por procedimiento del SECOP II.</li>
+      <li><b>Antecedentes disciplinarios e inhabilidades.</b> Antecedentes del Sistema de Información de Registro de Sanciones e Inhabilidades (SIRI) de la Procuraduría General de la Nación.</li>
+      <li><b>Matrícula mercantil, antigüedad, actividad económica y estado.</b> Registro Único Empresarial y Social (RUES), de Confecámaras y las cámaras de comercio.</li>
+      <li><b>Conflictos de interés y participación en sociedades.</b> Registro público de declaraciones creado por la Ley 2013 de 2019, que ordenó precisamente que estas declaraciones fueran públicas y consultables por cualquier ciudadano.</li>
+    </ul>
+    <p>Cada señal de la herramienta trae el enlace al registro original para que cualquiera pueda verificarla en la fuente. Si un dato está mal, está mal en el registro oficial, y la corrección se pide ahí: es la única forma de que quede corregido para todos.</p>
+
+    <h3 id="legal-fundamento">Con qué fundamento se publican nombres de contratistas y funcionarios</h3>
+    <p>La contratación pública no es información privada. Quien contrata con el Estado o administra recursos públicos se somete, por esa decisión, al control ciudadano. El fundamento es expreso:</p>
+    <ul>
+      <li><b>Constitución Política.</b> Artículo 20 (libertad de informar y recibir información), artículo 40 numeral 6 (derecho a participar en el control del poder político), artículo 74 (derecho a acceder a los documentos públicos) y artículo 270 (participación ciudadana en la vigilancia de la gestión pública).</li>
+      <li><b>Ley 80 de 1993, artículo 66.</b> «Todo contrato que celebren las entidades estatales estará sujeto a la vigilancia y control ciudadano», y obliga a las entidades a brindar la información necesaria para ejercerlo.</li>
+      <li><b>Ley 1712 de 2014.</b> Principio de máxima publicidad: toda información en poder del Estado se presume pública, y la carga de justificar una reserva recae en quien la invoca, no en quien la pide.</li>
+      <li><b>Ley 1757 de 2015, artículo 65.</b> «Todo contrato que celebren las instituciones del Estado estará sujeto a la vigilancia por parte de las personas, entidades y organizaciones que quieran hacerlo», y obliga a las entidades a entregar la información y a brindar las garantías para ejercer ese derecho. Su artículo 62 enumera las facultades del control social, entre ellas solicitar información pública y presentar denuncias.</li>
+      <li><b>Ley 850 de 2003, artículos 15 y 17.</b> Son funciones de las veedurías «vigilar porque el proceso de contratación se realice de acuerdo con los criterios legales» y comunicar a la ciudadanía los avances del control. El artículo 17 les reconoce el derecho a conocer los contratos desde su iniciación y cierra con una frase inequívoca: «la información solicitada por las veedurías es de obligatoria respuesta».</li>
+      <li><b>Convención de las Naciones Unidas contra la Corrupción, artículo 13.</b> Obliga a los Estados a «respetar, promover y proteger la libertad de buscar, recibir, publicar y difundir información relativa a la corrupción», con restricciones únicamente las que estén expresamente fijadas por la ley.</li>
+      <li><b>Ley 1581 de 2012, artículo 10.</b> La autorización del titular no se requiere cuando se trata de datos de naturaleza pública. El nombre de un contratista del Estado, el objeto, el valor y la fecha de su contrato, y el nombre del servidor que lo supervisa, son datos públicos por definición legal: el Estado está obligado a publicarlos.</li>
+    </ul>
+    <p>El parágrafo del artículo 18 de la Ley 1712 de 2014 cierra el punto: la excepción de intimidad «no deberá aplicarse […] cuando es claro que la información fue entregada como parte de aquella información que debe estar bajo el régimen de publicidad aplicable». Y el mismo artículo, en su literal a), somete el derecho a la intimidad a «las limitaciones propias que impone la condición de servidor público».</p>
+    <p>En otras palabras: la herramienta no divulga nada que el Estado no haya publicado ya. Lo que hace es ordenarlo y cruzarlo para que una persona sin tiempo ni conocimientos técnicos pueda leerlo.</p>
+    <p>Hay un límite que la herramienta respeta de forma expresa. El literal d) del artículo 19 de la Ley 1712 de 2014 reserva la información sobre investigaciones penales y disciplinarias mientras no se haya hecho efectiva la medida de aseguramiento o formulado el pliego de cargos. Por eso esta herramienta <b>nunca presenta a nadie como investigado, imputado o procesado</b>: solo muestra sanciones que ya están en firme y publicadas en los registros oficiales, con su fecha y su número de acto.</p>
+
+    <h3 id="legal-marco">En qué marco anticorrupción se apoya cada señal</h3>
+    <p>Las señales de esta herramienta no son invención propia. Cada una corresponde a un riesgo que una norma colombiana o un estándar internacional ya identificó como tal. Esto importa por dos razones: porque le da a quien usa la herramienta un fundamento citable para su derecho de petición o su denuncia, y porque le permite a una entidad entender qué se le está señalando y por qué.</p>
+
+    <h4>Los cuatro marcos de referencia</h4>
+    <div class="def"><b>Estatuto Anticorrupción, Ley 1474 de 2011</b>Su artículo 83 obliga a toda entidad pública a vigilar permanentemente la ejecución de lo contratado mediante supervisor o interventor, y el parágrafo 1 exige que en obras sobre la menor cuantía los estudios previos se pronuncien sobre la necesidad de interventoría. El artículo 84 hace responsables a supervisores e interventores de informar los hechos que puedan constituir corrupción, y su parágrafo 1 convierte en falta gravísima certificar como recibida a satisfacción una obra no ejecutada. El artículo 2 inhabilita para contratar a quien aportó más del 2,5 % de los topes a una campaña del nivel administrativo respectivo.</div>
+    <div class="def"><b>Ley 2195 de 2022</b>Reformó el artículo 73 de la Ley 1474: las entidades ya no elaboran un «Plan Anticorrupción y de Atención al Ciudadano» sino un <b>Programa de Transparencia y Ética Pública</b>, que debe identificar, medir, controlar y monitorear el riesgo de corrupción, e incluir debida diligencia, consulta de listas restrictivas y canales de denuncia. Lo reglamentó el Decreto 1122 de 2024, cuyo artículo 2.1.4.4.1.5 aclara que toda mención al antiguo plan se entiende hecha al nuevo programa. Su artículo 12 impuso el deber de identificar al beneficiario final y la estructura de control de quien contrata con el Estado.</div>
+    <div class="def"><b>Guía de riesgos de competencia en la contratación estatal, Superintendencia de Industria y Comercio, diciembre de 2025</b>Es el documento colombiano más detallado sobre señales de colusión y direccionamiento, y recomienda expresamente a las entidades «utilizar herramientas de análisis de datos, cruces de información y sistemas de alertas tempranas». Varias señales de esta herramienta están tomadas de sus listas. Se apoya a su vez en el numeral 9 del artículo 47 del Decreto 2153 de 1992, el artículo 1 de la Ley 155 de 1959 y el artículo 410A del Código Penal, que tipifica la colusión como delito.</div>
+    <div class="def"><b>Banderas rojas de la Open Contracting Partnership, 2024</b>Catálogo internacional de 73 indicadores de riesgo en compras públicas, con metodología y campos de datos definidos para cada uno. Donde una señal de esta herramienta corresponde a una de ellas, se cita su código (R001 a R073) para que el resultado sea comparable con el de observatorios de otros países.</div>
+    <p class="note">La norma ISO 37001 sobre gestión antisoborno es una referencia voluntaria: ninguna norma colombiana la exige, y esta herramienta no la usa como fundamento de ninguna señal. Para el sector privado, la Circular Externa 100-000011 de 2021 de la Superintendencia de Sociedades sí obliga a un Programa de Transparencia y Ética Empresarial a las empresas vigiladas con contratos estatales desde 500 salarios mínimos y activos o ingresos desde 30.000 salarios mínimos, e incluye la debida diligencia sobre contratistas.</p>
+
+    <h4>Señal por señal</h4>
+    <div class="tabla-wrap"><table class="tabla-marco">
+      <thead><tr><th>Señal de la herramienta</th><th>Fundamento</th><th>Bandera roja</th></tr></thead>
+      <tbody>
+        <tr><td>Un solo oferente</td><td>Guía de competencia en las compras públicas de Colombia Compra Eficiente (bajo número de proponentes); guía SIC 2025, riesgo 2, alerta a)</td><td>R018</td></tr>
+        <tr><td>Plazo muy corto para presentar ofertas</td><td>Guía SIC 2025, riesgo 2, alerta h): «plazos de presentación de ofertas inusualmente cortos en comparación con la complejidad técnica o financiera del objeto»</td><td>R003, R014</td></tr>
+        <tr><td>Oferta pegada al presupuesto oficial</td><td>Guía SIC 2025, riesgo 1, alerta g): «una oferta igual o muy cercana al presupuesto oficial»</td><td>R031</td></tr>
+        <tr><td>Adjudicado sobre el presupuesto</td><td>Guía SIC 2025, riesgo 1, alerta g), parte final: propuestas superiores al presupuesto oficial</td><td>R031</td></tr>
+        <tr><td>Oferente que solo acompaña</td><td>Guía SIC 2025, riesgo 1, alerta a) (participación alternada entre los mismos oferentes) y riesgo 5, alerta e)</td><td>R053, R025, R057</td></tr>
+        <tr><td>Comparte representante legal</td><td>Guía SIC 2025, riesgo 1, alerta b) y riesgo 5, alerta b): rotación de representantes legales entre proponentes recurrentes</td><td>R032, R033, R044</td></tr>
+        <tr><td>Posible fraccionamiento</td><td>Topes de mínima cuantía del Decreto 1082 de 2015; deber de moralidad administrativa de la Ley 1474 de 2011; Manual de riesgo M-ICR-01 de Colombia Compra Eficiente</td><td>R011, R049, R055</td></tr>
+        <tr><td>Concentra la contratación</td><td>Guía de competencia de Colombia Compra Eficiente: «repetición del adjudicatario o grupo de adjudicatarios»; guía SIC 2025, riesgo 4, alerta a)</td><td>R040, R050, R051</td></tr>
+        <tr><td>Un supervisor concentra un contratista</td><td>Artículos 83 y 84 de la Ley 1474 de 2011: la supervisión es un deber de vigilancia permanente y su concentración en una sola relación debilita el control</td><td>—</td></tr>
+        <tr><td>Valor aumentó 50 % o más</td><td>Parágrafo del artículo 40 de la Ley 80 de 1993, que limita la adición al 50 % del valor inicial en salarios mínimos</td><td>R064, R066, R069</td></tr>
+        <tr><td>Plazo ampliado 50 % o más</td><td>Deber de planeación del Decreto 1082 de 2015 y vigilancia de la ejecución del artículo 83 de la Ley 1474 de 2011</td><td>R064</td></tr>
+        <tr><td>Contratista con inhabilidad al firmar</td><td>Artículo 8 de la Ley 80 de 1993 y régimen de inhabilidades derivadas de sanción disciplinaria; Antecedentes del SIRI de la Procuraduría</td><td>R046</td></tr>
+        <tr><td>Contratista con sanción disciplinaria</td><td>Igual que la anterior, cuando no se pudo establecer que la inhabilidad estuviera vigente a la firma</td><td>R046</td></tr>
+        <tr><td>Contratista con sanciones</td><td>Multas y sanciones contractuales publicadas en SECOP; artículo 86 de la Ley 1474 de 2011</td><td>R046, R067</td></tr>
+        <tr><td>Empresa creada poco antes</td><td>Capacidad y experiencia del proponente, artículo 6 de la Ley 1150 de 2007; Circular 100-000011 de 2021, señales de estructura societaria</td><td>R045, R052</td></tr>
+        <tr><td>Matrícula mercantil cancelada o sin renovar</td><td>Existencia y representación legal como requisito habilitante, Decreto 1082 de 2015; RUES</td><td>R045</td></tr>
+        <tr><td>Conflicto de interés declarado</td><td>Ley 2013 de 2019, que hizo público el registro de conflictos de interés, y artículo 11 de la Ley 1437 de 2011 sobre el deber de declararse impedido</td><td>R043</td></tr>
+        <tr><td>Firmado antes de Ley de Garantías</td><td>Ley 996 de 2005, que restringe la contratación directa y los convenios interadministrativos en los periodos preelectorales</td><td>—</td></tr>
+        <tr><td>Vencido sin cierre en SECOP</td><td>Deber de publicación del artículo 2.2.1.1.1.7.1 del Decreto 1082 de 2015 y de liquidación de los artículos 60 y 61 de la Ley 80 de 1993</td><td>R063, R067</td></tr>
+        <tr><td>Valor fuera de rango</td><td>Deber de calidad, veracidad y confiabilidad de la información publicada, parágrafo 1 del artículo 9 de la Ley 1712 de 2014</td><td>R005</td></tr>
+      </tbody>
+    </table></div>
+
+    <h4>Qué falta y por qué</h4>
+    <p>Hay riesgos reconocidos que esta herramienta todavía no puede calcular, y conviene decirlo para que nadie suponga que su ausencia equivale a que no existan:</p>
+    <ul>
+      <li><b>Retardo en la publicación.</b> El artículo 2.2.1.1.1.7.1 del Decreto 1082 de 2015 obliga a publicar los documentos y actos del proceso dentro de los tres días siguientes a su expedición. Es la alerta más objetiva de todo el marco, pero los conjuntos de datos abiertos no traen la fecha de expedición de cada documento, solo la de publicación, de modo que no se puede medir el retardo sin consultar cada expediente.</li>
+      <li><b>Precios iguales o muy cercanos entre oferentes</b> (R028, R024) y <b>oferentes que comparten domicilio, teléfono o correo</b> (R042, R044). El registro público de proponentes por proceso trae quién se presentó, pero no el valor de cada oferta ni los datos de contacto. Requiere abrir el informe de evaluación de cada proceso.</li>
+      <li><b>Beneficiario final.</b> El artículo 13 de la Ley 2195 de 2022 reservó el Registro Único de Beneficiarios Finales a la Contraloría, la DIAN, la Fiscalía y la Superintendencia de Sociedades. Una veeduría no puede consultarlo: solo puede aproximarse por el RUES y por la composición publicada de consorcios y uniones temporales.</li>
+      <li><b>Aportes de campaña.</b> El cruce entre quien financió una campaña y quien resultó adjudicatario, que es la inhabilidad del artículo 2 de la Ley 1474 de 2011, es uno de los más potentes. Cuentas Claras del Consejo Nacional Electoral no publica un conjunto de datos nacional consolidado, así que hoy exige descargar los informes candidato por candidato.</li>
+      <li><b>Perdedores subcontratados por el ganador</b> (R070, R071, R072) y <b>mismo revisor fiscal certificando a varios oferentes</b>. No hay fuente abierta de subcontratos ni de revisores fiscales por proponente.</li>
+    </ul>
+    <p class="note">Si tu entidad, veeduría u organización tiene acceso a alguna de estas fuentes, o quiere proponer una señal con su fundamento normativo, escribe a <a href="mailto:gerencia.inverpro@gmail.com">gerencia.inverpro@gmail.com</a>. La herramienta está abierta a incorporarlas.</p>
+
+    <h3 id="legal-excluido">Qué no se trata nunca</h3>
+    <p>El control a la contratación se ocupa de la capacidad para contratar, las inhabilidades, los precios y la ejecución. Nada más. Por eso esta herramienta <b>no recoge, no cruza y no publica</b>:</p>
+    <ul>
+      <li>Datos sensibles en el sentido del artículo 5 de la Ley 1581 de 2012: salud, vida sexual, origen racial o étnico, convicciones religiosas o filosóficas, afiliación sindical, orientación política, datos biométricos.</li>
+      <li>Información sobre la vida privada, familiar o social de ninguna persona, ni cruces con redes sociales, plataformas de contenido, aplicaciones de citas o cualquier servicio ajeno a la contratación. Aun si un cruce de esos fuera técnicamente posible, no diría nada sobre un contrato y sí vulneraría el artículo 15 de la Constitución y los artículos 5 y 6 de la Ley 1581 de 2012.</li>
+      <li>Datos de niñas, niños y adolescentes.</li>
+      <li>Cifras de patrimonio, cuentas bancarias, ingresos, deudas o bienes de ninguna persona. De las declaraciones de la Ley 2013 de 2019 solo se usa si una casilla quedó marcada o no; jamás los montos.</li>
+      <li>Direcciones de residencia, teléfonos personales, correos personales ni ubicación de personas naturales.</li>
+      <li>Antecedentes penales, medidas correctivas de policía, procesos judiciales en curso o cualquier información de ese tipo.</li>
+    </ul>
+    <p>Además, el número de documento de las personas naturales se muestra siempre incompleto, aunque el registro oficial lo publique completo.</p>
+
+    <h3 id="legal-senales">Qué significa, y qué no significa, una señal</h3>
+    <p>Las señales son <b>indicios estadísticos y documentales, calculados automáticamente</b> con las mismas reglas para todas las entidades y todos los contratistas. Nadie las edita, nadie excluye a nadie y nadie prioriza resultados a mano.</p>
+    <p>Una señal <b>no</b> es una denuncia, no es un hallazgo, no es una imputación y no declara responsabilidad de nadie. Solo indica que vale la pena mirar un expediente de cerca. Puede haber, y hay, explicaciones legítimas para casi todas: una empresa nueva puede estar perfectamente capacitada, un único oferente puede deberse a un mercado pequeño, una adición puede estar plenamente justificada, y una declaración de conflicto de interés es precisamente la prueba de que alguien cumplió su deber de declararlo.</p>
+    <p>Rige la presunción de inocencia y el debido proceso del artículo 29 de la Constitución. Solo la Contraloría, la Procuraduría, la Fiscalía o un juez pueden establecer responsabilidades, cada uno en su ámbito. Afirmar públicamente que una persona cometió una irregularidad a partir de una señal de esta herramienta, sin verificar el expediente, puede constituir injuria o calumnia (artículos 220 y 221 del Código Penal) y comprometer a quien lo afirme, no a la herramienta.</p>
+    <p>Dos cruces exigen cuidado especial, y la herramienta lo advierte en pantalla cada vez que los muestra:</p>
+    <div class="def"><b>Antecedentes e inhabilidades</b>El cruce se hace por número de documento y <b>puede acertar sobre un homónimo o sobre un error de digitación en el registro</b>. El documento con valor legal es el certificado de antecedentes que expide la Procuraduría. Nunca concluyas nada sin descargarlo.</div>
+    <div class="def"><b>Conflictos de interés</b>Declarar un conflicto es una obligación legal y declararlo es la conducta correcta, no la sospechosa. La señal sirve para preguntar si el conflicto declarado tiene relación con ese contrato y si se presentó el impedimento, no para suponer que alguien actuó mal.</div>
+
+    <h3 id="legal-derechos">Si apareces aquí: tus derechos y cómo ejercerlos</h3>
+    <p>Si eres una persona natural o jurídica mencionada en esta herramienta, tienes derecho a conocer, actualizar, rectificar y solicitar la supresión de tus datos, en los términos del artículo 15 de la Constitución y del artículo 8 de la Ley 1581 de 2012.</p>
+    <p>Como la herramienta no almacena datos, hay dos caminos y conviene saber cuál sirve para qué:</p>
+    <ol>
+      <li><b>Para corregir el dato de raíz,</b> dirígete a la entidad que lo publicó: Colombia Compra Eficiente para contratos y sanciones, la Procuraduría para antecedentes, la cámara de comercio o Confecámaras para RUES, el Departamento Administrativo de la Función Pública para las declaraciones de la Ley 2013 de 2019. Una vez corregido allí, la corrección aparece aquí automáticamente en la siguiente consulta, porque los datos se leen en vivo. Es la vía que resuelve el problema de verdad, también frente a cualquier otra herramienta que use los mismos registros.</li>
+      <li><b>Para reportar un error de cálculo, de interpretación o de presentación de esta herramienta,</b> escribe a <a href="mailto:gerencia.inverpro@gmail.com">gerencia.inverpro@gmail.com</a> indicando el contrato o el registro y qué consideras incorrecto. INVERPRO atenderá consultas en los diez días hábiles y reclamos en los quince días hábiles que fijan los artículos 14 y 15 de la Ley 1581 de 2012, y corregirá la regla de cálculo si el reporte es acertado. Si el error está en la fuente y no en el cálculo, se te indicará a qué entidad acudir.</li>
+    </ol>
+    <p>INVERPRO no puede suprimir de esta herramienta un dato que el Estado publica como información pública, del mismo modo que no podría suprimirlo del SECOP. Lo que sí hace, y hace sin demora, es corregir una regla de cálculo equivocada, retirar una señal mal fundada y precisar un texto que induzca a error.</p>
+    <p>La autoridad de protección de datos personales en Colombia es la Delegatura para la Protección de Datos Personales de la Superintendencia de Industria y Comercio, ante la cual puede presentarse una queja una vez agotada la consulta o el reclamo ante el responsable.</p>
+
+    <h3 id="legal-responsabilidad">Límite de responsabilidad</h3>
+    <p><b>Esta es una versión de prueba y se entrega como está.</b> Los datos provienen de fuentes oficiales que contienen errores de digitación, registros duplicados, valores imposibles, campos vacíos y entidades que publican tarde o no publican. La herramienta detecta y advierte varios de esos errores, pero no todos.</p>
+    <p>En consecuencia, INVERPRO COL S.A.S. no garantiza la exactitud, completitud ni actualidad de la información, y <b>no asume responsabilidad alguna por decisiones, publicaciones, denuncias, acciones judiciales o administrativas, ni por daños de cualquier naturaleza derivados del uso de esta herramienta o de la interpretación de sus resultados.</b> Quien usa la información responde por el uso que le da.</p>
+    <p>Antes de usar un resultado para cualquier fin que produzca efectos, verifícalo en el expediente del proceso en el SECOP y en los registros oficiales. Los enlaces están en cada ficha precisamente para eso.</p>
+    <p>La herramienta no presta asesoría jurídica, contable ni técnica, y no sustituye el dictamen de un profesional, el ejercicio del derecho de petición ni la actuación de los organismos de control.</p>
+
+    <h3 id="legal-visitantes">Privacidad de quien consulta la página</h3>
+    <p>No hay registro, no hay cuentas de usuario y no se pide ningún dato personal para usar la herramienta. No se usan cookies de seguimiento ni herramientas de analítica o publicidad. El contador de visitas suma consultas de forma agregada y no guarda direcciones IP ni identificadores de nadie.</p>
+    <p>Las consultas a los datos abiertos las hace tu navegador directamente contra datos.gov.co, de modo que ese portal ve tu solicitud igual que si lo visitaras tú. Si usas el asistente de preguntas, el texto de tu pregunta se envía a la API de Anthropic para generar la respuesta; no escribas datos personales ni información confidencial en el asistente. Las fuentes tipográficas se cargan desde Google Fonts.</p>
+
+    <h3 id="legal-paises">Consulta desde otros países</h3>
+    <p>El acceso es libre, gratuito y sin registro desde cualquier país. La información que se muestra es información pública del sector público colombiano, y la herramienta no recoge datos personales de quien la consulta, cualquiera que sea su lugar de residencia.</p>
+    <p>Quien consulte desde fuera de Colombia debe tener en cuenta que el marco normativo citado es el colombiano, que los valores están en pesos colombianos y que las señales están calibradas sobre reglas de la contratación estatal colombiana, de modo que no son trasladables a otros ordenamientos. Para cualquier asunto de protección de datos, el punto de contacto es <a href="mailto:gerencia.inverpro@gmail.com">gerencia.inverpro@gmail.com</a>.</p>
+
+    <h3 id="legal-uso">Permiso de uso del contenido</h3>
+    <p>Puedes usar libremente y sin pedir permiso los resultados de esta herramienta en derechos de petición, denuncias ante organismos de control, informes de veeduría, trabajos académicos, piezas periodísticas y debate público, citando la fuente. INVERPRO conserva los derechos sobre el código, el diseño y la marca de la herramienta. Los datos subyacentes mantienen la licencia Creative Commons Atribución-CompartirIgual 4.0 con que los publica el Estado.</p>
+    <div class="def"><b>Cómo citar</b>Ojo al contrato, versión 3.0. INVERPRO COL S.A.S., con datos abiertos de SECOP (Colombia Compra Eficiente), Procuraduría General de la Nación, RUES y Función Pública, en datos.gov.co. Consultado el [fecha], en radar-secop.netlify.app/veeduria.</div>
+
+    <h3 id="legal-ley">Ley aplicable y contacto</h3>
+    <p>Estas condiciones se rigen por la ley colombiana. Responsable: INVERPRO COL S.A.S., NIT 901.006.761-2, Yopal, Casanare, Colombia. Contacto para comentarios, correcciones y ejercicio de derechos: <a href="mailto:gerencia.inverpro@gmail.com">gerencia.inverpro@gmail.com</a>.</p>
+    <p class="note">Última actualización de esta sección: noviembre de 2026. Este texto explica cómo funciona la herramienta y cuál es su fundamento; no es un dictamen jurídico. Si vas a usar la herramienta de forma intensiva o institucional, consulta a tu abogado.</p>
+  </section>
+
 </main>
 
 <footer class="site">
   <div class="wrap">
+    <div class="prueba">
+      <p><b>Versión de prueba.</b> Ojo al contrato está en pruebas. La información proviene de datos abiertos oficiales que pueden contener errores de digitación, registros duplicados, campos vacíos o publicaciones tardías. <b>Verifica siempre en el SECOP y en los registros oficiales antes de tomar una decisión o de publicar una conclusión.</b></p>
+      <p>Los resultados son indicios para revisar, no hallazgos ni imputaciones. No declaran responsabilidad de nadie y no sustituyen el dictamen de un profesional ni la actuación de los organismos de control. Rige la presunción de inocencia del artículo 29 de la Constitución.</p>
+      <p>INVERPRO COL S.A.S. no garantiza la exactitud, completitud ni actualidad de la información y no asume responsabilidad por decisiones, publicaciones, denuncias ni daños derivados del uso de esta herramienta o de la interpretación de sus resultados. Quien usa la información responde por el uso que le da.</p>
+      <p>Comentarios, correcciones y mejoras: <a href="mailto:gerencia.inverpro@gmail.com">gerencia.inverpro@gmail.com</a>. El detalle del origen de los datos, el fundamento legal para publicarlos, qué datos no se tratan nunca y cómo pedir una corrección está en <a href="#legal">Marco legal y uso de la información</a>.</p>
+    </div>
     <div class="about">
       <picture>
         <source srcset="data:image/png;base64,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" media="(prefers-color-scheme: dark)">
@@ -402,7 +593,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
       </picture>
       <div>
         <p class="dev">Desarrollado por INVERPRO</p>
-        <p>Ojo al contrato <span class="ver">Versión 2.1</span> <span style="color:var(--ink-3)">septiembre de 2026</span></p>
+        <p>Ojo al contrato <span class="ver">Versión 2.1</span> <span class="ver" style="background:var(--alarm-soft,rgba(180,52,31,.07));color:var(--alarm,#b4341f)">En prueba</span> <span style="color:var(--ink-3)">septiembre de 2026</span></p>
         <p>© 2026 INVERPRO COL S.A.S., NIT 901.006.761-2. Derechos reservados sobre el código, el diseño y la marca. El uso de la herramienta es libre y gratuito: consúltala, compártela y cita sus resultados indicando la fuente.</p>
       </div>
     </div>
@@ -464,8 +655,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
      CONFIGURACIÓN
      ===================================================================== */
   const CONFIG = {
-    VERSION: '2.1',
-    DEPTO: 'Casanare',
+    VERSION: '3.0',
+    DEPTO_DEF: 'Casanare',
     // Opcional: token gratuito de datos.gov.co. Recomendado si mucha gente usa la página.
     APP_TOKEN: '',
     DS: {
@@ -475,6 +666,13 @@ footer.site p{margin:0 0 8px;max-width:52em}
       mod: 'https://www.datos.gov.co/resource/u8cx-r425.json', // SECOP II modificaciones
       s1:  'https://www.datos.gov.co/resource/4n4q-k399.json', // Multas y sanciones SECOP I
       s2:  'https://www.datos.gov.co/resource/it5q-hg94.json', // Multas y sanciones SECOP II
+      siri:'https://www.datos.gov.co/resource/iaeu-rcn6.json', // Antecedentes SIRI (Procuraduría)
+      rues:'https://www.datos.gov.co/resource/c82u-588k.json', // RUES (cámaras de comercio)
+      conf:'https://www.datos.gov.co/resource/83qu-fqy5.json', // Declaraciones de conflictos de interés (Ley 2013 de 2019)
+      act: 'https://www.datos.gov.co/resource/8tz7-h3eu.json', // Declaración de activos y patrimonio (Ley 2013 de 2019)
+      ofe: 'https://www.datos.gov.co/resource/hgi6-6wh3.json', // Proponentes por proceso
+      tvec:'https://www.datos.gov.co/resource/rgxm-mmea.json', // Tienda Virtual del Estado Colombiano
+      paa: 'https://www.datos.gov.co/resource/9sue-ezhx.json', // Plan Anual de Adquisiciones (detalle)
     },
     PAGE: 25000,
     MAX_ROWS: 150000,
@@ -498,6 +696,16 @@ footer.site p{margin:0 0 8px;max-width:52em}
     GARANTIAS_FIN: '2026-06-22',
     GARANTIAS_DIAS: 14,
     GARANTIAS_MIN_DIRECTA: 100e6,
+    // Cruces con otros registros públicos
+    SIRI_ANCHO: 15,          // en SIRI el documento viene rellenado con espacios a 15 caracteres
+    EMPRESA_NUEVA_DIAS: 365, // matrícula mercantil reciente frente a la firma del contrato
+    EMPRESA_MIN_VALOR: 50e6, // solo se revisa la antigüedad en contratos desde este valor
+    ACOMP_MIN: 3,            // procesos perdidos ante el mismo ganador para hablar de acompañamiento
+    PLAZO_MIN_MOD: 8,        // procesos de la misma modalidad necesarios para comparar plazos
+    PLAZO_PISO: 2,           // días de recepción de ofertas por debajo de los cuales se revisa siempre
+    PEGADO_MIN: 0.995,       // adjudicación sobre presupuesto a partir de la cual se considera pegada
+    SUP_MIN_CONTRATOS: 5,    // contratos del mismo contratista a cargo de un mismo supervisor
+    SUP_SHARE: 0.6,          // y qué parte de la carga de ese supervisor representan
     ASISTENTE_URL: '/api/preguntar',
     ASISTENTE_MAX_PASOS: 8,
   };
@@ -514,6 +722,15 @@ footer.site p{margin:0 0 8px;max-width:52em}
     concentracion:{ label: 'Concentra la contratación' },
     vencido:      { label: 'Vencido sin cierre en SECOP' },
     rango:        { label: 'Valor fuera de rango' },
+    inhabilidad:  { label: 'Contratista con inhabilidad al firmar' },
+    disciplinario:{ label: 'Contratista con sanción disciplinaria' },
+    empresaNueva: { label: 'Empresa creada poco antes' },
+    matricula:    { label: 'Matrícula mercantil cancelada o sin renovar' },
+    conflicto:    { label: 'Conflicto de interés declarado' },
+    acompanante:  { label: 'Oferente que solo acompaña' },
+    supervisor:   { label: 'Un supervisor concentra un contratista' },
+    plazoCorto:   { label: 'Plazo muy corto para presentar ofertas' },
+    pegado:       { label: 'Oferta pegada al presupuesto oficial' },
   };
 
   const MOD_LABEL = {
@@ -521,7 +738,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
     abreviada: 'Selección abreviada', licitacion: 'Licitación pública', concurso: 'Concurso de méritos', otra: 'Otras modalidades',
   };
 
-  const MUNICIPIOS = ['Yopal','Aguazul','Chámeza','Hato Corozal','La Salina','Maní','Monterrey','Nunchía','Orocué','Paz de Ariporo','Pore','Recetor','Sabanalarga','Sácama','San Luis de Palenque','Támara','Tauramena','Trinidad','Villanueva'];
+  // Los 32 departamentos y el Distrito Capital, tal como los escribe el SECOP.
+  const DEPARTAMENTOS = ['Amazonas','Antioquia','Arauca','Atlántico','Bogotá D.C.','Bolívar','Boyacá','Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba','Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena','Meta','Nariño','Norte de Santander','Putumayo','Quindío','Risaralda','San Andrés, Providencia y Santa Catalina','Santander','Sucre','Tolima','Valle del Cauca','Vaupés','Vichada'];
 
   /* =====================================================================
      Utilidades
@@ -603,7 +821,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
     }).join(' ');
   }
   function cleanEnt(raw) {
-    let s = String(raw || '').replace(/^\s*CASANARE\s*-\s*/i, '');
+    let s = String(raw || '').replace(/^\s*[A-ZÁÉÍÓÚÑ\s.]{4,40}?\s*-\s*/, m => (N(m.slice(0, -1).trim()) === N(state.depto) ? '' : m));
     s = s.replace(/[\s.*\/]+$/g, '').replace(/([A-Za-zÁÉÍÓÚÑáéíóúñ])1$/, '$1').replace(/\s+1$/, '').trim();
     return titleCase(s || 'Entidad sin nombre');
   }
@@ -619,16 +837,21 @@ footer.site p{margin:0 0 8px;max-width:52em}
     if (/asamblea/.test(nameN)) return 'asamblea';
     return 'main';
   }
-  const MUN_N = new Map(MUNICIPIOS.map(m => [N(m), m]));
-  MUN_N.set('hatocorozal', 'Hato Corozal');
+  // El catálogo de municipios se arma con lo que traiga el propio departamento consultado,
+  // así la herramienta sirve igual en cualquier parte del país.
+  const MUN_N = new Map();
+  function munAprender(raw) {
+    const n = N(raw);
+    if (!n || n.length < 3 || /^(no definido|sin dato|ninguno|na)$/.test(n)) return;
+    if (!MUN_N.has(n)) MUN_N.set(n, titleCase(String(raw).trim()));
+  }
   function munCanon(raw, entName) {
     const n = N(raw);
     if (MUN_N.has(n)) return MUN_N.get(n);
     const en = N(entName);
     let best = '';
-    for (const [k, v] of MUN_N) if (en.includes(k) && k.length > best.length) best = k;
+    for (const k of MUN_N.keys()) if (k.length > 3 && en.includes(k) && k.length > best.length) best = k;
     if (best) return MUN_N.get(best);
-    if (/departament|gobernacion|regional|asamblea/.test(en)) return 'Yopal';
     return 'Sin dato';
   }
   function modGroup(raw) {
@@ -707,10 +930,10 @@ footer.site p{margin:0 0 8px;max-width:52em}
   const T = d => `${d}T00:00:00`;
 
   async function getContratosII(P, onRows) {
-    const select = ['nombre_entidad','nit_entidad','ciudad','proceso_de_compra','id_contrato','estado_contrato','objeto_del_contrato','tipo_de_contrato','modalidad_de_contratacion','justificacion_modalidad_de','fecha_de_firma','fecha_de_inicio_del_contrato','fecha_de_fin_del_contrato','tipodocproveedor','documento_proveedor','codigo_proveedor','proveedor_adjudicado','valor_del_contrato','valor_pagado','dias_adicionados','urlproceso','origen_de_los_recursos','es_grupo','identificaci_n_representante_legal','orden'];
+    const select = ['nombre_entidad','nit_entidad','ciudad','proceso_de_compra','id_contrato','estado_contrato','objeto_del_contrato','tipo_de_contrato','modalidad_de_contratacion','justificacion_modalidad_de','fecha_de_firma','fecha_de_inicio_del_contrato','fecha_de_fin_del_contrato','tipodocproveedor','documento_proveedor','codigo_proveedor','proveedor_adjudicado','valor_del_contrato','valor_pagado','dias_adicionados','urlproceso','origen_de_los_recursos','es_grupo','identificaci_n_representante_legal','orden','nombre_supervisor','n_mero_de_documento_supervisor','n_mero_de_documento_ordenador_del_gasto','nombre_ordenador_del_gasto'];
     const raw = await soda(CONFIG.DS.c2, {
       $select: select.join(','),
-      $where: `departamento=${sq(CONFIG.DEPTO)} AND fecha_de_firma >= ${sq(T(P.a))} AND fecha_de_firma < ${sq(T(P.b))}`,
+      $where: `departamento=${sq(state.depto)} AND fecha_de_firma >= ${sq(T(P.a))} AND fecha_de_firma < ${sq(T(P.b))}`,
       $order: ':id',
     }, onRows);
     return raw.map(r => {
@@ -725,6 +948,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
         val: num(r.valor_del_contrato), pag: num(r.valor_pagado), dias: num(r.dias_adicionados),
         est: r.estado_contrato || '', url: url || '', proc: r.proceso_de_compra || '', rec: r.origen_de_los_recursos || '',
         grupo: r.es_grupo === 'Si', rep: repKey(r.identificaci_n_representante_legal), terr: !/nacional/i.test(r.orden || ''),
+        supDoc: digits(r.n_mero_de_documento_supervisor), supName: String(r.nombre_supervisor || '').trim(),
+        ogDoc: digits(r.n_mero_de_documento_ordenador_del_gasto), ogName: String(r.nombre_ordenador_del_gasto || '').trim(),
       };
     });
   }
@@ -732,7 +957,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
     const select = ['nombre_de_la_entidad','nit_de_la_entidad','municipio_entidad','modalidad_de_contrataci_n','objeto_a_contratar','tipo_de_contrato','fecha_de_firma_del_contrato','fecha_inicio_ejecuci_n','fecha_fin_ejecuci_n','numero_del_contrato','valor_contrato','nom_raz_social_contratista','url_contrato','tipo_documento_proveedor','documento_proveedor','estado_del_proceso'];
     const raw = await soda(CONFIG.DS.int, {
       $select: select.join(','),
-      $where: `departamento_entidad=${sq(CONFIG.DEPTO)} AND origen='SECOPI' AND fecha_de_firma_del_contrato >= ${sq(T(P.a))} AND fecha_de_firma_del_contrato < ${sq(T(P.b))}`,
+      $where: `departamento_entidad=${sq(state.depto)} AND origen='SECOPI' AND fecha_de_firma_del_contrato >= ${sq(T(P.a))} AND fecha_de_firma_del_contrato < ${sq(T(P.b))}`,
       $order: ':id',
     }, onRows);
     return raw.map(r => ({
@@ -747,18 +972,21 @@ footer.site p{margin:0 0 8px;max-width:52em}
     }));
   }
   async function getProcesos(P, onRows) {
-    const select = ['id_del_portafolio','modalidad_de_contratacion','proveedores_unicos_con','precio_base','valor_total_adjudicacion'];
+    const select = ['id_del_portafolio','id_del_proceso','modalidad_de_contratacion','proveedores_unicos_con','precio_base','valor_total_adjudicacion','fecha_de_publicacion_del','fecha_de_recepcion_de'];
     const raw = await soda(CONFIG.DS.pr, {
       $select: select.join(','),
-      $where: `departamento_entidad=${sq(CONFIG.DEPTO)} AND adjudicado='Si' AND fecha_de_publicacion_del >= ${sq(T(addDays(P.a, -270)))} AND fecha_de_publicacion_del < ${sq(T(P.b))} AND modalidad_de_contratacion not in ('Contratación directa','Contratación régimen especial','Contratación Directa (con ofertas)')`,
+      $where: `departamento_entidad=${sq(state.depto)} AND adjudicado='Si' AND fecha_de_publicacion_del >= ${sq(T(addDays(P.a, -270)))} AND fecha_de_publicacion_del < ${sq(T(P.b))} AND modalidad_de_contratacion not in ('Contratación directa','Contratación régimen especial','Contratación Directa (con ofertas)')`,
       $order: ':id',
     }, onRows);
     const m = {};
     for (const r of raw) {
       const k = r.id_del_portafolio; if (!k) continue;
       const n = num(r.proveedores_unicos_con), b = num(r.precio_base), a = num(r.valor_total_adjudicacion);
-      const x = m[k] || (m[k] = { n: 0, b: 0, a: 0, mod: r.modalidad_de_contratacion || '' });
+      const x = m[k] || (m[k] = { n: 0, b: 0, a: 0, mod: r.modalidad_de_contratacion || '', req: '', pub: '', rec: '' });
       x.n = Math.max(x.n, n); x.b = Math.max(x.b, b); x.a = Math.max(x.a, a);
+      if (r.id_del_proceso) x.req = r.id_del_proceso;
+      if (r.fecha_de_publicacion_del) x.pub = iso10(r.fecha_de_publicacion_del);
+      if (r.fecha_de_recepcion_de) x.rec = iso10(r.fecha_de_recepcion_de);
     }
     return m;
   }
@@ -806,6 +1034,207 @@ footer.site p{margin:0 0 8px;max-width:52em}
   }
 
   /* =====================================================================
+     Cruces con otros registros públicos
+     Todos son datos abiertos del Estado colombiano, publicados por mandato
+     legal, y se consultan solo por número de documento o NIT.
+     ===================================================================== */
+
+  // Consulta por lotes usando in(...), igual que el historial de modificaciones.
+  async function porLotes(url, campo, valores, params, tam = 120, hilos = 3) {
+    const vals = [...new Set(valores.filter(Boolean))];
+    if (!vals.length) return { rows: [], failed: 0, total: 0 };
+    const chunks = [];
+    for (let i = 0; i < vals.length; i += tam) chunks.push(vals.slice(i, i + tam));
+    const rows = []; let idx = 0, failed = 0;
+    async function worker() {
+      while (idx < chunks.length) {
+        const ch = chunks[idx++];
+        const q = new URLSearchParams(Object.assign({}, params, {
+          $where: `${campo} in(${ch.map(sq).join(',')})` + (params.$extra ? ' AND ' + params.$extra : ''),
+          $limit: '30000',
+        }));
+        q.delete('$extra');
+        try { const r = await fetchRetry(url + '?' + q.toString()); if (Array.isArray(r)) rows.push(...r); }
+        catch (e) { failed++; }
+      }
+    }
+    await Promise.all(Array.from({ length: hilos }, worker));
+    return { rows, failed, total: chunks.length };
+  }
+
+  // dd/mm/aaaa -> aaaa-mm-dd
+  function isoLatam(s) {
+    const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(s || '').trim());
+    return m ? `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}` : '';
+  }
+  // aaaammdd -> aaaa-mm-dd
+  function isoCompacto(s) {
+    const d = digits(s);
+    return /^\d{8}$/.test(d) ? `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}` : '';
+  }
+  function addMonths(iso, n) {
+    if (!iso) return '';
+    const d = new Date(iso + 'T00:00:00Z');
+    d.setUTCMonth(d.getUTCMonth() + n);
+    return d.toISOString().slice(0, 10);
+  }
+
+  // 1) Antecedentes SIRI de la Procuraduría: sanciones disciplinarias e inhabilidades.
+  //    El documento viene rellenado con espacios a 15 caracteres, así que hay que
+  //    rellenar también el que se busca o la consulta nunca coincide.
+  async function getInhabilidades(docs) {
+    const padded = docs.filter(Boolean).map(d => d.length <= CONFIG.SIRI_ANCHO ? d.padEnd(CONFIG.SIRI_ANCHO, ' ') : d);
+    const r = await porLotes(CONFIG.DS.siri, 'numero_identificacion', padded, {
+      $select: 'numero_identificacion,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,tipo_inhabilidad,sanciones,fecha_efectos_juridicos,duracion_anos,duracion_mes,duracion_dias,entidad_sancionado,numero_siri,autoridad',
+    });
+    const by = {};
+    for (const x of r.rows) {
+      const doc = digits(x.numero_identificacion); if (!doc) continue;
+      const desde = isoLatam(x.fecha_efectos_juridicos);
+      const anos = num(x.duracion_anos), meses = num(x.duracion_mes), dd = num(x.duracion_dias);
+      let hasta = '';
+      if (desde && (anos || meses || dd)) hasta = addDays(addMonths(desde, anos * 12 + meses), dd);
+      (by[doc] = by[doc] || []).push({
+        tipo: String(x.tipo_inhabilidad || '').trim(),
+        sancion: String(x.sanciones || '').trim(),
+        desde, hasta,
+        ent: String(x.entidad_sancionado || '').trim(),
+        siri: String(x.numero_siri || '').trim(),
+        aut: String(x.autoridad || '').trim(),
+      });
+    }
+    return { by, n: r.rows.length, failed: r.failed, total: r.total };
+  }
+
+  // 2) RUES: existencia, antigüedad, actividad y estado de la matrícula mercantil.
+  async function getRues(nits) {
+    const r = await porLotes(CONFIG.DS.rues, 'numero_identificacion', nits, {
+      $select: 'numero_identificacion,razon_social,fecha_matricula,estado_matricula,ultimo_ano_renovado,cod_ciiu_act_econ_pri,camara_comercio,organizacion_juridica,inscripcion_proponente,fecha_cancelacion',
+    });
+    const by = {};
+    for (const x of r.rows) {
+      const doc = digits(x.numero_identificacion); if (!doc) continue;
+      const mat = isoCompacto(x.fecha_matricula);
+      const prev = by[doc];
+      const it = {
+        razon: String(x.razon_social || '').trim(),
+        mat,
+        est: String(x.estado_matricula || '').trim(),
+        ren: digits(x.ultimo_ano_renovado),
+        ciiu: digits(x.cod_ciiu_act_econ_pri),
+        camara: titleCase(String(x.camara_comercio || '').trim()),
+        forma: titleCase(String(x.organizacion_juridica || '').trim()),
+        rup: digits(x.inscripcion_proponente) ? true : false,
+        cancel: isoCompacto(x.fecha_cancelacion),
+      };
+      // Si una misma identificación trae varios registros, se prefiere la matrícula activa y más antigua.
+      if (!prev || (/activa/i.test(it.est) && !/activa/i.test(prev.est)) || (prev.mat && it.mat && it.mat < prev.mat && /activa/i.test(it.est))) by[doc] = it;
+    }
+    return { by, n: Object.keys(by).length, failed: r.failed, total: r.total };
+  }
+
+  // 3) Ley 2013 de 2019: declaración de conflictos de interés y de participación en
+  //    sociedades. Son declaraciones públicas y obligatorias. Se guardan solo las
+  //    casillas marcadas, nunca cifras de patrimonio.
+  async function getConflictos(docs) {
+    const [a, b] = await Promise.all([
+      porLotes(CONFIG.DS.conf, 'numero_documento', docs, {
+        $select: 'numero_documento,cargo_declarante,nombre_entidad,declarante_es_contratista,parientes_conflictos_interes,intereses_directos_actuaciones,otros_posibles_conflictos,descripc_otros_posibles,ano_gravable_declarac_iyr,fecha_publicac_declarac,numero_formulario',
+      }),
+      porLotes(CONFIG.DS.act, 'numero_documento', docs, {
+        $select: 'numero_documento,cargo_declarante,nombre_entidad,particip_corp_socied_asoc,particip_juntas_consejos,activ_econom_privadas,ano_gravable_declarac_iyr,numero_formulario',
+      }),
+    ]);
+    const SI = v => /^s(i|í)$/i.test(String(v || '').trim());
+    const by = {};
+    const push = (doc, it) => { if (doc) (by[doc] = by[doc] || []).push(it); };
+    for (const x of a.rows) {
+      const marcas = [];
+      if (SI(x.parientes_conflictos_interes)) marcas.push('parientes con posible conflicto');
+      if (SI(x.intereses_directos_actuaciones)) marcas.push('intereses directos en actuaciones');
+      if (SI(x.otros_posibles_conflictos)) marcas.push('otros posibles conflictos');
+      if (!marcas.length) continue;
+      push(digits(x.numero_documento), {
+        clase: 'conflicto', marcas,
+        cargo: titleCase(String(x.cargo_declarante || '').trim()),
+        ent: titleCase(String(x.nombre_entidad || '').trim()),
+        ano: digits(x.ano_gravable_declarac_iyr),
+        form: String(x.numero_formulario || '').trim(),
+      });
+    }
+    for (const x of b.rows) {
+      const marcas = [];
+      if (SI(x.particip_corp_socied_asoc)) marcas.push('participación en sociedades o asociaciones');
+      if (SI(x.particip_juntas_consejos)) marcas.push('participación en juntas o consejos');
+      if (SI(x.activ_econom_privadas)) marcas.push('actividad económica privada');
+      if (!marcas.length) continue;
+      push(digits(x.numero_documento), {
+        clase: 'actividad', marcas,
+        cargo: titleCase(String(x.cargo_declarante || '').trim()),
+        ent: titleCase(String(x.nombre_entidad || '').trim()),
+        ano: digits(x.ano_gravable_declarac_iyr),
+        form: String(x.numero_formulario || '').trim(),
+      });
+    }
+    return { by, n: a.rows.length + b.rows.length, failed: a.failed + b.failed, total: a.total + b.total };
+  }
+
+  // 4) Proponentes por proceso: quién se presentó y quién no ganó nunca.
+  //    El enlace es contrato -> id_del_portafolio -> id_del_proceso -> proponentes.
+  async function getOferentes(reqIds) {
+    const r = await porLotes(CONFIG.DS.ofe, 'id_procedimiento', reqIds, {
+      $select: 'id_procedimiento,nit_proveedor,proveedor,nit_entidad,entidad_compradora,nombre_procedimiento',
+    }, 60);
+    const by = {};
+    for (const x of r.rows) {
+      const k = x.id_procedimiento; if (!k) continue;
+      const doc = digits(x.nit_proveedor);
+      (by[k] = by[k] || []).push({ doc, name: cleanProv(x.proveedor) });
+    }
+    return { by, n: r.rows.length, failed: r.failed, total: r.total };
+  }
+
+  // 5) Tienda Virtual del Estado Colombiano: un canal de compra que no aparece en
+  //    los conjuntos de contratos y que por sí solo mueve miles de millones.
+  async function getTienda(P) {
+    const rows = await soda(CONFIG.DS.tvec, {
+      $select: 'identificador_de_la_orden,entidad,nit_entidad,proveedor,nit_proveedor,total,fecha,estado,agregacion,ciudad',
+      $where: `departamento=${sq(state.depto)} AND fecha >= ${sq(T(P.a))} AND fecha < ${sq(T(P.b))}`,
+      $order: ':id',
+    });
+    let v = 0; const prov = new Map(); const ents = new Map();
+    const vivas = rows.filter(r => !/anulad|cancelad|rechazad/i.test(r.estado || ''));
+    for (const r of vivas) {
+      const t = num(r.total); v += t;
+      const doc = digits(r.nit_proveedor);
+      const pk = doc ? 'n' + doc : 'p' + hash36(N(r.proveedor));
+      let x = prov.get(pk); if (!x) { x = { pk, doc, name: cleanProv(r.proveedor), v: 0, n: 0 }; prov.set(pk, x); }
+      x.v += t; x.n++;
+      const en = nitNorm(r.nit_entidad) || hash36(N(r.entidad));
+      let e = ents.get(en); if (!e) { e = { nit: nitNorm(r.nit_entidad), name: cleanEnt(r.entidad), v: 0, n: 0 }; ents.set(en, e); }
+      e.v += t; e.n++;
+    }
+    return { n: vivas.length, v, prov, ents, anuladas: rows.length - vivas.length };
+  }
+
+  // 6) Plan Anual de Adquisiciones: lo que la entidad dijo que iba a contratar.
+  //    Se consulta agregado por entidad, no fila por fila.
+  async function getPlan(nits, anos) {
+    const r = await porLotes(CONFIG.DS.paa, 'nit_entidad', nits, {
+      $select: 'nit_entidad,sum(valor_total_esperado) as vp,count(*) as n',
+      $group: 'nit_entidad',
+      $extra: `annio in(${anos.map(sq).join(',')})`,
+    }, 60);
+    const by = {};
+    for (const x of r.rows) {
+      const k = nitNorm(x.nit_entidad); if (!k) continue;
+      const prev = by[k] || { v: 0, n: 0 };
+      by[k] = { v: prev.v + num(x.vp), n: prev.n + num(x.n) };
+    }
+    return { by, failed: r.failed, total: r.total };
+  }
+
+  /* =====================================================================
      Caché local (IndexedDB) para no repetir descargas
      ===================================================================== */
   const IDB = {
@@ -827,18 +1256,37 @@ footer.site p{margin:0 0 8px;max-width:52em}
      Estado de la aplicación
      ===================================================================== */
   const state = {
-    periodo: 'u12', D: null, token: 0,
+    periodo: 'u12', depto: CONFIG.DEPTO_DEF, D: null, token: 0,
     status: {},
     f: { tipo: '', sede: '', ent: '', min: 0, q: '', orden: 'prio' }, alLimit: CONFIG.PAGE_LIST,
     eq: '', esede: '', eorden: 'v', cq: '',
-    fetchedAt: null, modsState: 'pendiente',
+    fetchedAt: null, modsState: 'pendiente', crucesState: 'pendiente',
   };
 
   const STATUS_ROWS = [
     ['c2', 'Contratos SECOP II'], ['c1', 'Contratos SECOP I'], ['pr', 'Procesos y número de oferentes'],
     ['sa', 'Multas y sanciones'], ['mo', 'Historial de valor (adiciones)'],
+    ['ih', 'Antecedentes e inhabilidades (Procuraduría)'], ['ru', 'Matrícula mercantil (RUES)'],
+    ['ci', 'Conflictos de interés declarados (Ley 2013)'], ['of', 'Oferentes por proceso'],
+    ['tv', 'Órdenes de la Tienda Virtual'], ['pa', 'Plan Anual de Adquisiciones'],
   ];
   function setStatus(id, st, detail) { state.status[id] = { st, detail }; renderStatus(); }
+  const CRUCE_ROWS = [
+    ['ih', 'antecedentes de la Procuraduría'], ['ru', 'matrícula mercantil en RUES'],
+    ['ci', 'conflictos de interés de la Ley 2013'], ['of', 'oferentes por proceso'],
+    ['tv', 'Tienda Virtual del Estado'], ['pa', 'Plan Anual de Adquisiciones'],
+  ];
+  function cruceLinea() {
+    const malos = CRUCE_ROWS.filter(([id]) => state.status[id] && state.status[id].st === 'err');
+    const buenos = CRUCE_ROWS.filter(([id]) => state.status[id] && state.status[id].st === 'ok');
+    const corriendo = CRUCE_ROWS.filter(([id]) => state.status[id] && (state.status[id].st === 'run' || state.status[id].st === 'pend'));
+    if (corriendo.length) return `<p class="cruces">Cruzando con otros registros públicos (${esc(corriendo.map(x => x[1]).join(', '))}). Las señales que dependen de ellos aparecerán en unos segundos.</p>`;
+    if (!buenos.length && !malos.length) return '';
+    let h = '';
+    if (buenos.length) h += `<p class="cruces">Además del SECOP, se cruzó con ${esc(buenos.map(x => x[1]).join(', '))}. <a href="#legal-marco">En qué norma se apoya cada señal</a>.</p>`;
+    if (malos.length) h += `<p class="cruces err">No respondió ${esc(malos.map(x => x[1]).join(', '))}, así que las señales que dependen de esos registros no se calcularon en esta consulta. Vuelve a intentarlo con <b>Actualizar datos</b>.</p>`;
+    return h;
+  }
   function renderStatus() {
     const el = $('#estado');
     const allOk = STATUS_ROWS.every(([id]) => state.status[id] && state.status[id].st === 'ok');
@@ -855,7 +1303,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
   async function load(force = false) {
     const P = PERIODOS.find(p => p.id === state.periodo) || PERIODOS[0];
     const token = ++state.token;
-    const key = `${CONFIG.CACHE_VER}:${P.id}:${P.a}:${P.b}`;
+    const key = `${CONFIG.CACHE_VER}:${N(state.depto)}:${P.id}:${P.a}:${P.b}`;
     state.status = {};
     state.D = null; renderAll();
 
@@ -867,14 +1315,17 @@ footer.site p{margin:0 0 8px;max-width:52em}
         ['c2', 'c1', 'pr', 'sa'].forEach(id => setStatus(id, c.st[id]?.st || 'ok', c.st[id]?.detail || 'desde la copia guardada'));
         build(c.raw, P);
         if (c.raw.mods) { setStatus('mo', 'ok', c.st.mo?.detail || 'desde la copia guardada'); state.modsState = 'ok'; }
+        ['ih', 'ru', 'ci', 'of', 'tv', 'pa'].forEach(id => c.st[id] && setStatus(id, c.st[id].st, c.st[id].detail || 'desde la copia guardada'));
+        if (c.raw.inhab) state.crucesState = 'ok';
         renderAll();
         if (!c.raw.mods) loadMods(key, c, token);
+        if (!c.raw.inhab) loadCruces(key, c, token, P);
         return;
       }
     }
 
-    STATUS_ROWS.forEach(([id]) => setStatus(id, 'run', 'descargando…'));
-    setStatus('mo', 'pend', 'se calcula al terminar lo anterior');
+    ['c2', 'c1', 'pr', 'sa'].forEach(id => setStatus(id, 'run', 'descargando…'));
+    ['mo', 'ih', 'ru', 'ci', 'of', 'tv', 'pa'].forEach(id => setStatus(id, 'pend', 'se calcula al terminar lo anterior'));
     const tasks = {
       c2: getContratosII(P, n => token === state.token && setStatus('c2', 'run', `${fmtN(n)} contratos…`)),
       c1: getContratosI(P, n => token === state.token && setStatus('c1', 'run', `${fmtN(n)} contratos…`)),
@@ -911,6 +1362,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
     const complete = st.c2.st === 'ok' && st.c1.st === 'ok';
     if (complete) IDB.set(key, entry);
     loadMods(key, complete ? entry : null, token);
+    loadCruces(key, complete ? entry : null, token, P);
   }
 
   async function loadMods(key, entry, token) {
@@ -930,6 +1382,67 @@ footer.site p{margin:0 0 8px;max-width:52em}
     renderAll(true);
     if (entry && !r.failed) { entry.raw.mods = r.map; entry.st.mo = { st: 'ok', detail }; IDB.set(key, entry); }
   }
+
+  // Segunda fase: cuando ya están los contratos, se cruzan con los demás registros.
+  async function loadCruces(key, entry, token, P) {
+    const D = state.D; if (!D) return;
+    const cs = D.contracts.filter(c => !c.bad);
+
+    const docsProv = [...new Set(cs.map(c => c.doc).filter(d => d && d.length >= 5))];
+    const nitsProv = [...new Set(cs.filter(c => !c.nat).map(c => c.doc).filter(d => d && d.length >= 7))];
+    const docsPub = [...new Set(cs.flatMap(c => [c.supDoc, c.ogDoc]).filter(d => d && d.length >= 5))];
+    const entNits = [...new Set(cs.map(c => c.nit).filter(Boolean))];
+    const anos = [...new Set(cs.map(c => String(c.year)).filter(y => /^\d{4}$/.test(y)))];
+    const reqIds = [...new Set(cs.map(c => (D.raw.pr && D.raw.pr[c.proc] || {}).req).filter(Boolean))];
+
+    const marcar = (id, r, etiqueta, nSinDato) => {
+      if (!r) { setStatus(id, 'err', 'no respondió; esa señal no se calculó'); return; }
+      const falta = r.failed && r.total && r.failed >= r.total;
+      if (falta) { setStatus(id, 'err', 'no respondió; esa señal no se calculó'); return; }
+      setStatus(id, 'ok', etiqueta + (r.failed ? ` (faltaron ${r.failed} de ${r.total} lotes)` : ''));
+    };
+
+    ['ih', 'ru', 'ci', 'of', 'tv', 'pa'].forEach(id => setStatus(id, 'run', 'consultando…'));
+    const tareas = {
+      ih: docsProv.length ? getInhabilidades(docsProv) : Promise.resolve({ by: {}, n: 0, failed: 0, total: 0 }),
+      ru: nitsProv.length ? getRues(nitsProv) : Promise.resolve({ by: {}, n: 0, failed: 0, total: 0 }),
+      ci: docsPub.length ? getConflictos(docsPub) : Promise.resolve({ by: {}, n: 0, failed: 0, total: 0 }),
+      of: reqIds.length ? getOferentes(reqIds) : Promise.resolve({ by: {}, n: 0, failed: 0, total: 0 }),
+      tv: getTienda(P),
+      pa: entNits.length && anos.length ? getPlan(entNits, anos) : Promise.resolve({ by: {}, failed: 0, total: 0 }),
+    };
+    const ks = Object.keys(tareas);
+    const res = await Promise.allSettled(ks.map(k => tareas[k]));
+    if (token !== state.token) return;
+
+    const got = {};
+    ks.forEach((k, i) => { got[k] = res[i].status === 'fulfilled' ? res[i].value : null; });
+
+    D.raw.inhab = got.ih ? got.ih.by : null;
+    D.raw.rues = got.ru ? got.ru.by : null;
+    D.raw.conf = got.ci ? got.ci.by : null;
+    D.raw.ofe = got.of ? got.of.by : null;
+    D.raw.tvec = got.tv || null;
+    D.raw.plan = got.pa ? got.pa.by : null;
+
+    marcar('ih', got.ih, got.ih ? `${fmtN(Object.keys(got.ih.by).length)} contratistas con antecedentes` : '');
+    marcar('ru', got.ru, got.ru ? `${fmtN(got.ru.n)} de ${fmtN(nitsProv.length)} empresas encontradas en RUES` : '');
+    marcar('ci', got.ci, got.ci ? `${fmtN(Object.keys(got.ci.by).length)} de ${fmtN(docsPub.length)} con declaración marcada` : '');
+    marcar('of', got.of, got.of ? `${fmtN(Object.keys(got.of.by).length)} procesos con lista de oferentes` : '');
+    marcar('tv', got.tv, got.tv ? `${fmtN(got.tv.n)} órdenes por ${money(got.tv.v)}` : '');
+    marcar('pa', got.pa, got.pa ? `${fmtN(Object.keys(got.pa.by).length)} entidades con plan publicado` : '');
+
+    state.crucesState = 'ok';
+    compute(D);
+    renderAll(true);
+    if (entry) {
+      entry.raw.inhab = D.raw.inhab; entry.raw.rues = D.raw.rues; entry.raw.conf = D.raw.conf;
+      entry.raw.ofe = D.raw.ofe; entry.raw.tvec = D.raw.tvec; entry.raw.plan = D.raw.plan;
+      ['ih', 'ru', 'ci', 'of', 'tv', 'pa'].forEach(id => { entry.st[id] = state.status[id]; });
+      IDB.set(key, entry);
+    }
+  }
+
 
   /* =====================================================================
      Construcción del modelo y cálculo de señales
@@ -959,6 +1472,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
       m.set(nm, (m.get(nm) || 0) + w);
     }
     // Municipio sede: el municipio más frecuente de la entidad
+    MUN_N.clear();
+    for (const c of contracts) munAprender(c.munRaw);
     const entMun = new Map();
     for (const c of contracts) {
       const mun = munCanon(c.munRaw, c.entRaw);
@@ -1168,6 +1683,199 @@ footer.site p{margin:0 0 8px;max-width:52em}
       if (pv && pv.conc) add(c, 'concentracion', `Este contratista suma <span class="mk">el ${esc(pct(pv.conc))} de todo lo que contrató la entidad</span> en el periodo, con ${fmtN(pv.n)} contratos.`, 1);
     }
 
+    // --- Plazo muy corto para presentar ofertas ---
+    // No se usa un tope legal fijo, porque varía por modalidad. Se compara cada
+    // proceso contra la mediana de su propia modalidad en el mismo periodo, que es
+    // el método que recomiendan la Open Contracting Partnership (R003 y R014) y la
+    // guía de riesgos de competencia de la Superintendencia de Industria y Comercio.
+    {
+      const porMod = new Map();
+      for (const k in pr) {
+        const x = pr[k]; if (!x.pub || !x.rec) continue;
+        const d = diffDays(x.pub, x.rec); if (d < 0 || d > 365) continue;
+        x.plazo = d;
+        const mg = modGroup(x.mod);
+        if (!porMod.has(mg)) porMod.set(mg, []);
+        porMod.get(mg).push(d);
+      }
+      const medMod = new Map();
+      for (const [mg, arr] of porMod) if (arr.length >= CONFIG.PLAZO_MIN_MOD) medMod.set(mg, median(arr));
+      for (const c of contracts) {
+        if (c.bad || c.src !== 'II' || !c.proc) continue;
+        const x = pr[c.proc]; if (!x || x.plazo === undefined) continue;
+        c.plazo = x.plazo;
+        const med = medMod.get(c.mg);
+        const corto = med !== undefined && med >= 3 && x.plazo <= Math.floor(med / 3);
+        const piso = c.mg !== 'minima' && c.mg !== 'directa' && c.mg !== 'especial' && x.plazo <= CONFIG.PLAZO_PISO;
+        if (!corto && !piso) continue;
+        add(c, 'plazoCorto', `Entre la publicación del proceso y el cierre para recibir ofertas pasaron <span class="mk">${x.plazo === 0 ? 'menos de un día' : fmtN(x.plazo) + (x.plazo === 1 ? ' día' : ' días')}</span>${med !== undefined ? `, frente a una mediana de ${fmtN(Math.round(med))} días en los procesos de ${esc((MOD_LABEL[c.mg] || c.mg).toLowerCase())} del periodo` : ''}. Un plazo muy corto reduce de hecho el número de oferentes posibles: revisa el aviso de convocatoria y si alguien observó que el tiempo era insuficiente.`, piso ? 3 : 2);
+      }
+    }
+
+    // --- Oferta pegada al presupuesto oficial ---
+    // Bandera roja R031 de la Open Contracting Partnership y alerta g) del Riesgo 1
+    // de la guía de la Superintendencia de Industria y Comercio.
+    for (const c of contracts) {
+      if (c.bad || c.src !== 'II' || !c.proc) continue;
+      const x = pr[c.proc]; if (!x || !(x.b > 0) || !(x.a > 0)) continue;
+      const r = x.a / x.b;
+      if (r < CONFIG.PEGADO_MIN || r > 1.0005) continue;
+      if (x.n === 1) continue; // ya se explica en la señal de un solo oferente
+      add(c, 'pegado', `Con ${fmtN(x.n)} oferentes, la adjudicación quedó en el <span class="mk">${esc(pct(r, 2))} del presupuesto oficial</span>, es decir prácticamente sin ahorro para la entidad. Cuando hay competencia real suele haber descuento: compara las ofertas económicas y revisa si el presupuesto oficial estaba bien estimado.`, 2);
+    }
+
+    /* =================================================================
+       Señales de los cruces con otros registros públicos
+       ================================================================= */
+
+    // --- Inhabilidades y sanciones disciplinarias (Antecedentes SIRI) ---
+    if (raw.inhab) {
+      for (const c of contracts) {
+        if (c.bad || !c.doc) continue;
+        const ant = raw.inhab[c.doc]; if (!ant || !ant.length) continue;
+        c.inhab = ant;
+        // Con inhabilidad vigente a la fecha de la firma: la señal más fuerte de todas.
+        const vig = ant.filter(x => x.desde && x.hasta && c.f && c.f >= x.desde && c.f <= x.hasta);
+        if (vig.length) {
+          const x = vig.sort((a, b) => b.hasta.localeCompare(a.hasta))[0];
+          add(c, 'inhabilidad', `El documento de este contratista aparece en los Antecedentes de la Procuraduría con <span class="mk">${esc((x.sancion || 'una sanción').toLowerCase())}</span> cuya inhabilidad iría del ${esc(fmtDate(x.desde))} al ${esc(fmtDate(x.hasta))}, y el contrato se firmó el ${esc(fmtDate(c.f))}, dentro de ese plazo. Puede tratarse de un homónimo: confírmalo en el certificado de antecedentes antes de concluir nada.`, 4, { siri: x.siri });
+          continue;
+        }
+        const fuertes = ant.filter(x => /inhabilidad|destitucion|suspension|separacion/i.test(x.sancion || x.tipo || ''));
+        if (fuertes.length) {
+          const x = fuertes.sort((a, b) => (b.desde || '').localeCompare(a.desde || ''))[0];
+          add(c, 'disciplinario', `El documento de este contratista registra en los Antecedentes de la Procuraduría <span class="mk">${esc((x.sancion || 'una sanción disciplinaria').toLowerCase())}</span>${x.desde ? ` con efectos desde el ${esc(fmtDate(x.desde))}` : ''}. No se pudo establecer que la inhabilidad estuviera vigente al firmar. Puede ser un homónimo: verifícalo en el certificado de antecedentes.`, 2, { siri: x.siri });
+        }
+      }
+    }
+
+    // --- Matrícula mercantil (RUES) ---
+    if (raw.rues) {
+      for (const c of contracts) {
+        if (c.bad || c.nat || !c.doc) continue;
+        const r = raw.rues[c.doc]; if (!r) continue;
+        c.rues = r;
+        if (r.mat && c.f && c.val >= CONFIG.EMPRESA_MIN_VALOR) {
+          const d = diffDays(r.mat, c.f);
+          if (d >= 0 && d <= CONFIG.EMPRESA_NUEVA_DIAS) {
+            add(c, 'empresaNueva', `La empresa tiene matrícula mercantil del ${esc(fmtDate(r.mat))} en la Cámara de Comercio de ${esc(r.camara || 'origen no registrado')}, es decir <span class="mk">${fmtN(d)} día${d === 1 ? '' : 's'} antes</span> de firmar este contrato de ${esc(money(c.val))}. Una empresa nueva puede competir sin problema; lo que conviene revisar es cómo acreditó experiencia y capacidad financiera.`, d <= 180 ? 3 : 2);
+          }
+        }
+        const cancelada = /cancelad/i.test(r.est);
+        const sinRenovar = r.ren && c.year && +r.ren < c.year - 1;
+        if (cancelada || sinRenovar) {
+          add(c, 'matricula', cancelada
+            ? `En RUES la matrícula mercantil de esta empresa figura como <span class="mk">cancelada</span>${r.cancel ? ` desde el ${esc(fmtDate(r.cancel))}` : ''}, y el contrato se firmó el ${esc(fmtDate(c.f))}. Revisa si la cancelación es posterior o si la empresa estaba inactiva al contratar.`
+            : `En RUES la última renovación de la matrícula mercantil figura en <span class="mk">${esc(r.ren)}</span>, y el contrato se firmó en ${esc(String(c.year))}. La matrícula sin renovar afecta la capacidad de contratar; conviene verificar el certificado de existencia y representación de la fecha del contrato.`, 2);
+        }
+      }
+    }
+
+    // --- Conflictos de interés declarados (Ley 2013 de 2019) ---
+    // Se cruza contra quien supervisa el contrato y quien ordena el gasto, que es
+    // donde la declaración tiene efecto sobre la contratación.
+    // Tener participación en sociedades o actividad privada es corriente y lícito:
+    // eso se muestra como contexto en la ficha, no como alerta. Solo se marca lo que
+    // toca directamente la función, y con más peso cuando la declaración es de la
+    // misma entidad que firmó el contrato.
+    if (raw.conf) {
+      const FUERTE = /intereses directos/i;
+      for (const c of contracts) {
+        if (c.bad) continue;
+        for (const [doc, papel, nombre] of [[c.ogDoc, 'ordenó el gasto', c.ogName], [c.supDoc, 'supervisa este contrato', c.supName]]) {
+          if (!doc) continue;
+          const decls = raw.conf[doc]; if (!decls || !decls.length) continue;
+          (c.conf = c.conf || []).push({ papel, nombre, decls });
+          const rel = decls.filter(d => d.clase === 'conflicto');
+          if (!rel.length) continue;
+          // La declaración pesa cuando es de la entidad que contrata y del año del contrato o anterior.
+          const mismaEnt = rel.filter(d => d.ent && c.ent && N(d.ent).includes(N(c.ent).slice(0, 18)));
+          const elegidas = mismaEnt.length ? mismaEnt : rel;
+          const d = elegidas.sort((x, y) => (y.ano || '').localeCompare(x.ano || ''))[0];
+          const fuerte = d.marcas.some(m => FUERTE.test(m));
+          if (!fuerte && !mismaEnt.length) continue; // parientes declarados en otra entidad: solo contexto
+          const w = (fuerte ? 2 : 1) + (mismaEnt.length ? 1 : 0);
+          add(c, 'conflicto', `Quien ${esc(papel)} declaró, en el registro público de la Ley 2013 de 2019${d.ano ? ` (año ${esc(d.ano)}` : ''}${d.ent ? `, ${esc(d.ent)})` : d.ano ? ')' : ''}, <span class="mk">${esc(d.marcas.join(', '))}</span>${mismaEnt.length ? ', y lo declaró en esta misma entidad' : ''}. Declarar es un deber legal y por sí solo no indica irregularidad: lo que corresponde revisar es si el conflicto declarado tiene relación con este contrato y si se presentó el impedimento.`, w);
+          break;
+        }
+      }
+    }
+
+    // --- Oferentes que solo acompañan ---
+    // Para cada proceso con lista de oferentes se mira quién ganó y quién no.
+    // Si un mismo oferente pierde varias veces siempre ante el mismo ganador,
+    // el patrón merece revisión.
+    if (raw.ofe) {
+      const porReq = new Map();   // id del proceso -> { ganadores:Set, oferentes:[], contratos:[] }
+      for (const c of contracts) {
+        if (c.bad || c.src !== 'II' || !c.proc) continue;
+        const req = (pr[c.proc] || {}).req; if (!req) continue;
+        const of = raw.ofe[req]; if (!of || of.length < 2) continue;
+        let x = porReq.get(req);
+        if (!x) { x = { of, gan: new Set(), cs: [] }; porReq.set(req, x); }
+        if (c.doc) x.gan.add(c.doc);
+        x.cs.push(c);
+      }
+      // perdedor -> ganador -> número de procesos
+      const perdio = new Map();
+      for (const x of porReq.values()) {
+        if (!x.gan.size) continue;
+        for (const o of x.of) {
+          if (!o.doc || x.gan.has(o.doc)) continue;
+          let m = perdio.get(o.doc); if (!m) { m = { name: o.name, g: new Map() }; perdio.set(o.doc, m); }
+          for (const g of x.gan) m.g.set(g, (m.g.get(g) || 0) + 1);
+        }
+      }
+      // ganador -> lista de oferentes que solo pierden ante él
+      const acomp = new Map();
+      for (const [pd, m] of perdio) {
+        const total = [...m.g.values()].reduce((a, b) => a + b, 0);
+        for (const [g, n] of m.g) {
+          if (n < CONFIG.ACOMP_MIN || n !== total) continue; // perdió solo ante ese ganador
+          let l = acomp.get(g); if (!l) { l = []; acomp.set(g, l); }
+          l.push({ doc: pd, name: m.name, n });
+        }
+      }
+      for (const x of porReq.values()) {
+        for (const c of x.cs) {
+          const l = c.doc && acomp.get(c.doc); if (!l || !l.length) continue;
+          const o = l.sort((a, b) => b.n - a.n)[0];
+          const otros = l.length - 1;
+          c.acomp = l;
+          add(c, 'acompanante', `En los procesos cargados, <span class="mk">${esc(o.name)}</span> se presentó ${fmtN(o.n)} veces compitiendo con este contratista y no ganó ninguna, y no ganó tampoco frente a nadie más${otros > 0 ? `. Hay ${fmtN(otros)} oferente${otros === 1 ? '' : 's'} más en la misma situación` : ''}. Un oferente que solo acompaña puede ser una coincidencia o una señal de acuerdo entre oferentes: compara las ofertas y los precios unitarios.`, 2);
+        }
+      }
+    }
+
+    // --- Un supervisor concentra los contratos de un mismo contratista ---
+    {
+      const carga = new Map();  // supervisor -> total de contratos
+      const pares = new Map();  // supervisor|contratista -> { n, v, name, prov }
+      for (const c of contracts) {
+        if (c.bad || !c.supDoc) continue;
+        carga.set(c.supDoc, (carga.get(c.supDoc) || 0) + 1);
+        const k = c.supDoc + '|' + c.pk;
+        let x = pares.get(k);
+        if (!x) { x = { n: 0, v: 0, name: c.supName, prov: c.provName }; pares.set(k, x); }
+        x.n++; x.v += c.val;
+      }
+      const marcados = new Set();
+      for (const [k, x] of pares) {
+        const sup = k.split('|')[0];
+        const tot = carga.get(sup) || 0;
+        if (x.n < CONFIG.SUP_MIN_CONTRATOS || tot < CONFIG.SUP_MIN_CONTRATOS) continue;
+        if (x.n / tot < CONFIG.SUP_SHARE) continue;
+        marcados.add(k);
+      }
+      for (const c of contracts) {
+        if (c.bad || !c.supDoc) continue;
+        const k = c.supDoc + '|' + c.pk;
+        if (!marcados.has(k)) continue;
+        const x = pares.get(k); const tot = carga.get(c.supDoc) || 0;
+        add(c, 'supervisor', `La misma persona supervisa <span class="mk">${fmtN(x.n)} de los ${fmtN(tot)} contratos</span> que tiene a cargo en el periodo, y todos con este contratista, por ${esc(money(x.v))}. La supervisión concentrada en una sola relación reduce el control: revisa los informes de supervisión y los pagos.`, 2);
+      }
+    }
+
     // --- Prioridad ---
     const alerted = [];
     for (const c of contracts) {
@@ -1213,7 +1921,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
     const D = state.D;
     const P = PERIODOS.find(p => p.id === state.periodo) || PERIODOS[0];
     if (!D) {
-      $('#resumen').innerHTML = `<p>Descargando la contratación de Casanare de ${esc(P.label.toLowerCase())} desde datos.gov.co. La primera vez puede tardar unos segundos.</p>`;
+      $('#resumen').innerHTML = `<p>Descargando la contratación de ${esc(state.depto)} de ${esc(P.label.toLowerCase())} desde datos.gov.co. La primera vez puede tardar unos segundos.</p>`;
       $('#metaLine').textContent = ''; $('#nAlertas').textContent = ''; $('#nEntidades').textContent = '';
       return;
     }
@@ -1224,9 +1932,12 @@ footer.site p{margin:0 0 8px;max-width:52em}
     p2.push(`El <span class="mk">${esc(pct(dirPct))} del valor</span> se contrató de forma directa, sin competencia entre oferentes.`);
     if (D.compN) p2.push(`En SECOP II, <span class="mk">${fmtN(D.compU)} de ${fmtN(D.compN)} procesos competitivos</span> tuvieron un solo oferente.`);
     if (D.totV) p2.push(`Sumando todo, el <span class="mk">${esc(pct(D.totSin / D.totV))} del valor</span> se adjudicó sin que compitieran dos o más ofertas.`);
+    const tv = D.raw && D.raw.tvec;
+    if (tv && tv.n) p2.push(`Aparte, la Tienda Virtual del Estado registra <span class="mk">${fmtN(tv.n)} órdenes por ${esc(money(tv.v))}</span> que no figuran en los contratos de arriba.`);
     $('#resumen').innerHTML = `
-      <p>Entre el ${esc(fmtDate(P.a))} y el ${esc(fmtDate(hasta))}, <b>${fmtN(nEnt)} entidades</b> con sede en Casanare firmaron <b>${fmtN(nC)} contratos</b> por <b>${esc(money(D.totV))}</b>. <b>${fmtN(nA)}</b> tienen al menos una señal que vale la pena revisar.</p>
-      <p>${p2.join(' ')}</p>`;
+      <p>Entre el ${esc(fmtDate(P.a))} y el ${esc(fmtDate(hasta))}, <b>${fmtN(nEnt)} entidades</b> con sede en ${esc(state.depto)} firmaron <b>${fmtN(nC)} contratos</b> por <b>${esc(money(D.totV))}</b>. <b>${fmtN(nA)}</b> tienen al menos una señal que vale la pena revisar.</p>
+      <p>${p2.join(' ')}</p>
+      ${cruceLinea()}`;
     $('#nAlertas').textContent = fmtN(nA);
     $('#nEntidades').textContent = fmtN(nEnt);
     const when = state.fetchedAt ? new Date(state.fetchedAt).toLocaleString('es-CO', { timeZone: CONFIG.TZ, day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '';
@@ -1293,6 +2004,17 @@ footer.site p{margin:0 0 8px;max-width:52em}
     if (opt.prov !== false) facts.push(`<div><dt>Contratista</dt><dd><a href="#c/${encodeURIComponent(c.pk)}">${esc(c.provName)}</a></dd></div>`);
     facts.push(`<div><dt>Valor</dt><dd class="val"${valFull}>${esc(valTxt)}</dd></div>`);
     facts.push(`<div><dt>Modalidad y fecha de firma</dt><dd>${esc(mod)}, ${esc(fmtDate(c.f))}, ${plataforma}</dd></div>`);
+    if (c.supName || c.ogName) {
+      const partes = [];
+      if (c.supName) partes.push(`${esc(titleCase(c.supName))} (supervisión)`);
+      if (c.ogName && N(c.ogName) !== N(c.supName)) partes.push(`${esc(titleCase(c.ogName))} (ordenador del gasto)`);
+      facts.push(`<div><dt>Responsables en la entidad</dt><dd>${partes.join(' · ')}</dd></div>`);
+    }
+    if (c.rues) {
+      const r = c.rues;
+      const det = [r.forma || null, r.mat ? `matrícula del ${fmtDate(r.mat)}` : null, r.camara ? `Cámara de ${r.camara}` : null, r.est ? r.est.toLowerCase() : null, r.rup ? 'inscrita como proponente' : 'sin inscripción de proponente en RUES'].filter(Boolean);
+      facts.push(`<div><dt>Registro mercantil del contratista</dt><dd>${esc(det.join(' · '))}</dd></div>`);
+    }
     const acts = [];
     if (c.url) acts.push(`<a href="${esc(c.url)}" target="_blank" rel="noopener">Ver en SECOP</a>`);
     acts.push(`<button class="linkbtn" type="button" data-pet="${esc(c.src + '|' + c.k)}">Pedir información</button>`);
@@ -1342,7 +2064,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
       if (o === 'uni') return (entStats(b).uni ?? -1) - (entStats(a).uni ?? -1) || b.compN - a.compN;
       return b.v - a.v;
     });
-    $('#eCount').textContent = state.eq || state.esede ? `${fmtN(arr.length)} ${arr.length === 1 ? 'entidad' : 'entidades'}` : `${fmtN(arr.length)} entidades con sede en Casanare`;
+    $('#eCount').textContent = state.eq || state.esede ? `${fmtN(arr.length)} ${arr.length === 1 ? 'entidad' : 'entidades'}` : `${fmtN(arr.length)} entidades con sede en ${state.depto}`;
     el.innerHTML = arr.length ? arr.map(e => {
       const s = entStats(e);
       return `<a class="row" href="#e/${encodeURIComponent(e.ek)}">
@@ -1493,6 +2215,18 @@ footer.site p{margin:0 0 8px;max-width:52em}
     const mods = Object.entries(e.byMod).map(([k, val]) => ({ label: esc(MOD_LABEL[k] || k), v: val })).sort((a, b) => b.v - a.v);
     const provs = [...e.provs.values()].sort((a, b) => b.v - a.v).slice(0, 10);
     const onlyI = !e.srcs.has('II');
+    const R0 = state.D.raw || {};
+    const plan = (e.nit && R0.plan) ? R0.plan[e.nit] : null;
+    const tv = (e.nit && R0.tvec && R0.tvec.ents) ? [...R0.tvec.ents.values()].find(x => x.nit === e.nit) : null;
+    // Quién supervisa y quién ordena el gasto en esta entidad
+    const sup = new Map(), org = new Map();
+    for (const c of cs) {
+      if (c.bad) continue;
+      if (c.supName) { const k = c.supDoc || N(c.supName); const x = sup.get(k) || { label: esc(titleCase(c.supName)), v: 0, n: 0 }; x.v += c.val; x.n++; sup.set(k, x); }
+      if (c.ogName) { const k = c.ogDoc || N(c.ogName); const x = org.get(k) || { label: esc(titleCase(c.ogName)), v: 0, n: 0 }; x.v += c.val; x.n++; org.set(k, x); }
+    }
+    const supTop = [...sup.values()].sort((a, b) => b.v - a.v).slice(0, 8).map(x => ({ label: `${x.label} <span style="color:var(--ink-3)">(${fmtN(x.n)} ${x.n === 1 ? 'contrato' : 'contratos'})</span>`, v: x.v }));
+    const orgTop = [...org.values()].sort((a, b) => b.v - a.v).slice(0, 5).map(x => ({ label: `${x.label} <span style="color:var(--ink-3)">(${fmtN(x.n)} ${x.n === 1 ? 'contrato' : 'contratos'})</span>`, v: x.v }));
     v.innerHTML = `
       <a class="back" href="#entidades">Volver a entidades</a>
       <div class="ficha-head">
@@ -1507,7 +2241,17 @@ footer.site p{margin:0 0 8px;max-width:52em}
         <div><dt>Contratos con señales</dt><dd>${fmtN(e.alN)}</dd></div>
       </dl>
       ${onlyI ? `<p class="note">Esta entidad publica en SECOP I, que no trae el número de oferentes ni el historial de modificaciones. Para ella solo se calculan fraccionamiento, sanciones, concentración y valor fuera de rango.</p>` : ''}
+      ${plan || tv ? `<h3>Otros registros de la misma entidad</h3>
+        <dl class="kv">
+          ${plan ? `<div><dt>Plan Anual de Adquisiciones</dt><dd>${esc(money(plan.v))} planeados en ${fmtN(plan.n)} líneas${plan.v > 0 ? `. Lo contratado equivale al ${esc(pct(e.v / plan.v, 0))} de lo planeado` : ''}</dd></div>` : ''}
+          ${tv ? `<div><dt>Tienda Virtual del Estado</dt><dd>${esc(money(tv.v))} en ${fmtN(tv.n)} órden${tv.n === 1 ? 'es' : 'es'} por catálogo, aparte de los contratos de arriba</dd></div>` : ''}
+        </dl>
+        <p class="note">${plan ? 'El plan anual es una proyección y cambia durante el año, así que una diferencia con lo contratado no es por sí sola una irregularidad: sirve para preguntar qué se contrató sin estar planeado y qué se planeó y nunca se ejecutó (artículo 2.2.1.1.1.4.1 y siguientes del Decreto 1082 de 2015, y literal e) del artículo 9 de la Ley 1712 de 2014). ' : ''}${tv ? 'Las órdenes de la Tienda Virtual se tramitan por acuerdo marco de precios y no figuran en los conjuntos de contratos del SECOP.' : ''}</p>` : ''}
       ${renderIndicadores(indicadores(ek))}
+      ${supTop.length ? `<h3>Quién supervisa y quién ordena el gasto</h3>
+        ${barRows(supTop, e.v)}
+        ${orgTop.length ? `<p class="note" style="margin-top:10px"><b>Ordenadores del gasto:</b></p>${barRows(orgTop, e.v)}` : ''}
+        <p class="note">Son servidores públicos o contratistas de apoyo identificados en el propio registro del contrato en SECOP. La supervisión es un deber legal (artículos 83 y 84 de la Ley 1474 de 2011): cuando una sola persona concentra la supervisión de muchos contratos, o la de un mismo contratista, el control se debilita.</p>` : ''}
       <h3>Cómo contrata</h3>
       ${barRows(mods, e.v)}
       <h3>Principales contratistas</h3>
@@ -1550,11 +2294,16 @@ footer.site p{margin:0 0 8px;max-width:52em}
     const v = $('#v-contratista');
     if (!state.D) { v.innerHTML = '<div class="empty">Cargando…</div>'; return; }
     const p = state.D.provs.get(pk);
-    if (!p) { v.innerHTML = `<a class="back" href="#contratistas">Volver a contratistas</a><div class="empty">Este contratista no tiene contratos con entidades de Casanare en el periodo elegido. Prueba con otro periodo.</div>`; return; }
+    if (!p) { v.innerHTML = `<a class="back" href="#contratistas">Volver a contratistas</a><div class="empty">Este contratista no tiene contratos con entidades de ${esc(state.depto)} en el periodo elegido. Prueba con otro periodo o con otro departamento.</div>`; return; }
     const cs = sortContracts(p.cs, 'fecha');
     const sanc = state.D.provSanc && state.D.provSanc.get(pk);
     const sArr = sanc ? [...sanc.values()].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')) : [];
     const byEnt = new Map(); for (const c of p.cs) { if (c.bad) continue; const x = byEnt.get(c.ek) || { label: `<a href="#e/${encodeURIComponent(c.ek)}">${esc(c.ent)}</a>`, v: 0 }; x.v += c.val; byEnt.set(c.ek, x); }
+    const R0 = state.D.raw || {};
+    const rues = (!p.nat && p.doc && R0.rues) ? R0.rues[p.doc] : null;
+    const inhab = (p.doc && R0.inhab && R0.inhab[p.doc]) ? R0.inhab[p.doc] : [];
+    const tv = R0.tvec && R0.tvec.prov ? R0.tvec.prov.get(pk) : null;
+    const tvec = tv ? [{ name: `${fmtN(tv.n)} orden${tv.n === 1 ? '' : 'es'} por catálogo`, v: tv.v }] : [];
     v.innerHTML = `
       <a class="back" href="#contratistas">Volver a contratistas</a>
       <div class="ficha-head">
@@ -1570,6 +2319,22 @@ footer.site p{margin:0 0 8px;max-width:52em}
       ${sArr.length ? `<h3>Multas y sanciones registradas en SECOP (${fmtN(sArr.length)})</h3>
         <ul class="sanc">${sArr.map(s => `<li><b>${esc(s.tipo)}</b> impuesta por ${esc(titleCase(s.ent || 'entidad sin nombre'))}${s.fecha ? ', ' + esc(fmtDate(s.fecha)) : ''}${s.valor ? ', por ' + esc(money(s.valor)) : ''}. ${s.acto ? 'Acto: ' + esc(s.acto) + '. ' : ''}${s.contrato ? 'Contrato ' + esc(s.contrato) + '. ' : ''}Fuente: ${esc(s.src)}.${s.url ? ` <a href="${esc(s.url)}" target="_blank" rel="noopener">Ver registro</a>` : ''}</li>`).join('')}</ul>
         <p class="note">Estas sanciones pueden venir de entidades de cualquier parte del país. Una multa no inhabilita por sí sola para contratar; revisa también los antecedentes en Procuraduría, Contraloría y Policía.</p>` : ''}
+      ${rues ? `<h3>Registro mercantil (RUES)</h3>
+        <dl class="kv">
+          <div><dt>Razón social en RUES</dt><dd>${esc(titleCase(rues.razon))}</dd></div>
+          <div><dt>Matrícula mercantil</dt><dd>${esc(rues.mat ? fmtDate(rues.mat) : 'sin fecha registrada')}${rues.camara ? ', Cámara de Comercio de ' + esc(rues.camara) : ''}</dd></div>
+          <div><dt>Estado</dt><dd>${esc(titleCase(rues.est || 'sin dato'))}${rues.ren ? ', renovada por última vez en ' + esc(rues.ren) : ''}</dd></div>
+          <div><dt>Forma jurídica</dt><dd>${esc(rues.forma || 'sin dato')}</dd></div>
+          <div><dt>Actividad principal (CIIU)</dt><dd>${esc(rues.ciiu || 'sin dato')}</dd></div>
+          <div><dt>Inscripción como proponente</dt><dd>${rues.rup ? 'sí, figura inscrita' : 'no figura inscrita en RUES'}</dd></div>
+        </dl>
+        <p class="note">Confronta la actividad económica registrada con el objeto de los contratos: si no se parecen, pide el certificado de existencia y representación y el soporte de experiencia. Fuente: RUES, publicado en datos.gov.co por Confecámaras.</p>` : ''}
+      ${inhab.length ? `<h3>Antecedentes en la Procuraduría (${fmtN(inhab.length)})</h3>
+        <ul class="sanc">${inhab.slice(0, 12).map(x => `<li><b>${esc(titleCase(x.sancion || 'Sanción'))}</b>${x.tipo ? ` (${esc(titleCase(x.tipo))})` : ''}${x.desde ? `, con efectos desde el ${esc(fmtDate(x.desde))}` : ''}${x.hasta ? ` y hasta el ${esc(fmtDate(x.hasta))}` : ''}.${x.ent ? ' Entidad: ' + esc(titleCase(x.ent)) + '.' : ''}${x.siri ? ' SIRI ' + esc(x.siri) + '.' : ''}</li>`).join('')}</ul>
+        <p class="note"><b>Este cruce es por número de documento y puede acertar sobre un homónimo.</b> No concluyas nada sin descargar el certificado de antecedentes disciplinarios en <a href="https://www.procuraduria.gov.co/portal/antecedentes.html" target="_blank" rel="noopener">la página de la Procuraduría</a>, que es la fuente con valor legal. Fuente de este listado: Antecedentes de SIRI publicados en datos.gov.co.</p>` : ''}
+      ${tvec.length ? `<h3>Órdenes por catálogo en la Tienda Virtual (${fmtN(tvec.length)})</h3>
+        ${barRows(tvec.map(x => ({ label: esc(x.name), v: x.v })), tvec.reduce((a, b) => a + b.v, 0))}
+        <p class="note">Son compras por acuerdo marco o grandes almacenes, que no aparecen en los conjuntos de contratos del SECOP. Fuente: Tienda Virtual del Estado Colombiano.</p>` : ''}
       ${byEnt.size > 1 ? `<h3>Con qué entidades contrata</h3>${barRows([...byEnt.values()].sort((a, b) => b.v - a.v), p.v)}` : ''}
       <h3>Contratos en el periodo (${fmtN(cs.length)})</h3>
       <div class="list">${cs.slice(0, 60).map(c => card(c, { prov: false })).join('')}</div>
@@ -1580,7 +2345,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
   /* =====================================================================
      Navegación
      ===================================================================== */
-  const VIEWS = ['alertas', 'entidades', 'entidad', 'contratistas', 'contratista', 'metodo'];
+  const VIEWS = ['alertas', 'entidades', 'entidad', 'contratistas', 'contratista', 'metodo', 'legal'];
   function show(view, tab) {
     for (const v of VIEWS) $('#v-' + v).hidden = v !== view;
     document.querySelectorAll('.tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
@@ -1594,6 +2359,8 @@ footer.site p{margin:0 0 8px;max-width:52em}
     else if (h === 'entidades') { show('entidades', 'entidades'); renderEntidades(); }
     else if (h === 'contratistas') { show('contratistas', 'contratistas'); renderContratistas(); }
     else if (h === 'metodo') { show('metodo', 'metodo'); }
+    else if (h === 'legal') { show('legal', 'legal'); }
+    else if (h.startsWith('legal-')) { show('legal', 'legal'); setTimeout(() => { const a = document.getElementById(h); if (a) a.scrollIntoView({ block: 'start' }); }, 0); return; }
     else if (h === 'acerca') { show('metodo', 'metodo'); setTimeout(() => { const a = document.getElementById('acerca'); if (a) a.scrollIntoView({ block: 'start' }); }, 0); return; }
     else { show('alertas', 'alertas'); renderAlertas(); }
     if (changed && !keepScroll && lastRoute && document.readyState === 'complete') {
@@ -1628,7 +2395,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
       '',
       'Señores',
       c.ent,
-      c.mun && c.mun !== 'Sin dato' ? `${c.mun}, Casanare` : 'Casanare',
+      c.mun && c.mun !== 'Sin dato' ? `${c.mun}, ${state.depto}` : state.depto,
       '',
       `Asunto: Derecho de petición de información sobre el contrato${num}`,
       '',
@@ -1816,7 +2583,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
         : [...D.provs.values()].sort((a, b) => b.v - a.v).slice(0, 10).map(p => ({ contratista: p.name, id: p.pk, contratos: p.n, valor: money(p.v) }));
       const al = sortContracts(D.alerted.filter(c => !e || c.ek === e.ek), 'prio').slice(0, 8).map(c => brief(c, true));
       return {
-        entidad: e ? e.name : 'Todas las entidades con sede en Casanare', id: e ? e.ek : null,
+        entidad: e ? e.name : `Todas las entidades con sede en ${state.depto}`, id: e ? e.ek : null,
         municipio_sede: e ? e.mun : undefined, nit: e ? e.nit : undefined, plataforma: e ? entStats(e).plat : undefined,
         otras_coincidencias: otras.length ? otras : undefined,
         periodo: `${P.label} (${P.a} a ${addDays(P.b, -1)})`,
@@ -1880,7 +2647,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
         else { const w = N(texto).split(' ').filter(x => x.length > 1); m = [...D.provs.values()].filter(p => w.every(x => p._s.includes(x))); }
       }
       m.sort((a, b) => b.v - a.v);
-      if (!m.length) return { encontrado: false, mensaje: 'No hay contratos de ese contratista con entidades de Casanare en el periodo cargado.' };
+      if (!m.length) return { encontrado: false, mensaje: `No hay contratos de ese contratista con entidades de ${state.depto} en el periodo cargado.` };
       const p = m[0]; const sanc = D.provSanc && D.provSanc.get(p.pk);
       return {
         encontrado: true, contratista: p.name, id: p.pk, documento: maskDoc(p.doc, p.nat), tipo: p.nat ? 'persona natural' : 'empresa u organización',
@@ -1940,7 +2707,7 @@ footer.site p{margin:0 0 8px;max-width:52em}
       ? (agotado
         ? '<p><b>El asistente alcanzó su presupuesto del mes.</b> Se apaga solo para no afectar el resto del sitio y vuelve el mes entrante. Mientras tanto, puedes usar los filtros, los indicadores y las fichas de la página.</p>'
         : '<p><b>El asistente no está disponible en este momento.</b> Mientras tanto, puedes usar los filtros, los indicadores y las fichas de la página.</p>')
-      : '<p>Pregunta en tus palabras sobre la contratación de las entidades de Casanare. Busco en los contratos cargados, calculo indicadores y te abro la ficha o la lista en pantalla.</p>');
+      : `<p>Pregunta en tus palabras sobre la contratación de las entidades de ${esc(state.depto)}. Busco en los contratos cargados, calculo indicadores y te abro la ficha o la lista en pantalla.</p>`);
     chatSug(); chatBusy(false);
   }
   async function asEstado() {
@@ -2088,6 +2855,16 @@ footer.site p{margin:0 0 8px;max-width:52em}
   }
   function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
   function init() {
+    const dsel = $('#depto');
+    dsel.innerHTML = DEPARTAMENTOS.map(d => `<option value="${esc(d)}"${d === state.depto ? ' selected' : ''}>${esc(d)}</option>`).join('');
+    dsel.addEventListener('change', () => {
+      state.depto = dsel.value;
+      state.alLimit = CONFIG.PAGE_LIST;
+      state.f = { tipo: '', sede: '', ent: '', min: 0, q: '', orden: 'prio' };
+      state.eq = ''; state.esede = ''; state.cq = '';
+      try { history.replaceState(null, '', '#alertas'); } catch (e) {}
+      state.loadingPromise = load();
+    });
     const sel = $('#periodo');
     sel.innerHTML = PERIODOS.map(p => `<option value="${p.id}">${esc(p.label)}</option>`).join('');
     sel.value = state.periodo;
@@ -2142,5 +2919,103 @@ footer.site p{margin:0 0 8px;max-width:52em}
   init();
 })();
 </script>
+<!-- INVERPRO IA · componente legal -->
+<script type="application/json" id="inverpro-legal-config">{"id": "radar-secop", "modo": "herramienta", "version": "2026-11-23", "titular": {"nombre": "Inverpro Col S.A.S.", "nit": "901.006.761-2", "ciudad": "Yopal, Casanare", "correo": "gerencia.inverpro@gmail.com"}, "puntos": ["Usa datos abiertos de contratación pública (SECOP, datos.gov.co) y de otros registros oficiales, que pueden tener errores, duplicados o retrasos. Verifique siempre en la fuente oficial antes de decidir, ofertar o denunciar.", "Los resultados son indicios para revisar, no hallazgos ni imputaciones. No declaran responsabilidad de nadie y rige la presunción de inocencia.", "El asistente de consulta y la lectura asistida de pliegos usan inteligencia artificial (Anthropic): usted está interactuando con un sistema automático que puede equivocarse. Para responder, se envían a ese proveedor su pregunta o los fragmentos del pliego necesarios.", "Si registra un correo o un chat de Telegram para los avisos del agente, esos datos se usan solo para enviarle los avisos.", "El contador de visitas es anónimo: no guarda su dirección IP ni datos personales."], "herramienta": "Ojo al contrato"}</script>
+<script>/* INVERPRO IA · Componente legal: pie de página con titular y créditos, y aceptación expresa de términos la primera vez que se usa la herramienta. */
+(function () {
+  var cfgEl = document.getElementById("inverpro-legal-config");
+  if (!cfgEl) return;
+  var C;
+  try { C = JSON.parse(cfgEl.textContent); } catch (e) { return; }
+  var KEY = "inverpro-legal:" + C.id;
+  var BASE = "https://inverpro-col.netlify.app";
+  var TERMINOS = C.terminos || BASE + "/terminos";
+  var POLITICA = C.politica || BASE + "/privacidad";
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function leer() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function guardar(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+
+  var CSS = [
+    ":host{all:initial;display:block;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color-scheme:light dark}",
+    ".pie{background:#F4F3F0;color:#5E646B;border-top:1px solid #DCDAD5;padding:14px clamp(16px,4vw,32px) 16px;font-size:12.5px;line-height:1.55}",
+    ".pie b{color:#131518;font-weight:600}",
+    ".pie a,.pie button{color:#131518;text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;font:inherit;cursor:pointer}",
+    ".pie .links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px}",
+    ".velo{position:fixed;inset:0;z-index:2147483647;background:rgba(10,12,14,.62);display:flex;align-items:center;justify-content:center;padding:16px}",
+    ".caja{background:#fff;color:#131518;max-width:560px;width:100%;max-height:calc(100vh - 32px);overflow:auto;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.35);padding:24px clamp(18px,4vw,28px) 20px;font-size:15px;line-height:1.55}",
+    ".caja .kick{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#B0262B;margin:0 0 6px}",
+    ".caja h2{font-size:21px;line-height:1.25;margin:0 0 10px;font-weight:650}",
+    ".caja p{margin:0 0 10px;color:#3D4247}",
+    ".caja ul{margin:0 0 12px;padding-left:20px;color:#3D4247}",
+    ".caja li{margin:0 0 6px}",
+    ".caja a{color:#131518}",
+    ".acepta{display:flex;gap:10px;align-items:flex-start;background:#F4F3F0;border-radius:10px;padding:12px;margin:14px 0;cursor:pointer}",
+    ".acepta input{width:18px;height:18px;margin:2px 0 0;flex:none;accent-color:#B0262B}",
+    ".botones{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;align-items:center}",
+    ".btn{font:inherit;font-weight:600;border-radius:9px;padding:10px 18px;cursor:pointer;border:1px solid #131518}",
+    ".btn.si{background:#131518;color:#fff}",
+    ".btn.si:disabled{opacity:.35;cursor:not-allowed}",
+    ".btn.no{background:#fff;color:#131518;border-color:#DCDAD5}",
+    ".ver{font-size:12px;color:#7A8086;margin:12px 0 0}",
+    "@media (prefers-color-scheme:dark){.pie{background:#16181B;color:#A1A7AD;border-top-color:#2B3035}.pie b,.pie a,.pie button{color:#EDEDEC}.caja{background:#1C1F22;color:#EDEDEC}.caja p,.caja ul{color:#C9CDD1}.caja a{color:#EDEDEC}.acepta{background:#26292D}.btn{border-color:#EDEDEC}.btn.si{background:#EDEDEC;color:#131518}.btn.no{background:#1C1F22;color:#EDEDEC;border-color:#3A3F44}.caja .kick{color:#EF5257}}",
+    "@media print{.pie{background:none;border-top:1px solid #999}.velo{display:none}}"
+  ].join("");
+
+  var T = C.titular || {};
+  var titularTxt = esc(T.nombre) + (T.nit ? " · NIT " + esc(T.nit) : "") + (T.ciudad ? " · " + esc(T.ciudad) : "");
+  var titularFrase = esc(T.nombre) + (T.nit || T.ciudad ? " (" + [T.nit ? "NIT " + esc(T.nit) : "", esc(T.ciudad || "")].filter(Boolean).join(", ") + ")" : "");
+
+  function pie() {
+    var host = document.createElement("inverpro-legal-pie");
+    var root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
+    root.innerHTML = "<style>" + CSS + "</style><div class=\"pie\" role=\"contentinfo\">" +
+      "<div><b>" + esc(C.herramienta) + "</b> · © " + new Date().getFullYear() + " " + titularTxt + " · Todos los derechos reservados · Desarrollado por <b>INVERPRO IA</b>" +
+      (T.correo ? " · <a href=\"mailto:" + esc(T.correo) + "\">" + esc(T.correo) + "</a>" : "") + "</div>" +
+      (C.aviso ? "<div>" + esc(C.aviso) + "</div>" : "") +
+      "<div class=\"links\"><a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">Términos de uso</a><a href=\"" + esc(POLITICA) + "\" target=\"_blank\" rel=\"noopener\">Política de tratamiento de datos</a>" +
+      (C.modo === "herramienta" ? "<button type=\"button\" data-ver>Ver condiciones aceptadas</button>" : "") + "</div></div>";
+    document.body.appendChild(host);
+    var b = root.querySelector("[data-ver]");
+    if (b) b.addEventListener("click", function () { modal(true); });
+  }
+
+  function modal(soloVer) {
+    var previo = leer();
+    var host = document.createElement("inverpro-legal-aceptacion");
+    var root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
+    var puntos = (C.puntos || []).map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("");
+    root.innerHTML = "<style>" + CSS + "</style><div class=\"velo\"><div class=\"caja\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"t\">" +
+      "<p class=\"kick\">Condiciones de uso</p>" +
+      "<h2 id=\"t\">Antes de usar " + esc(C.herramienta) + "</h2>" +
+      "<p>" + esc(C.herramienta) + " es una herramienta de " + titularFrase + ", desarrollada por INVERPRO IA, la línea de inteligencia artificial de Inverpro Col S.A.S. Está en versión beta.</p>" +
+      (puntos ? "<ul>" + puntos + "</ul>" : "") +
+      (soloVer && previo
+        ? "<p class=\"ver\">Usted aceptó la versión " + esc(previo.v) + " de estas condiciones el " + esc(new Date(previo.fecha).toLocaleString("es-CO")) + ".</p><div class=\"botones\"><a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">Leer los términos completos</a><button class=\"btn si\" type=\"button\" data-cerrar>Cerrar</button></div>"
+        : "<label class=\"acepta\"><input type=\"checkbox\" data-chk><span>He leído y acepto los <a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">términos de uso</a> y autorizo el tratamiento de mis datos según la <a href=\"" + esc(POLITICA) + "\" target=\"_blank\" rel=\"noopener\">política de tratamiento de datos</a>.</span></label>" +
+          "<div class=\"botones\"><button class=\"btn no\" type=\"button\" data-no>No acepto</button><button class=\"btn si\" type=\"button\" data-si disabled>Acepto y continuar</button></div>" +
+          "<p class=\"ver\">Versión " + esc(C.version) + " de las condiciones. Su aceptación queda guardada en este navegador con la fecha y la versión.</p>") +
+      "</div></div>";
+    document.body.appendChild(host);
+    var chk = root.querySelector("[data-chk]"), si = root.querySelector("[data-si]"), no = root.querySelector("[data-no]"), cerrar = root.querySelector("[data-cerrar]");
+    function quitar() { host.remove(); }
+    if (chk) chk.addEventListener("change", function () { si.disabled = !chk.checked; });
+    if (si) si.addEventListener("click", function () { if (!chk.checked) return; guardar({ v: C.version, fecha: new Date().toISOString() }); quitar(); });
+    if (no) no.addEventListener("click", function () { location.href = BASE + "/"; });
+    if (cerrar) cerrar.addEventListener("click", quitar);
+    setTimeout(function () { var f = chk || cerrar; if (f) f.focus(); }, 30);
+  }
+
+  function iniciar() {
+    pie();
+    if (C.modo === "herramienta") {
+      var a = leer();
+      if (!a || a.v !== C.version) modal(false);
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar); else iniciar();
+})();
+</script>
+<!-- /INVERPRO IA -->
 </body>
 </html>

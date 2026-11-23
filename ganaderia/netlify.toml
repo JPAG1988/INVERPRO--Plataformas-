@@ -1,5 +1,7 @@
 [build]
   publish = "."
+  # Solo reconstruye Ganadería si cambió su carpeta: los cambios de otras herramientas del repositorio no gastan créditos.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
   functions = "netlify/functions"
 
 [functions]
