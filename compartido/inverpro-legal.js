@@ -1,0 +1,94 @@
+/* INVERPRO IA · Componente legal: pie de página con titular y créditos, y aceptación expresa de términos la primera vez que se usa la herramienta. */
+(function () {
+  var cfgEl = document.getElementById("inverpro-legal-config");
+  if (!cfgEl) return;
+  var C;
+  try { C = JSON.parse(cfgEl.textContent); } catch (e) { return; }
+  var KEY = "inverpro-legal:" + C.id;
+  var BASE = "https://inverpro-col.netlify.app";
+  var TERMINOS = C.terminos || BASE + "/terminos";
+  var POLITICA = C.politica || BASE + "/privacidad";
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function leer() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+  function guardar(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) {} }
+
+  var CSS = [
+    ":host{all:initial;display:block;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color-scheme:light dark}",
+    ".pie{background:#F4F3F0;color:#5E646B;border-top:1px solid #DCDAD5;padding:14px clamp(16px,4vw,32px) 16px;font-size:12.5px;line-height:1.55}",
+    ".pie b{color:#131518;font-weight:600}",
+    ".pie a,.pie button{color:#131518;text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;font:inherit;cursor:pointer}",
+    ".pie .links{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px}",
+    ".velo{position:fixed;inset:0;z-index:2147483647;background:rgba(10,12,14,.62);display:flex;align-items:center;justify-content:center;padding:16px}",
+    ".caja{background:#fff;color:#131518;max-width:560px;width:100%;max-height:calc(100vh - 32px);overflow:auto;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.35);padding:24px clamp(18px,4vw,28px) 20px;font-size:15px;line-height:1.55}",
+    ".caja .kick{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#B0262B;margin:0 0 6px}",
+    ".caja h2{font-size:21px;line-height:1.25;margin:0 0 10px;font-weight:650}",
+    ".caja p{margin:0 0 10px;color:#3D4247}",
+    ".caja ul{margin:0 0 12px;padding-left:20px;color:#3D4247}",
+    ".caja li{margin:0 0 6px}",
+    ".caja a{color:#131518}",
+    ".acepta{display:flex;gap:10px;align-items:flex-start;background:#F4F3F0;border-radius:10px;padding:12px;margin:14px 0;cursor:pointer}",
+    ".acepta input{width:18px;height:18px;margin:2px 0 0;flex:none;accent-color:#B0262B}",
+    ".botones{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;align-items:center}",
+    ".btn{font:inherit;font-weight:600;border-radius:9px;padding:10px 18px;cursor:pointer;border:1px solid #131518}",
+    ".btn.si{background:#131518;color:#fff}",
+    ".btn.si:disabled{opacity:.35;cursor:not-allowed}",
+    ".btn.no{background:#fff;color:#131518;border-color:#DCDAD5}",
+    ".ver{font-size:12px;color:#7A8086;margin:12px 0 0}",
+    "@media (prefers-color-scheme:dark){.pie{background:#16181B;color:#A1A7AD;border-top-color:#2B3035}.pie b,.pie a,.pie button{color:#EDEDEC}.caja{background:#1C1F22;color:#EDEDEC}.caja p,.caja ul{color:#C9CDD1}.caja a{color:#EDEDEC}.acepta{background:#26292D}.btn{border-color:#EDEDEC}.btn.si{background:#EDEDEC;color:#131518}.btn.no{background:#1C1F22;color:#EDEDEC;border-color:#3A3F44}.caja .kick{color:#EF5257}}",
+    "@media print{.pie{background:none;border-top:1px solid #999}.velo{display:none}}"
+  ].join("");
+
+  var T = C.titular || {};
+  var titularTxt = esc(T.nombre) + (T.nit ? " · NIT " + esc(T.nit) : "") + (T.ciudad ? " · " + esc(T.ciudad) : "");
+  var titularFrase = esc(T.nombre) + (T.nit || T.ciudad ? " (" + [T.nit ? "NIT " + esc(T.nit) : "", esc(T.ciudad || "")].filter(Boolean).join(", ") + ")" : "");
+
+  function pie() {
+    var host = document.createElement("inverpro-legal-pie");
+    var root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
+    root.innerHTML = "<style>" + CSS + "</style><div class=\"pie\" role=\"contentinfo\">" +
+      "<div><b>" + esc(C.herramienta) + "</b> · © " + new Date().getFullYear() + " " + titularTxt + " · Todos los derechos reservados · Desarrollado por <b>INVERPRO IA</b>" +
+      (T.correo ? " · <a href=\"mailto:" + esc(T.correo) + "\">" + esc(T.correo) + "</a>" : "") + "</div>" +
+      (C.aviso ? "<div>" + esc(C.aviso) + "</div>" : "") +
+      "<div class=\"links\"><a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">Términos de uso</a><a href=\"" + esc(POLITICA) + "\" target=\"_blank\" rel=\"noopener\">Política de tratamiento de datos</a>" +
+      (C.modo === "herramienta" ? "<button type=\"button\" data-ver>Ver condiciones aceptadas</button>" : "") + "</div></div>";
+    document.body.appendChild(host);
+    var b = root.querySelector("[data-ver]");
+    if (b) b.addEventListener("click", function () { modal(true); });
+  }
+
+  function modal(soloVer) {
+    var previo = leer();
+    var host = document.createElement("inverpro-legal-aceptacion");
+    var root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
+    var puntos = (C.puntos || []).map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("");
+    root.innerHTML = "<style>" + CSS + "</style><div class=\"velo\"><div class=\"caja\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"t\">" +
+      "<p class=\"kick\">Condiciones de uso</p>" +
+      "<h2 id=\"t\">Antes de usar " + esc(C.herramienta) + "</h2>" +
+      "<p>" + esc(C.herramienta) + " es una herramienta de " + titularFrase + ", desarrollada por INVERPRO IA, la línea de inteligencia artificial de Inverpro Col S.A.S. Está en versión beta.</p>" +
+      (puntos ? "<ul>" + puntos + "</ul>" : "") +
+      (soloVer && previo
+        ? "<p class=\"ver\">Usted aceptó la versión " + esc(previo.v) + " de estas condiciones el " + esc(new Date(previo.fecha).toLocaleString("es-CO")) + ".</p><div class=\"botones\"><a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">Leer los términos completos</a><button class=\"btn si\" type=\"button\" data-cerrar>Cerrar</button></div>"
+        : "<label class=\"acepta\"><input type=\"checkbox\" data-chk><span>He leído y acepto los <a href=\"" + esc(TERMINOS) + "\" target=\"_blank\" rel=\"noopener\">términos de uso</a> y autorizo el tratamiento de mis datos según la <a href=\"" + esc(POLITICA) + "\" target=\"_blank\" rel=\"noopener\">política de tratamiento de datos</a>.</span></label>" +
+          "<div class=\"botones\"><button class=\"btn no\" type=\"button\" data-no>No acepto</button><button class=\"btn si\" type=\"button\" data-si disabled>Acepto y continuar</button></div>" +
+          "<p class=\"ver\">Versión " + esc(C.version) + " de las condiciones. Su aceptación queda guardada en este navegador con la fecha y la versión.</p>") +
+      "</div></div>";
+    document.body.appendChild(host);
+    var chk = root.querySelector("[data-chk]"), si = root.querySelector("[data-si]"), no = root.querySelector("[data-no]"), cerrar = root.querySelector("[data-cerrar]");
+    function quitar() { host.remove(); }
+    if (chk) chk.addEventListener("change", function () { si.disabled = !chk.checked; });
+    if (si) si.addEventListener("click", function () { if (!chk.checked) return; guardar({ v: C.version, fecha: new Date().toISOString() }); quitar(); });
+    if (no) no.addEventListener("click", function () { location.href = BASE + "/"; });
+    if (cerrar) cerrar.addEventListener("click", quitar);
+    setTimeout(function () { var f = chk || cerrar; if (f) f.focus(); }, 30);
+  }
+
+  function iniciar() {
+    pie();
+    if (C.modo === "herramienta") {
+      var a = leer();
+      if (!a || a.v !== C.version) modal(false);
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar); else iniciar();
+})();
