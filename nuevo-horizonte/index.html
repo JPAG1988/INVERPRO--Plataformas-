@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nuevo Horizonte · Lotes Yopal</title>
+<meta name="description" content="Lotes campestres desde $35.158.500 y lotes comerciales sobre la Marginal de la Selva, a 21 km de Yopal, Casanare. Compre desde Colombia o desde el exterior: 30% de cuota inicial y saldo a 3 años sin intereses, o 15% de descuento de contado hasta el 31 de diciembre.">
+<meta property="og:title" content="Nuevo Horizonte · Lotes Yopal">
+<meta property="og:site_name" content="Nuevo Horizonte · Lotes Yopal">
+<meta property="og:description" content="Su patrimonio en Colombia, aunque viva lejos. Lotes a 21 km de Yopal desde $35.158.500, con 30% de cuota inicial y saldo a 3 años sin intereses.">
+<meta property="og:image" content="https://nuevo-horizonte-lotes-yopal.netlify.app/img/hero.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#13284B">
+<link rel="icon" type="image/svg+xml" href="img/escudo.svg">
+<link rel="apple-touch-icon" href="img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700&family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noche:#13284B; --noche-2:#0D1D38; --oro:#C4A054; --oro-claro:#E9D9AE; --oro-oscuro:#82621F;
+  --niebla:#F2F3EE; --papel:#FFFFFF; --tinta:#1A2232; --tenue:#5A6372; --linea:#DCDFD6;
+  --morichal:#2F6447; --tierra:#A65E3A; --wa:#1FB255;
+  --serif:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --radio:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--niebla);color:var(--tinta);font-family:var(--sans);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--oro);outline-offset:3px}
+.env{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+h2{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 36;font-weight:600;font-size:clamp(2rem,4.2vw,3.2rem);line-height:1.06;color:var(--noche);letter-spacing:-.01em}
+h3{font-family:var(--sans);font-stretch:112%;font-weight:700;font-size:1.2rem;color:var(--noche)}
+p{margin:0 0 1em}
+.lead{font-size:1.15rem;color:var(--tenue);max-width:62ch}
+.kicker{font-family:var(--sans);font-stretch:118%;font-weight:700;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--oro-oscuro);margin:0 0 14px}
+.plano-sec .kicker,.pasos .kicker,.modo .kicker{color:var(--oro)}
+.pc{font-family:var(--sans);font-stretch:112%;font-weight:700;font-size:.82em}
+.num{font-family:var(--sans);font-stretch:108%;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+section{padding-block:96px}
+@media (max-width:760px){section{padding-block:60px}}
+.pend{background:#FFF3C4;color:#6B4E00;border:1px dashed #C4A054;border-radius:6px;padding:0 6px;font-weight:700;white-space:nowrap}
+
+/* botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--sans);font-stretch:112%;font-weight:700;font-size:1rem;line-height:1;padding:16px 26px;border-radius:999px;text-decoration:none;border:2px solid transparent;cursor:pointer;white-space:nowrap}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-wa{background:var(--wa);color:#04210F}
+.btn-wa:hover{filter:brightness(1.06)}
+.btn-oro{background:var(--oro);color:var(--noche)}
+.btn-oro:hover{background:#D3B067}
+.btn-borde{border-color:currentColor;background:transparent}
+.btn-noche{background:var(--noche);color:#fff}
+
+/* franja oferta */
+.oferta-barra{background:var(--oro);color:var(--noche);font-weight:600;font-size:.95rem}
+.oferta-barra .env{display:flex;justify-content:center;align-items:center;gap:6px 18px;flex-wrap:wrap;padding-block:9px;text-align:center}
+.oferta-barra b{font-weight:800}
+.oferta-barra a{font-weight:800;text-underline-offset:3px}
+.solo-movil{display:none}
+@media (max-width:760px){.oferta-barra{font-size:.84rem}.oferta-barra .env{padding-block:7px}.solo-pc{display:none}.solo-movil{display:inline}}
+
+/* encabezado */
+.cab{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(19,40,75,.97);backdrop-filter:saturate(1.2) blur(8px);color:#fff;border-bottom:1px solid rgba(196,160,84,.35)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--noche)}
+.cab .env{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:12px}
+.marca{display:block;color:#fff;line-height:0}
+.marca img{height:58px;width:auto}
+@media (max-width:640px){.marca img{height:40px}.cab .env{padding-block:10px}}
+.nav{display:flex;align-items:center;gap:26px;font-weight:600;font-size:.98rem}
+.nav a{text-decoration:none;opacity:.88}
+.nav a:hover{opacity:1;color:var(--oro-claro)}
+.nav .btn{padding:12px 20px;opacity:1}
+@media (max-width:1040px){.nav a:not(.btn){display:none}}
+@media (max-width:520px){.nav .btn{display:none}}
+
+/* portada */
+.portada{position:relative;color:#fff;background:var(--noche-2);overflow:hidden;padding-block:0}
+.portada .foto{position:absolute;inset:0}
+.portada .foto img{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.portada::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,29,56,.93) 0%,rgba(13,29,56,.74) 45%,rgba(13,29,56,.2) 78%),linear-gradient(0deg,rgba(13,29,56,.85) 0%,rgba(13,29,56,0) 40%)}
+.portada .env{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:80px 72px;min-height:min(78vh,700px)}
+.portada .kicker{color:var(--oro-claro)}
+.portada h1{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 40;font-weight:600;font-size:clamp(2.3rem,5.6vw,4.6rem);line-height:1.02;letter-spacing:-.015em;max-width:18ch}
+@media (max-width:600px){.portada h1{max-width:none}.portada .acciones .btn{flex:1 1 100%}}
+.portada .bajada{font-size:1.25rem;color:#E3E9F2;max-width:44ch;margin:22px 0 8px}
+.portada .bajada b{color:#fff}
+.portada .apoyo{font-size:1rem;color:#B9C4D6;max-width:50ch;margin:0 0 28px}
+.portada .acciones{display:flex;gap:12px;flex-wrap:wrap}
+.panel{background:rgba(255,255,255,.97);color:var(--tinta);border-radius:20px;padding:26px 26px 22px;box-shadow:0 24px 50px rgba(0,0,0,.3);justify-self:end;width:min(100%,400px)}
+.panel .fila{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding-block:12px;border-bottom:1px solid var(--linea)}
+.panel .fila:last-of-type{border-bottom:0}
+.panel small{color:var(--tenue);font-weight:600;font-size:.9rem;line-height:1.3}
+.panel .num{font-size:1.45rem;color:var(--noche);white-space:nowrap}
+.panel .fila.verde .num{color:var(--morichal)}
+.panel .tit{font-weight:700;font-stretch:112%;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--oro-oscuro);margin:0 0 4px}
+.panel .com{margin:14px 0 0;padding-top:12px;border-top:2px solid var(--tierra);font-size:.92rem;color:var(--tenue)}
+.panel .com b{color:var(--tierra)}
+.ref{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:10px;z-index:3;font-size:.72rem;color:rgba(255,255,255,.7)}
+@media (max-width:900px){
+  .portada .env{grid-template-columns:1fr;min-height:0;padding-block:36px 52px;gap:28px}
+  .panel{justify-self:stretch;width:100%}
+  .portada::after{background:linear-gradient(0deg,rgba(13,29,56,.96) 0%,rgba(13,29,56,.78) 50%,rgba(13,29,56,.55) 100%)}
+  .portada .bajada{font-size:1.1rem;margin-top:16px}
+  .portada .apoyo{font-size:.95rem;margin-bottom:22px}
+}
+
+/* respaldo */
+.respaldo{background:var(--noche);color:#fff;padding-block:0}
+.respaldo ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr)}
+.respaldo li{display:flex;gap:14px;align-items:center;padding:26px 20px;border-left:1px solid rgba(255,255,255,.12)}
+.respaldo li:first-child{border-left:0}
+.respaldo svg{width:34px;height:34px;flex:none;color:var(--oro)}
+.respaldo b{display:block;font-stretch:112%;font-size:1.02rem}
+.respaldo span{color:#B9C4D6;font-size:.9rem}
+@media (max-width:900px){.respaldo ul{grid-template-columns:1fr 1fr}.respaldo li:nth-child(3){border-left:0}.respaldo li:nth-child(n+3){border-top:1px solid rgba(255,255,255,.12)}}
+@media (max-width:520px){.respaldo li{flex-direction:column;align-items:flex-start;gap:8px;padding:18px 14px}.respaldo b{font-size:.95rem}.respaldo span{font-size:.82rem}}
+
+/* tipos de lote */
+.tipos-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:44px}
+.tipo{background:var(--papel);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--linea),0 20px 50px -30px rgba(19,40,75,.45)}
+.tipo figure{margin:0;position:relative;aspect-ratio:16/10;overflow:hidden;background:#E8EAE3}
+.tipo figure img{width:100%;height:100%;object-fit:cover}
+.tipo figure.plano-fig img{object-fit:cover;object-position:30% 30%}
+.tipo figcaption{position:absolute;left:14px;bottom:12px;background:rgba(13,29,56,.82);color:#fff;font-size:.75rem;padding:4px 10px;border-radius:999px}
+.tipo .etq{position:absolute;left:16px;top:16px;color:#fff;font-weight:700;font-stretch:112%;font-size:.85rem;padding:6px 14px;border-radius:999px}
+.tipo.res .etq{background:var(--morichal)} .tipo.com .etq{background:var(--tierra)}
+.tipo .cuerpo{padding:28px 30px 30px;display:grid;gap:14px;flex:1;align-content:start}
+.tipo h3{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 30;font-size:1.9rem;font-weight:600;line-height:1.1;font-stretch:normal}
+.cifras{display:flex;gap:24px;flex-wrap:wrap;border-block:1px solid var(--linea);padding-block:14px}
+.cifras div{display:grid}
+.cifras small{color:var(--tenue);font-size:.82rem;font-weight:600}
+.cifras b{font-stretch:112%;font-size:1.2rem;color:var(--noche)}
+.tipo ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.tipo li{padding-left:26px;position:relative}
+.tipo li::before{content:"";position:absolute;left:0;top:.5em;width:14px;height:8px;border-left:2.5px solid var(--oro);border-bottom:2.5px solid var(--oro);transform:rotate(-45deg)}
+.tipo .btn{justify-self:start;margin-top:6px}
+@media (max-width:860px){.tipos-grid{grid-template-columns:minmax(0,1fr)}.tipo .cuerpo{padding:22px 22px 24px}.tipo figure{aspect-ratio:16/9}}
+@media (max-width:600px){.tipos-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;margin:28px -20px 0;padding:2px 20px 16px;scrollbar-width:none}.tipos-grid::-webkit-scrollbar{display:none}.tipo{flex:0 0 86%;scroll-snap-align:start}.tipo h3{font-size:1.55rem}.tipos-pista{display:block!important}}
+.tipos-pista{display:none;font-size:.85rem;color:var(--tenue);margin-top:2px}
+
+/* plano */
+.plano-sec{background:var(--noche);color:#fff}
+.plano-sec h2{color:#fff}
+.plano-sec .lead{color:#C4CEDD}
+.plano-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:32px;align-items:start;margin-top:32px}
+@media (max-width:900px){.plano-grid{grid-template-columns:minmax(0,1fr)}}
+.controles{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filtros{display:flex;gap:8px;flex-wrap:wrap}
+.filtros button{font:inherit;font-weight:600;font-size:.95rem;padding:10px 18px;border-radius:999px;border:1.5px solid rgba(255,255,255,.5);background:transparent;color:#fff;cursor:pointer}
+.filtros button[aria-pressed="true"]{background:var(--oro);border-color:var(--oro);color:var(--noche)}
+.sel-lote{display:none;width:100%}
+.sel-lote select{background:#fff;font-weight:600}
+@media (max-width:900px){.sel-lote{display:block}}
+.mapa{position:relative;background:#fff;border-radius:20px;overflow:hidden}
+.mapa img{width:100%;height:auto}
+.pin{position:absolute;transform:translate(-50%,-50%);font-family:var(--sans);font-weight:700;font-size:clamp(.55rem,1.25vw,.8rem);font-stretch:112%;color:#fff;border:2px solid #fff;border-radius:999px;padding:3px 8px;cursor:pointer;line-height:1.2;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform .15s}
+.pin::after{content:"";position:absolute;inset:-9px}
+.pin.c{background:var(--morichal)} .pin.i{background:var(--tierra)}
+.pin:hover{transform:translate(-50%,-50%) scale(1.12)}
+.pin[aria-pressed="true"]{background:var(--oro);color:var(--noche);transform:translate(-50%,-50%) scale(1.22);z-index:3}
+.pin.oculto{opacity:.12;pointer-events:none}
+.leyenda{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:#C4CEDD;margin-top:12px}
+.leyenda i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.ficha{background:#fff;color:var(--tinta);border-radius:20px;padding:26px;position:sticky;top:110px}
+.ficha .tipo-txt{font-weight:700;font-stretch:112%;font-size:.9rem;color:var(--morichal);margin:0}
+.ficha .tipo-txt.i{color:var(--tierra)}
+.ficha h3{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 30;font-stretch:normal;font-size:2.4rem;margin:2px 0 12px}
+.ficha dl{margin:0 0 14px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:baseline}
+.ficha dt{color:var(--tenue)}
+.ficha dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.ficha .op{border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.ficha .op.cont{background:#EEF5F0}
+.ficha .op.fin{background:#F4F1E8}
+.ficha .op small{display:block;font-weight:700;font-size:.82rem}
+.ficha .op.cont small{color:var(--morichal)} .ficha .op.fin small{color:#7A5F22}
+.ficha .op .num{font-size:1.5rem;color:var(--noche)}
+.ficha .op.cont .num{color:var(--morichal)}
+.ficha .op span{display:block;font-size:.9rem;color:var(--tenue)}
+.ficha .uso{color:var(--tenue);font-size:.95rem;margin:6px 0 14px}
+.ficha .nota{font-size:.8rem;color:var(--tenue);margin:12px 0 0}
+.ficha .vacio{color:var(--tenue);margin:0}
+.ficha .vacio b{display:block;font-family:var(--serif);font-size:1.6rem;color:var(--noche);margin-bottom:6px}
+.tabla-lotes{margin-top:30px}
+.tabla-lotes summary{font-weight:700;cursor:pointer;color:var(--oro-claro)}
+.tabla-scroll{overflow-x:auto;margin-top:12px;border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:.95rem;background:#fff;color:var(--tinta)}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--linea)}
+th{font-weight:600;color:var(--tenue);font-size:.85rem;background:#F7F8F4}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* formas de pago */
+.pago{background:var(--papel)}
+.pago-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;margin-top:40px;align-items:stretch}
+@media (max-width:900px){.pago-grid{grid-template-columns:minmax(0,1fr)}}
+.modo{min-width:0}
+.modo{border-radius:24px;padding:34px 34px 30px;display:flex;flex-direction:column;gap:14px}
+.modo.fin{background:var(--noche);color:#fff}
+.modo.cont{background:linear-gradient(120deg,#FFFDF7,#F4EBD3);border:2px solid var(--oro)}
+.modo .grande{font-family:var(--sans);font-stretch:110%;font-weight:800;font-size:clamp(2.6rem,6vw,4rem);line-height:.95;letter-spacing:-.02em}
+.modo.fin .grande{color:var(--oro-claro)}
+.modo.cont .grande{color:var(--noche)}
+.modo h3{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 30;font-stretch:normal;font-weight:600;font-size:1.7rem;line-height:1.15}
+.modo.fin h3{color:#fff}
+.modo p{margin:0}
+.modo.fin p{color:#C4CEDD}
+.modo.cont p{color:var(--tenue)}
+.modo table{font-size:.92rem;border-radius:12px;overflow:hidden}
+.modo td,.modo th{padding:10px 10px}
+@media (max-width:600px){.modo .oc{display:none}.modo{padding:26px 20px 22px}.modo table{font-size:.86rem}}
+.modo .letra{font-size:.82rem;color:#AEB9CA!important}
+.cuenta{display:flex;gap:10px;margin-top:4px}
+.cuenta div{background:var(--noche);color:#fff;border-radius:12px;padding:10px 14px;min-width:74px;text-align:center}
+.cuenta b{display:block;font-size:1.7rem;line-height:1.05}
+.cuenta small{font-size:.75rem;color:var(--oro-claro);font-weight:600}
+.ejemplo{background:#fff;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ejemplo s{color:var(--tenue)}
+.ejemplo .num{color:var(--morichal);font-size:1.4rem}
+
+/* proyecto */
+.proy-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+@media (max-width:900px){.proy-grid{grid-template-columns:minmax(0,1fr);gap:28px}}
+.proy-foto{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5;background:#DDE2D8;margin:0}
+@media (max-width:900px){.proy-foto{aspect-ratio:16/10}}
+.proy-foto img{width:100%;height:100%;object-fit:cover;object-position:68% center}
+.proy-foto figcaption{position:absolute;left:14px;bottom:12px;background:rgba(13,29,56,.82);color:#fff;font-size:.75rem;padding:4px 10px;border-radius:999px}
+.proy-foto .sello{position:absolute;right:18px;top:18px;background:var(--papel);border-radius:18px;padding:14px 18px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+.sello b{display:block;font-size:1.8rem;color:var(--morichal);line-height:1}
+.sello small{font-size:.78rem;color:var(--tenue);font-weight:600}
+.amen{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:22px 26px}
+.amen li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+.amen svg{width:44px;height:44px;padding:10px;border-radius:12px;background:var(--noche);color:var(--oro)}
+.amen b{display:block;font-stretch:112%;color:var(--noche)}
+.amen span{color:var(--tenue);font-size:.94rem;line-height:1.45}
+@media (max-width:600px){
+  .amen{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-inline:-20px;padding:2px 20px 14px;scrollbar-width:none}
+  .amen::-webkit-scrollbar{display:none}
+  .amen li{flex:0 0 78%;scroll-snap-align:start;background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 0 var(--linea)}
+  .desliza{display:block!important}
+}
+.desliza{display:none;font-size:.85rem;color:var(--tenue);margin-top:4px}
+
+/* respaldo legal */
+.legal-sec{background:var(--niebla)}
+.legal-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:start}
+@media (max-width:900px){.legal-grid{grid-template-columns:minmax(0,1fr);gap:24px}}
+.docs{list-style:none;margin:0;padding:0;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 1px 0 var(--linea)}
+.docs li{display:grid;grid-template-columns:200px 1fr;gap:16px;padding:18px 24px;border-bottom:1px solid var(--linea)}
+.docs li:last-child{border-bottom:0}
+.docs dt,.docs .k{font-weight:700;font-stretch:112%;color:var(--noche);font-size:.95rem}
+.docs .v{color:var(--tinta);font-size:.98rem}
+@media (max-width:600px){.docs li{grid-template-columns:1fr;gap:2px;padding:14px 18px}}
+
+/* ubicación */
+.ubic{background:var(--papel)}
+.ubic-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:32px;margin-top:36px;align-items:stretch}
+@media (max-width:900px){.ubic-grid{grid-template-columns:minmax(0,1fr)}}
+.mapa-ubic{margin:0;border-radius:22px;overflow:hidden;background:#D9DED4;min-height:420px;position:relative}
+.mapa-ubic #mapa-sat{position:absolute;inset:0;background:#2b3a2f}
+.mapa-ubic{min-height:520px}
+@media (max-width:600px){.mapa-ubic{min-height:420px}}
+.mapa-ley{position:absolute;left:12px;bottom:12px;z-index:500;background:rgba(13,29,56,.88);color:#fff;border-radius:12px;padding:10px 12px;font-size:.78rem;line-height:1.5;display:grid;gap:2px;pointer-events:none}
+.mapa-ley i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:7px;vertical-align:-1px;border:1.5px solid #fff}
+.mapa-nota{position:absolute;right:12px;top:12px;z-index:500;background:rgba(13,29,56,.85);color:#E3E9F2;border-radius:10px;padding:6px 10px;font-size:.72rem;max-width:58%;pointer-events:none}
+@media (max-width:600px){.mapa-ley{font-size:.7rem;padding:8px 10px}.mapa-nota{display:none}}
+.leaflet-container{font-family:var(--sans)}
+.lote-num{background:transparent;border:0;box-shadow:none;color:#fff;font-weight:800;font-size:.72rem;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 2px #000;padding:0}
+.lote-num::before{display:none}
+.pop h4{margin:0 0 2px;font-family:var(--serif);font-size:1.4rem;color:var(--noche)}
+.pop .t{font-weight:700;font-size:.8rem;margin:0 0 8px}
+.pop .t.c{color:var(--morichal)} .pop .t.i{color:var(--tierra)}
+.pop dl{display:grid;grid-template-columns:auto auto;gap:3px 14px;margin:0 0 10px;font-size:.88rem}
+.pop dt{color:var(--tenue)} .pop dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.pop .b{display:flex;gap:8px;flex-wrap:wrap}
+.pop .b a,.pop .b button{font:inherit;font-weight:700;font-size:.82rem;border-radius:999px;padding:8px 12px;text-decoration:none;border:0;cursor:pointer}
+.pop .b a{background:var(--wa);color:#04210F!important} .pop .b button{background:var(--noche);color:#fff}
+.ubic-info{background:var(--noche);color:#fff;border-radius:22px;padding:30px;display:grid;gap:18px;align-content:start}
+.ubic-info h3{color:var(--oro);font-size:1.02rem}
+.ubic-info p{margin:4px 0 0;color:#D6DEEA;font-size:.98rem}
+.ubic-info .btns{display:grid;gap:10px}
+.ubic-info .btn{width:100%;white-space:normal;text-align:center}
+.ubic-info a.kml{color:var(--oro-claro);font-size:.9rem}
+.ubic-info .kml-ayuda{font-size:.8rem;color:#AEB9CA;margin:-10px 0 0}
+.variante{margin-top:28px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;background:var(--niebla);border-radius:20px;padding:22px 24px;border-left:5px solid var(--oro)}
+.variante svg{width:40px;height:40px;color:var(--noche)}
+.variante p{margin:0;color:var(--tinta)}
+.variante small{display:block;margin-top:8px;color:var(--tenue);font-size:.82rem}
+
+/* Casanare en cifras */
+.region{background:var(--papel)}
+.region-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:40px}
+@media (max-width:900px){.region-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.region-grid{gap:12px}}
+.dato{background:var(--niebla);border-radius:20px;padding:24px 22px;border-top:4px solid var(--oro);display:grid;gap:8px;align-content:start;min-width:0}
+.dato .num{font-size:clamp(2rem,4vw,2.8rem);line-height:1;color:var(--noche)}
+.dato b{font-stretch:112%;color:var(--noche);font-size:1rem;line-height:1.3}
+.dato span{color:var(--tenue);font-size:.9rem;line-height:1.45}
+@media (max-width:520px){.dato{padding:18px 16px}.dato b{font-size:.92rem}.dato span{font-size:.82rem}}
+.fuente{margin:22px 0 0;font-size:.85rem;color:var(--tenue);max-width:80ch}
+.fuente a{color:var(--noche);font-weight:600}
+
+/* pasos */
+.pasos{background:var(--noche);color:#fff}
+.pasos h2{color:#fff}
+.pasos .lead{color:#C4CEDD;margin-top:16px}
+.pasos .nota-ext{margin:26px 0 0;padding:18px 22px;border-radius:16px;background:rgba(196,160,84,.12);border-left:4px solid var(--oro);color:#D6DEEA;font-size:.95rem;max-width:90ch}
+.pasos .nota-ext b{color:#fff}
+.pasos ol{list-style:none;margin:40px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:paso}
+.pasos li{counter-increment:paso;position:relative;padding:26px 22px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(196,160,84,.35)}
+.pasos li::before{content:counter(paso);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--oro);color:var(--noche);font-weight:800;font-size:1.2rem;margin-bottom:14px}
+.pasos li b{display:block;font-stretch:112%;color:#fff;margin-bottom:6px;font-size:1.08rem}
+.pasos li span{color:#C4CEDD;font-size:.95rem}
+@media (max-width:900px){.pasos ol{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.pasos ol{grid-template-columns:1fr}.pasos li{display:grid;grid-template-columns:44px 1fr;column-gap:14px;padding:18px}.pasos li::before{margin:0;grid-row:span 2}}
+
+/* contacto */
+.contacto{background:var(--niebla)}
+.contacto-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start}
+@media (max-width:900px){.contacto-grid{grid-template-columns:minmax(0,1fr);gap:28px}}
+.contacto .directo{display:grid;gap:12px;margin-top:24px}
+.contacto .directo .btn{justify-self:start}
+.contacto .tel{color:var(--tenue);font-size:.98rem}
+.contacto .tel b{color:var(--noche)}
+form.caja-form{background:#fff;color:var(--tinta);border-radius:22px;padding:32px;box-shadow:0 20px 50px -30px rgba(19,40,75,.45)}
+.campos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:600px){.campos{grid-template-columns:1fr}form.caja-form{padding:22px}}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px;color:var(--noche)}
+input,select,textarea{width:100%;font:inherit;font-size:1rem;padding:13px 14px;border:1.5px solid #C9CEC3;border-radius:12px;background:#fff;color:var(--tinta)}
+input:focus,select:focus,textarea:focus{border-color:var(--oro);outline:none;box-shadow:0 0 0 3px rgba(196,160,84,.25)}
+textarea{min-height:90px;resize:vertical}
+.ancho{grid-column:1/-1}
+.hp{position:absolute;left:-9999px}
+details.mas{margin-top:16px;border-top:1px solid var(--linea);padding-top:14px}
+details.mas summary{cursor:pointer;font-weight:700;color:var(--noche);font-size:.95rem}
+details.mas .campos{margin-top:14px}
+.autoriza{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;margin-top:18px;font-weight:400;font-size:.88rem;color:var(--tenue);line-height:1.45}
+.autoriza input{width:20px;height:20px;margin:2px 0 0;padding:0;accent-color:var(--noche)}
+.autoriza a{color:var(--noche);font-weight:600}
+.form-pie{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:18px}
+.estado{margin-top:16px;padding:16px;border-radius:12px;display:none}
+.estado.ok{display:block;background:#E3F0E7;color:#1E4A33}
+.estado.error{display:block;background:#F6E3DC;color:#6B2E16}
+
+/* preguntas */
+.faq{background:var(--papel)}
+.faq .env{max-width:900px}
+details.pregunta{background:var(--niebla);border-radius:16px;padding:18px 22px;margin-top:10px}
+details.pregunta summary{font-weight:700;font-stretch:112%;cursor:pointer;color:var(--noche);font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;gap:16px}
+details.pregunta summary::-webkit-details-marker{display:none}
+details.pregunta summary::after{content:"+";color:var(--oro);font-size:1.5rem;line-height:1}
+details.pregunta[open] summary::after{content:"–"}
+details.pregunta p{margin:12px 0 0;color:var(--tinta)}
+details.pregunta p small{color:var(--tenue)}
+
+footer{background:var(--noche-2);color:#AEB9CA;padding-block:56px 120px;font-size:.95rem}
+.pie-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1.2fr;gap:36px;align-items:start}
+@media (max-width:900px){.pie-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.pie-grid{grid-template-columns:1fr 1fr;gap:22px}.pie-grid>div:first-child{grid-column:1/-1}.pie-logo{width:150px}footer{padding-top:44px}}
+.pie-logo{width:200px}
+.pie-logo img{width:100%;height:auto;display:block}
+footer h4{color:#fff;margin:0 0 8px;font-size:1rem}
+footer p{margin:0}
+footer .enlaces{display:flex;gap:8px 22px;flex-wrap:wrap;margin-top:32px}
+footer .enlaces a{color:var(--oro-claro);font-weight:600}
+.nota-cur{font-size:.8rem;line-height:1.4;color:var(--tenue);margin:12px 0 0}
+.nota-cur-osc{color:inherit;opacity:.8}
+footer .legal.creditos{margin-top:8px;padding-top:0;border-top:0}
+footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);font-size:.82rem}
+
+/* barra fija móvil */
+.barra-movil{display:none}
+@media (max-width:760px){
+  .barra-movil{display:grid;grid-template-columns:1.15fr 1fr;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(13,29,56,.97);padding:10px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));border-top:1px solid rgba(196,160,84,.4)}
+  .barra-movil .btn{padding:14px 8px;font-size:.95rem}
+  .wa-flot{display:none}
+}
+.wa-flot{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:60px;height:60px;border-radius:50%;background:var(--wa);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.wa-flot svg{width:32px;height:32px}
+@media (max-width:760px){.wa-flot{display:none}}
+
+@media (prefers-reduced-motion:no-preference){
+  .portada h1,.portada .bajada,.portada .apoyo,.portada .acciones,.panel{animation:sube .9s cubic-bezier(.2,.7,.2,1) both}
+  .portada .bajada{animation-delay:.08s}.portada .apoyo{animation-delay:.12s}.portada .acciones{animation-delay:.18s}.panel{animation-delay:.28s}
+  @keyframes sube{from{opacity:.001;transform:translateY(18px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+
+<div class="oferta-barra">
+  <div class="env">
+    <span class="solo-pc"><b>Lanzamiento:</b> 30% de cuota inicial y saldo a 3 años sin intereses · 15% de descuento de contado hasta el 31 de diciembre.*</span>
+    <span class="solo-movil"><b>Saldo a 3 años sin intereses</b> · 15% dcto. de contado*</span>
+    <a class="solo-pc" href="#pago">Ver formas de pago</a>
+  </div>
+</div>
+
+<header class="cab">
+  <div class="env">
+    <a class="marca" href="#inicio" aria-label="Nuevo Horizonte, inicio"><img src="img/logo-horizontal-blanco.svg" alt="Nuevo Horizonte" width="640" height="132"></a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#lotes">Lotes y precios</a>
+      <a href="#pago">Formas de pago</a>
+      <a href="#ubicacion">Ubicación</a>
+      <a href="#exterior">Desde el exterior</a>
+      <a href="#respaldo">Respaldo legal</a>
+      <a class="btn btn-oro" href="https://wa.me/573212304299?text=Hola%2C%20quiero%20agendar%20una%20visita%20a%20Nuevo%20Horizonte" target="_blank" rel="noopener">Agendar visita</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="portada">
+    <div class="foto"><img src="img/hero.jpg" alt="Sabana llanera al atardecer, con palmas" fetchpriority="high"></div>
+    <div class="env">
+      <div>
+        <p class="kicker">Casanare, Colombia · Km 21 vía Yopal – Paz de Ariporo</p>
+        <h1>Su patrimonio<br> en Colombia,<br> aunque viva lejos.</h1>
+        <p class="bajada">Un lote a 21&nbsp;km de Yopal para disfrutar, compartir y, si lo decide, rentar. Pague el <b>30%</b> y el saldo <b>hasta en 3 años sin intereses</b>, o de contado con <b>15% de descuento</b>.</p>
+        <p class="apoyo">16 lotes residenciales y 4 comerciales sobre la Marginal de la Selva. Compre desde Yopal o desde el exterior, con un asesor por videollamada y WhatsApp, y escritura a su nombre al terminar de pagar.</p>
+        <div class="acciones">
+          <a class="btn btn-oro" href="#lotes">Ver lotes y precios</a>
+          <a class="btn btn-wa" href="https://wa.me/573212304299?text=Hola%2C%20vengo%20de%20la%20p%C3%A1gina%20de%20Nuevo%20Horizonte%20y%20quiero%20informaci%C3%B3n%20de%20los%20lotes" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.7 11.7 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg> Escribir por WhatsApp</a>
+        </div>
+      </div>
+      <div class="panel" aria-label="Precios de lanzamiento">
+        <p class="tit">Lote residencial campestre</p>
+        <div class="fila"><small>Desde (LT-27, 540,90 m²)</small><span class="num">$35.158.500*</span></div>
+        <div class="fila"><small>Cuota inicial desde (30%), saldo a 3 años sin intereses</small><span class="num">$10.547.550</span></div>
+        <div class="fila verde"><small>De contado (−15%) desde</small><span class="num">$29.884.725</span></div>
+        <p class="com"><b>Comercial sobre la marginal:</b> $95.000 el m², lotes de 2.295 a 2.521 m².*</p>
+        <p class="nota-cur">* Precios de lanzamiento. Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</p>
+      </div>
+    </div>
+    <span class="ref">Imagen ilustrativa</span>
+  </section>
+
+  <section class="respaldo" aria-label="Lo esencial del proyecto">
+    <div class="env">
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3 4 6v6c0 4.4 3.4 8 8 9 4.6-1 8-4.6 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><div><b>Promesa de compraventa</b><span>Escritura a su nombre</span></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3s-6 6.5-6 11a6 6 0 0 0 12 0c0-4.5-6-11-6-11z"/></svg><div><b>Agua, luz y gas</b><span>En punto central del proyecto</span></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><div><b>3 años sin intereses</b><span>Con 30% de cuota inicial</span></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><div><b>Compra desde el exterior</b><span>Por videollamada y WhatsApp</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="tipos">
+    <div class="env">
+      <p class="kicker">Dos formas de invertir</p>
+      <h2>Para disfrutar el campo o para arrendar sobre la vía.</h2>
+      <div class="tipos-grid">
+        <article class="tipo res">
+          <figure><img src="img/casa.jpg" alt="Casa campestre con corredor y jardín" loading="lazy"><span class="etq">Residencial campestre</span><figcaption>Imagen ilustrativa</figcaption></figure>
+          <div class="cuerpo">
+            <h3>Su casa campestre a 21 km de Yopal</h3>
+            <div class="cifras">
+              <div><small>Lotes</small><b>16</b></div>
+              <div><small>Área</small><b>540 a 840 m²</b></div>
+              <div><small>Precio</small><b>$65.000 m²*</b></div>
+            </div>
+            <ul>
+              <li>Para vivir, descansar o construir una cabaña y rentarla cuando no la use.</li>
+              <li>Con bosques comestibles, caballerizas y gimnasio al aire libre.</li>
+              <li>Lote de 840 m²: $54.600.000, con cuota inicial de $16.380.000.</li>
+            </ul>
+            <a class="btn btn-noche" href="#lotes" data-filtrar="c">Ver lotes residenciales</a>
+          </div>
+        </article>
+        <article class="tipo com">
+          <figure class="plano-fig"><img src="img/plano-comercial.jpg" alt="Plano de los lotes comerciales con frente a la Vía Marginal de la Selva" loading="lazy"><span class="etq">Comercial sobre la marginal</span><figcaption>Plano de loteo del proyecto</figcaption></figure>
+          <div class="cuerpo">
+            <h3>Su bodega o negocio sobre la Vía Marginal de la Selva</h3>
+            <div class="cifras">
+              <div><small>Lotes</small><b>4</b></div>
+              <div><small>Área</small><b>2.295 a 2.521 m²</b></div>
+              <div><small>Precio</small><b>$95.000 m²*</b></div>
+            </div>
+            <ul>
+              <li>Para bodega, comercio o patio de maquinaria amarilla, propio o para arrendar.</li>
+              <li>Entrada con carril propio desde la vía, cerca del Molino Arroz Casanare.</li>
+              <li>Desde $218.077.250, con cuota inicial de $65.423.175.</li>
+            </ul>
+            <a class="btn btn-noche" href="#lotes" data-filtrar="i">Ver lotes comerciales</a>
+          </div>
+        </article>
+      </div>
+      <p class="tipos-pista">Deslice para ver el lote comercial →</p>
+    </div>
+  </section>
+
+  <section class="plano-sec" id="lotes">
+    <div class="env">
+      <p class="kicker">Plano interactivo</p>
+      <h2>Escoja su lote y vea cuánto paga.</h2>
+      <p class="lead" style="margin-top:14px">Toque un lote del plano o elíjalo de la lista: verá el precio, la cuota inicial y el valor de contado. Las áreas salen del cuadro de áreas oficial del proyecto.</p>
+      <p class="nota-cur nota-cur-osc">* Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</p>
+      <div class="plano-grid">
+        <div>
+          <div class="controles">
+            <div class="filtros" role="group" aria-label="Filtrar lotes">
+              <button type="button" data-filtro="todos" aria-pressed="true">Todos (20)</button>
+              <button type="button" data-filtro="c" aria-pressed="false">Residenciales (16)</button>
+              <button type="button" data-filtro="i" aria-pressed="false">Comerciales (4)</button>
+            </div>
+            <div class="sel-lote"><label for="sel-lote" style="color:#fff">Elija su lote</label><select id="sel-lote"><option value="">Seleccione un lote</option></select></div>
+          </div>
+          <div class="mapa" id="mapa">
+            <img src="img/plano.webp" alt="Plano de loteo con la ubicación de cada lote" width="1445" height="1824" loading="lazy">
+          </div>
+          <div class="leyenda">
+            <span><i style="background:var(--morichal)"></i>Residencial campestre</span>
+            <span><i style="background:var(--tierra)"></i>Comercial sobre la marginal</span>
+            <span><i style="background:var(--oro)"></i>Lote seleccionado</span>
+          </div>
+        </div>
+        <aside class="ficha" id="ficha" aria-live="polite">
+          <p class="vacio"><b>Toque un lote del plano.</b>Aquí verá su área, su precio, la cuota inicial del 30% y el precio de contado con el 15% de descuento.</p>
+        </aside>
+      </div>
+      <details class="tabla-lotes">
+        <summary>Ver la lista completa de lotes y precios</summary>
+        <div class="tabla-scroll">
+          <table>
+            <thead><tr><th>Lote</th><th>Tipo</th><th class="n">Área</th><th class="n">Precio del lote</th><th class="n">Cuota inicial (30%)</th><th class="n">De contado (−15%)</th></tr></thead>
+            <tbody id="tabla"></tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="pago" id="pago">
+    <div class="env">
+      <p class="kicker">Formas de pago</p>
+      <h2>30<span class="pc">%</span> y 3 años sin intereses, o contado con 15<span class="pc">%</span> de descuento.</h2>
+      <div class="pago-grid">
+        <div class="modo fin">
+          <div class="grande">30% y 3 años</div>
+          <h3>Cuota inicial del 30<span class="pc">%</span> y el saldo hasta en 36 meses, sin intereses.</h3>
+          <div class="tabla-scroll">
+            <table>
+              <thead><tr><th>Ejemplo</th><th class="n oc">Precio</th><th class="n">Cuota inicial</th><th class="n">36 cuotas de</th></tr></thead>
+              <tbody>
+                <tr><td>LT-27 · 540,90 m²</td><td class="n oc">$35.158.500</td><td class="n">$10.547.550</td><td class="n">$683.638</td></tr>
+                <tr><td>Residencial · 840 m²</td><td class="n oc">$54.600.000</td><td class="n">$16.380.000</td><td class="n">$1.061.667</td></tr>
+                <tr><td>Comercial LT-01-02-03</td><td class="n oc">$218.077.250</td><td class="n">$65.423.175</td><td class="n">$4.240.391</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="letra">Ejemplo con 36 cuotas mensuales iguales; el plan exacto queda en su promesa de compraventa. Si se atrasa dos cuotas, a partir del tercer mes se cobran intereses de mora a la tasa máxima que permita la ley. Al terminar de pagar se firma la escritura.</p>
+          <p class="letra">* Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</p>
+        </div>
+        <div class="modo cont">
+          <div class="grande">−15%</div>
+          <h3>Pague de contado y ahorre el 15<span class="pc">%</span> del valor de su lote.</h3>
+          <div class="ejemplo"><span>Lote de 840 m²: <s>$54.600.000</s></span><span class="num">$46.410.000</span></div>
+          <p>Precio de lanzamiento*, válido hasta el 31 de diciembre de 2026.</p>
+          <div class="cuenta" id="cuenta" aria-label="Tiempo restante de la oferta">
+            <div><b class="num" id="c-d">--</b><small>días</small></div>
+            <div><b class="num" id="c-h">--</b><small>horas</small></div>
+            <div><b class="num" id="c-m">--</b><small>minutos</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-sec" id="respaldo">
+    <div class="env legal-grid">
+      <div>
+        <p class="kicker">Respaldo legal</p>
+        <h2>Compre con promesa de compraventa y escritura a su nombre.</h2>
+        <p class="lead" style="margin-top:16px">Antes de pagar, revise los documentos del proyecto con un asesor en la sala de ventas.</p>
+      </div>
+      <ul class="docs">
+        <li><span class="k">Radicación para venta</span><span class="v">Documentos radicados ante la Alcaldía de Yopal.</span></li>
+        <li><span class="k">Desarrolla y vende</span><span class="v">Inverpro Col S.A.S., NIT 901.006.761-2, e Infinity</span></li>
+        <li><span class="k">Compra</span><span class="v">Promesa de compraventa con su plan de pagos, firmada al pagar el 30%.</span></li>
+        <li><span class="k">Escritura</span><span class="v">Individual, a nombre del comprador, al terminar de pagar el lote.</span></li>
+        <li><span class="k">Zonas comunes</span><span class="v">9.813 m² de zonas verdes, áreas comunales y vías de uso exclusivo de los propietarios, más de los 8.400 m² que exige el plan de ordenamiento de Yopal.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="ubic" id="ubicacion">
+    <div class="env">
+      <p class="kicker">Ubicación</p>
+      <h2>A 21 km de Yopal, con entrada directa desde la Marginal de la Selva.</h2>
+      <p class="lead" style="margin-top:14px">Así se ve la división de lotes sobre la imagen satelital del predio. Toque cualquier lote para ver su área, su precio y sus cuotas.</p>
+      <div class="ubic-grid">
+        <figure class="mapa-ubic">
+          <div id="mapa-sat" role="region" aria-label="Imagen satelital del predio con la división de lotes. Toque un lote para ver su precio."></div>
+          <div class="mapa-ley" aria-hidden="true"><span><i style="background:#2F6447"></i>Lote residencial</span><span><i style="background:#A65E3A"></i>Lote comercial</span><span><i style="background:#5FA84F"></i>Zona verde</span><span><i style="background:#6BA8D8"></i>Área comunal</span><span><i style="background:#E9D9A8"></i>Vía interna</span></div>
+          <p class="mapa-nota">Toque un lote para ver su precio. Trazado de referencia sobre la imagen satelital.</p>
+        </figure>
+        <div class="ubic-info">
+          <div><h3>Cómo llegar</h3><p>Desde Yopal tome la vía a Paz de Ariporo (Marginal de la Selva) y recorra 21 km hasta el sector La Patimena. La entrada está sobre la vía, con carril propio para entrar sin frenar en la carretera.</p></div>
+          <div><h3>Sala de ventas en Yopal</h3><p>Carrera 20 # 6-41, oficina 307, Parque Ramón Nonato Pérez.</p></div>
+          <div class="btns">
+            <a class="btn btn-oro" href="https://www.google.com/maps/dir/?api=1&amp;destination=5.437304,-72.258638" target="_blank" rel="noopener">Cómo llegar al lote</a>
+            <a class="btn btn-borde" href="https://earth.google.com/web/@5.437304,-72.258638,240a,900d,35y,0h,45t,0r" target="_blank" rel="noopener">Ver en Google Earth</a>
+          </div>
+          <a class="kml" href="img/nuevo-horizonte-loteo.kmz" download>Descargar la división de lotes para Google Earth (KMZ)</a>
+          <p class="kml-ayuda">En Google Earth: Proyectos → Abrir → Importar archivo KML. En el celular, abra el archivo con la app de Google Earth.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proyecto">
+    <div class="env proy-grid">
+      <figure class="proy-foto">
+        <img src="img/bosque.jpg" alt="Sendero entre árboles frutales" loading="lazy">
+        <div class="sello"><b class="num">4.200 m²</b><small>de zonas verdes</small></div>
+        <figcaption>Imagen ilustrativa</figcaption>
+      </figure>
+      <div>
+        <p class="kicker">El proyecto</p>
+        <h2>Bosques comestibles, caballerizas y gimnasio solo para los propietarios.</h2>
+        <p class="lead" style="margin-top:16px">De los 35.000 m² del predio, 9.813 m² son zonas verdes, áreas comunales y vías de uso exclusivo de quienes compran en Nuevo Horizonte.</p>
+        <ul class="amen">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 22V12"/><path d="M12 12c-4 0-6-3-6-6 3 0 6 2 6 6zm0 0c4 0 6-3 6-6-3 0-6 2-6 6z"/><circle cx="12" cy="17" r="1.6"/></svg><div><b>Bosques comestibles</b><span>Dos zonas verdes con árboles que dan sombra y fruta: 1.259 y 2.941 m².</span></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 20c1-5 3-8 6-9l-1-4 3 2c3 0 6 2 7 5l-3 1-2-2-2 7"/><path d="M4 20h4"/></svg><div><b>Caballerizas</b><span>Espacio para sus caballos, solo para propietarios.</span></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg><div><b>Gimnasio al aire libre</b><span>Para entrenar en medio de la sabana.</span></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 21h18M5 21V10l7-6 7 6v11"/></svg><div><b>Áreas comunales</b><span>Dos áreas de 1.757 y 344 m² de uso exclusivo de los propietarios.</span></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 3 5 21M16 3l3 18M12 5v2M12 11v2M12 17v2"/></svg><div><b>Cinco vías internas</b><span>Con parqueaderos para visitantes, andén y vía de acceso propia.</span></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><div><b>Agua, luz y gas</b><span>Disponibles en un punto central del proyecto; cada propietario hace su conexión.</span></div></li>
+        </ul>
+        <p class="desliza">Deslice para ver más →</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="region" id="casanare">
+    <div class="env">
+      <p class="kicker">¿Por qué Casanare?</p>
+      <h2>Tierra propia en la región con el segundo PIB por habitante del país.</h2>
+      <div class="region-grid">
+        <div class="dato"><span class="num">2.º</span><b>PIB por habitante más alto de Colombia</b><span>USD 12.338 por persona en 2025, cifra preliminar del DANE.</span></div>
+        <div class="dato"><span class="num">36%</span><b>del arroz del país sale de Casanare</b><span>Primer productor nacional en 2025. Los lotes comerciales quedan cerca del Molino Arroz Casanare.</span></div>
+        <div class="dato"><span class="num">24.148</span><b>empresas registradas en Casanare</b><span>11.976 de ellas en Yopal, a diciembre de 2025.</span></div>
+        <div class="dato"><span class="num">329.316</span><b>pasajeros en el aeropuerto de Yopal</b><span>En 2025, con vuelos de Latam, Avianca, Clic y Satena.</span></div>
+      </div>
+      <p class="fuente">Fuente: Cámara de Comercio de Casanare, <a href="https://cccasanare.co/wp-content/uploads/2026/07/Contexto-economico-2026-Casanare-1.pdf" target="_blank" rel="noopener">Contexto económico 2026</a>, con datos del DANE, EVA-UPRA y Aerocivil. Son cifras de la región: no garantizan la valorización ni la renta de ningún lote.</p>
+    </div>
+  </section>
+
+  <section class="pasos" id="exterior">
+    <div class="env">
+      <p class="kicker">Cómo comprar, desde Colombia o desde el exterior</p>
+      <h2>Del 30<span class="pc">%</span> a la escritura, desde donde viva.</h2>
+      <p class="lead">Si vive fuera de Colombia, un asesor le acompaña por videollamada y WhatsApp en cada paso, y usted visita el lote cuando venga.</p>
+      <ol>
+        <li><b>Conozca el lote</b><span>Visítelo en el Km 21 o pida una videollamada: le mostramos el lote, el plano y los documentos del proyecto.</span></li>
+        <li><b>Pague el 30% y firme la promesa</b><span>Firma la promesa de compraventa con su plan de pagos; si vive fuera, el asesor le explica cómo firmarla. De contado tiene 15% de descuento hasta el 31 de diciembre.</span></li>
+        <li><b>Pague el saldo sin intereses</b><span>Hasta en 3 años, por transferencia desde Colombia o desde el exterior. Desde el 30% puede sembrar y hacer adecuaciones menores que no sean construcciones.</span></li>
+        <li><b>Escriture y construya</b><span>Al terminar de pagar se firma la escritura a su nombre. Con la escritura puede construir, con la licencia de construcción que corresponda.</span></li>
+      </ol>
+      <p class="nota-ext"><b>Si paga desde el exterior:</b> haga cada pago por un canal bancario formal, a la cuenta de la empresa que le indique su asesor, y guarde el soporte. Antes de girar, consulte a su asesor tributario y cambiario: según su residencia, la compra de un inmueble en Colombia puede tener requisitos de registro ante el Banco de la República.</p>
+    </div>
+  </section>
+
+  <section class="contacto" id="contacto">
+    <div class="env contacto-grid">
+      <div>
+        <p class="kicker">Agende su visita</p>
+        <h2>Conozca su lote, en persona o por videollamada.</h2>
+        <p class="lead" style="margin-top:16px">Déjenos sus datos y un asesor le escribe por WhatsApp para confirmar la disponibilidad del lote, su plan de pagos y el día de la visita o de la videollamada.</p>
+        <div class="directo">
+          <a class="btn btn-wa" href="https://wa.me/573212304299?text=Hola%2C%20vengo%20de%20la%20p%C3%A1gina%20de%20Nuevo%20Horizonte%20y%20quiero%20informaci%C3%B3n%20de%20los%20lotes" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.7 11.7 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg> WhatsApp 321 230 4299</a>
+          <p class="tel">También al <b>316 831 8053</b> · Sala de ventas: Carrera 20 # 6-41, oficina 307, Yopal.</p>
+        </div>
+      </div>
+      <form class='caja-form' id='formulario' method='POST' name='interesados'>
+        <input type="hidden" name="form-name" value="interesados">
+        <input type="hidden" name="subject" value="Nuevo interesado en Nuevo Horizonte (%{submissionId})">
+        <p class="hp"><label>No llene este campo <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <div class="campos">
+          <div><label for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" autocomplete="name" required></div>
+          <div><label for="f-cel">Celular o WhatsApp, con indicativo</label><input id="f-cel" name="celular" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9 +()-]{7,}" placeholder="+57 321 000 0000"></div>
+          <div><label for="f-pais">¿Dónde vive?</label>
+            <select id="f-pais" name="pais"><option>Colombia</option><option>Estados Unidos</option><option>España</option><option>Canadá</option><option>Chile</option><option>Otro país</option></select></div>
+          <div><label for="f-tipo">Qué busca</label>
+            <select id="f-tipo" name="tipo_lote"><option>Lote residencial campestre</option><option>Lote comercial</option><option>Todavía no sé</option></select></div>
+        </div>
+        <details class="mas">
+          <summary>Agregar más detalles (opcional)</summary>
+          <div class="campos">
+            <div><label for="f-pago">Cómo piensa pagar</label>
+              <select id="f-pago" name="forma_pago"><option value="">Todavía no sé</option><option>Con 30% inicial y saldo a 3 años</option><option>De contado (15% de descuento)</option></select></div>
+            <div><label for="f-lote">Lote de interés</label><select id="f-lote" name="lote"><option value="">Ninguno en particular</option></select></div>
+            <div><label for="f-visita">¿Cuándo quiere la visita o la videollamada?</label><input id="f-visita" name="visita" placeholder="Ej.: sábado en la mañana, hora de Colombia"></div>
+            <div class="ancho"><label for="f-msg">Mensaje</label><textarea id="f-msg" name="mensaje"></textarea></div>
+          </div>
+        </details>
+        <label class="autoriza"><input type="checkbox" name="autorizacion_datos" value="Sí autorizo" required><span>Autorizo a Inverpro Col S.A.S. a tratar mis datos para contactarme e informarme sobre el proyecto Nuevo Horizonte, según la <a href='/politica-de-datos' target='_blank'>Política de tratamiento de datos personales</a>.</span></label>
+        <div class="form-pie">
+          <button class="btn btn-noche" type="submit">Quiero que me contacten</button>
+        </div>
+        <div class="estado" id="estado" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="env">
+      <p class="kicker">Preguntas frecuentes</p>
+      <h2>Lo que más nos preguntan.</h2>
+      <details class="pregunta"><summary>¿Cuánto cuesta un lote residencial?</summary><p>$65.000 por m²*. La mayoría de lotes tiene 840 m² y cuesta $54.600.000, o $46.410.000 de contado. El más pequeño, el LT-27 de 540,90 m², cuesta $35.158.500, o $29.884.725 de contado.</p></details>
+      <details class="pregunta"><summary>¿Cuánto cuesta un lote comercial?</summary><p>$95.000 por m²*. Los cuatro lotes sobre la marginal tienen entre 2.295,55 y 2.520,80 m²: entre $218.077.250 y $239.476.000. De contado, entre $185.365.663 y $203.554.600. * Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</p></details>
+      <details class="pregunta"><summary>¿Cómo es el plan de pagos?</summary><p>Usted paga el 30% del valor del lote como cuota inicial y el saldo hasta en 3 años, sin intereses. Si se atrasa dos cuotas, a partir del tercer mes se cobran intereses de mora a la tasa máxima que permita la ley. Si prefiere pagar de contado, tiene 15% de descuento hasta el 31 de diciembre de 2026.</p></details>
+      <details class="pregunta"><summary>¿Puedo comprar si vivo fuera de Colombia?</summary><p>Sí. Un asesor le muestra el lote, el plano y los documentos del proyecto por videollamada y le acompaña por WhatsApp. Al pagar el 30% firma la promesa de compraventa con su plan de pagos; si no está en Colombia, el asesor le explica cómo firmarla. Puede visitar el lote cuando venga.</p></details>
+      <details class="pregunta"><summary>¿Cómo pago desde el exterior?</summary><p>Por transferencia bancaria internacional, a la cuenta de la empresa que le indique su asesor, y guardando el soporte de cada pago. Antes de girar, consulte a su asesor tributario y cambiario: si usted no es residente en Colombia, la compra de un inmueble puede tener requisitos de registro ante el Banco de la República.</p></details>
+      <details class="pregunta"><summary>¿Qué puedo hacer en el lote mientras termino de pagar?</summary><p>Desde que paga el 30% puede sembrar y hacer adecuaciones menores que no sean construcciones. Para construir necesita la escritura a su nombre.</p></details>
+      <details class="pregunta"><summary>¿Qué documento firmo al comprar?</summary><p>Al pagar el 30% firma una promesa de compraventa con su plan de pagos. La escritura se firma cuando termina de pagar.</p></details>
+      <details class="pregunta"><summary>¿Cuándo me entregan la escritura y cuándo puedo construir?</summary><p>La escritura se firma cuando termina de pagar el lote. Con la escritura puede construir, tramitando la licencia de construcción que corresponda.</p></details>
+      <details class="pregunta"><summary>¿Cómo funcionan los servicios de agua, luz y gas?</summary><p>El proyecto entrega los tres servicios en un punto central. Desde ese punto, cada propietario hace la conexión hasta su lote.</p></details>
+      <details class="pregunta"><summary>¿En qué estado están los documentos del proyecto?</summary><p>Los documentos para la venta están radicados ante la Alcaldía de Yopal. En la sala de ventas un asesor le muestra los documentos del proyecto y el plano antes de que usted pague.</p></details>
+      <details class="pregunta"><summary>¿Las zonas verdes, las caballerizas y el gimnasio son solo para propietarios?</summary><p>Sí. Las zonas verdes con bosques comestibles, las áreas comunales, las caballerizas, el gimnasio al aire libre y las vías internas son de uso exclusivo de quienes compran en el proyecto.</p></details>
+      <details class="pregunta"><summary>¿Puedo construir para rentar?</summary><p>Sí. En un lote residencial puede construir una casa o cabaña para usarla y rentarla cuando no esté; en un lote comercial, una bodega para arrendar. Necesita la escritura y la licencia de construcción, y debe seguir las normas del proyecto. La renta depende de su construcción y del mercado: no la garantizamos.</p></details>
+      <details class="pregunta"><summary>¿Sirven los lotes del frente para bodega o maquinaria?</summary><p>Sí. Los cuatro lotes sobre la Vía Marginal de la Selva son comerciales, de uso mixto: bodegas, comercio y patio de maquinaria amarilla.</p></details>
+      <details class="pregunta"><summary>¿Qué es la Variante de Yopal y en qué cambia el acceso?</summary><p>Es una vía proyectada por Invías, de cerca de 24 km, que sacaría el tráfico pesado del casco urbano de Yopal y saldría a la vía a Paz de Ariporo en el Km 9+200. Con ella, quien venga desde Aguazul o Bogotá llegaría al proyecto sin cruzar la ciudad. Hoy está en estudios y licenciamiento, sin fecha de obra ni recursos asignados, así que no la tenga en cuenta como un hecho.<br><small>Fuentes: Casanare Online (abril de 2023) y CasanareHoy (agosto de 2026).</small></p></details>
+      <details class="pregunta"><summary>¿El lote se va a valorizar?</summary><p>Nadie puede garantizar la valorización de un predio y nosotros no la prometemos. Lo que sí puede revisar: el lote está a 21 km de Yopal, sobre una vía nacional, con escritura individual, y con una variante proyectada que saldría a esta misma vía.</p></details>
+      <details class="pregunta"><summary>¿Cómo agendo una visita?</summary><p>Escríbanos al <a href="https://wa.me/573212304299" target="_blank" rel="noopener">321 230 4299</a>, use el chat de esta página o deje sus datos en el formulario. También puede ir a la sala de ventas en la Carrera 20 # 6-41, oficina 307, Yopal.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="env">
+    <div class="pie-grid">
+      <div><div class="pie-logo"><img src="img/logo-apilado-blanco.svg" alt="Nuevo Horizonte" width="440" height="285" loading="lazy"></div></div>
+      <div><h4>Contacto</h4><p><a href="https://wa.me/573212304299" target="_blank" rel="noopener">321 230 4299</a><br><a href="https://wa.me/573168318053" target="_blank" rel="noopener">316 831 8053</a></p></div>
+      <div><h4>Sala de ventas</h4><p>Carrera 20 # 6-41, oficina 307<br>Parque Ramón Nonato Pérez, Yopal</p></div>
+      <div><h4>Desarrolla y vende</h4><p>Inverpro Col S.A.S. · NIT 901.006.761-2<br>Infinity<br>gerencia.inverpro@gmail.com</p></div>
+    </div>
+    <p class="enlaces"><a href='/politica-de-datos'>Política de tratamiento de datos</a><a href='/terminos'>Términos y condiciones</a></p>
+    <p class="legal"><b>* Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</b> Precios de lanzamiento sujetos a disponibilidad y a la firma de la promesa de compraventa. El descuento del 15% aplica solo al pago de contado del valor total, hasta el 31 de diciembre de 2026, y no se combina con el plan de pagos. Las imágenes marcadas como ilustrativas no corresponden al proyecto. El plano es de referencia; las áreas corresponden al cuadro de áreas del proyecto. El chat de esta página es un asistente virtual de información: las condiciones que rigen son las de la promesa de compraventa. Las cifras de Casanare provienen de la Cámara de Comercio de Casanare y describen la región; no son una promesa de valorización ni de renta. Esta página no es asesoría tributaria ni cambiaria. Al usar esta página usted acepta los <a href='/terminos'>términos y condiciones</a>.</p>
+    <p class="legal creditos">© 2026 Inverpro Col S.A.S. · Todos los derechos reservados · Desarrollado por INVERPRO IA</p>
+  </div>
+</footer>
+
+<a class="wa-flot" href="https://wa.me/573212304299?text=Hola%2C%20vengo%20de%20la%20p%C3%A1gina%20de%20Nuevo%20Horizonte%20y%20quiero%20informaci%C3%B3n%20de%20los%20lotes" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.7 11.7 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg></a>
+<div class="barra-movil">
+  <a class="btn btn-wa" href="https://wa.me/573212304299?text=Hola%2C%20vengo%20de%20la%20p%C3%A1gina%20de%20Nuevo%20Horizonte%20y%20quiero%20informaci%C3%B3n%20de%20los%20lotes" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.7 11.7 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg> WhatsApp</a>
+  <a class="btn btn-oro" href="#lotes">Ver precios</a>
+</div>
+
+<elevenlabs-convai agent-id="agent_1501m5zs2wd9fkbbwce5mk90dpax"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+<script>
+const LOTES = [{"id": "LT-01-02-03", "t": "i", "a": 2295.55, "p": 218077250, "pc": 185365663, "x": 19.45, "y": 25.47}, {"id": "LT-04-05-06", "t": "i", "a": 2503.41, "p": 237823950, "pc": 202150358, "x": 25.01, "y": 30.46}, {"id": "LT-07-08-09", "t": "i", "a": 2520.8, "p": 239476000, "pc": 203554600, "x": 33.23, "y": 38.23}, {"id": "LT-10-11-12", "t": "i", "a": 2520.18, "p": 239417100, "pc": 203504535, "x": 39.02, "y": 43.58}, {"id": "LT-13", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 40.63, "y": 54.86}, {"id": "LT-14", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 47.14, "y": 50.46}, {"id": "LT-15", "t": "c", "a": 838.54, "p": 54505100, "pc": 46329335, "x": 53.67, "y": 46.06}, {"id": "LT-16", "t": "c", "a": 837.03, "p": 54406950, "pc": 46245908, "x": 62.9, "y": 54.59}, {"id": "LT-17", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 56.22, "y": 59.11}, {"id": "LT-18", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 49.49, "y": 63.6}, {"id": "LT-19", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 57.63, "y": 70.9}, {"id": "LT-20", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 64.39, "y": 66.29}, {"id": "LT-21", "t": "c", "a": 835.83, "p": 54328950, "pc": 46179608, "x": 71.31, "y": 62.76}, {"id": "LT-22", "t": "c", "a": 837.56, "p": 54441400, "pc": 46275190, "x": 76.65, "y": 67.05}, {"id": "LT-23", "t": "c", "a": 840, "p": 54600000, "pc": 46410000, "x": 70.31, "y": 71.78}, {"id": "LT-24", "t": "c", "a": 784, "p": 50960000, "pc": 43316000, "x": 74.71, "y": 85.98}, {"id": "LT-25", "t": "c", "a": 784, "p": 50960000, "pc": 43316000, "x": 81.65, "y": 81.46}, {"id": "LT-26", "t": "c", "a": 781.92, "p": 50824800, "pc": 43201080, "x": 87.69, "y": 77.27}, {"id": "LT-27", "t": "c", "a": 540.9, "p": 35158500, "pc": 29884725, "x": 87.67, "y": 87.79}, {"id": "LT-28", "t": "c", "a": 726.9, "p": 47248500, "pc": 40161225, "x": 81.43, "y": 93.38}];
+const WA = "573212304299";
+const pesos = n => "$" + Math.round(n).toLocaleString("es-CO");
+const m2 = n => n.toLocaleString("es-CO",{minimumFractionDigits:2,maximumFractionDigits:2}) + " m²";
+const tipoTxt = t => t === "i" ? "Lote comercial sobre la marginal" : "Lote residencial campestre";
+const pm2 = t => t === "i" ? 95000 : 65000;
+const usoTxt = t => t === "i" ? "Para bodega, comercio o patio de maquinaria amarilla, con frente a la Vía Marginal de la Selva." : "Para casa campestre de vivienda, descanso o renta.";
+const inicial = l => Math.round(l.p * 0.3);
+const cuota = l => Math.round((l.p - inicial(l)) / 36);
+const mapa = document.getElementById("mapa"), ficha = document.getElementById("ficha"), tabla = document.getElementById("tabla"), selLote = document.getElementById("f-lote"), selPlano = document.getElementById("sel-lote");
+const pins = {};
+
+function mostrar(l, desdeLista){
+  mapa.querySelectorAll(".pin").forEach(p => p.setAttribute("aria-pressed","false"));
+  pins[l.id].setAttribute("aria-pressed","true");
+  const texto = encodeURIComponent(`Hola, vengo de la página de Nuevo Horizonte y me interesa el lote ${l.id} (${m2(l.a)}). ¿Está disponible?`);
+  ficha.innerHTML = `
+    <p class="tipo-txt ${l.t}">${tipoTxt(l.t)}</p>
+    <h3>${l.id}</h3>
+    <dl><dt>Área</dt><dd>${m2(l.a)}</dd><dt>Precio por m²</dt><dd>${pesos(pm2(l.t))}</dd><dt>Precio del lote</dt><dd>${pesos(l.p)}*</dd></dl>
+    <div class="op fin"><small>Con 30% de cuota inicial</small><span class="num">${pesos(inicial(l))}</span><span>y 36 cuotas de ${pesos(cuota(l))}, sin intereses</span></div>
+    <div class="op cont"><small>De contado (−15%)</small><span class="num">${pesos(l.pc)}</span></div>
+    <p class="uso">${usoTxt(l.t)}</p>
+    <a class="btn btn-wa" href="https://wa.me/${WA}?text=${texto}" target="_blank" rel="noopener">Preguntar por este lote</a>
+    <p class="nota">* Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite. Ejemplo con 36 cuotas mensuales iguales; el plan exacto queda en su promesa de compraventa. Descuento de contado hasta el 31 de diciembre de 2026. Un asesor confirma la disponibilidad.</p>`;
+  selLote.value = l.id; selPlano.value = l.id; const mas = document.querySelector('details.mas'); if (mas) mas.open = true;
+  if (!desdeLista && matchMedia("(max-width:900px)").matches) ficha.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"nearest"});
+}
+
+LOTES.forEach(l => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "pin " + l.t; b.style.left = l.x + "%"; b.style.top = l.y + "%";
+  b.textContent = l.id.replace("LT-",""); b.dataset.tipo = l.t; b.setAttribute("aria-pressed","false");
+  b.setAttribute("aria-label", `${l.id}, ${tipoTxt(l.t)}, ${m2(l.a)}, ${pesos(l.p)}`);
+  b.addEventListener("click", () => mostrar(l));
+  mapa.appendChild(b); pins[l.id] = b;
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${l.id}</td><td>${l.t === "i" ? "Comercial" : "Residencial"}</td><td class="n">${m2(l.a)}</td><td class="n">${pesos(l.p)}</td><td class="n">${pesos(inicial(l))}</td><td class="n">${pesos(l.pc)}</td>`;
+  tabla.appendChild(tr);
+  for (const s of [selLote, selPlano]) { const op = document.createElement("option"); op.value = l.id; op.textContent = `${l.id} · ${l.t === "i" ? "comercial" : "residencial"} · ${m2(l.a)}`; s.appendChild(op); }
+});
+selPlano.addEventListener("change", () => { const l = LOTES.find(x => x.id === selPlano.value); if (l) { mostrar(l, true); ficha.scrollIntoView({behavior:"smooth", block:"start"}); } });
+
+function filtrar(f){
+  document.querySelectorAll(".filtros button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filtro === f)));
+  mapa.querySelectorAll(".pin").forEach(p => p.classList.toggle("oculto", f !== "todos" && p.dataset.tipo !== f));
+}
+document.querySelectorAll(".filtros button").forEach(b => b.addEventListener("click", () => filtrar(b.dataset.filtro)));
+document.querySelectorAll("[data-filtrar]").forEach(a => a.addEventListener("click", () => filtrar(a.dataset.filtrar)));
+
+// cuenta regresiva hasta el 31 de diciembre de 2026, 23:59:59 hora de Bogotá
+const FIN = Date.parse("2027-01-01T00:00:00-05:00");
+function cuenta(){
+  let s = Math.max(0, Math.floor((FIN - Date.now())/1000));
+  const d = Math.floor(s/86400); s -= d*86400; const h = Math.floor(s/3600); s -= h*3600; const m = Math.floor(s/60);
+  document.getElementById("c-d").textContent = d; document.getElementById("c-h").textContent = String(h).padStart(2,"0"); document.getElementById("c-m").textContent = String(m).padStart(2,"0");
+}
+cuenta(); setInterval(cuenta, 30000);
+
+const form = document.getElementById("formulario"), estado = document.getElementById("estado");
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const datos = new FormData(form);
+  fetch("/", {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:new URLSearchParams(datos).toString()})
+    .then(r => { if (!r.ok) throw new Error(r.status);
+      estado.className = "estado ok";
+      estado.textContent = `Recibimos sus datos, ${datos.get("nombre")}. Un asesor le escribirá. Si quiere respuesta inmediata, escríbanos al WhatsApp 321 230 4299.`;
+      form.reset(); })
+    .catch(() => { estado.className = "estado error";
+      estado.innerHTML = `No se pudieron enviar sus datos. Escríbanos directamente al <a href="https://wa.me/${WA}" target="_blank" rel="noopener">321 230 4299</a>.`; });
+});
+
+// Mapa satelital con la división de lotes (se carga al acercarse a la sección)
+(function(){
+  const cont = document.getElementById("mapa-sat"); if (!cont) return;
+  const COLOR = {c:"#2F6447", i:"#A65E3A", verde:"#5FA84F", comunal:"#6BA8D8", via:"#E9D9A8", franja:"#C8C8C8"};
+  function iniciar(){
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+    s.onload = () => fetch("img/loteo.geojson").then(r => r.json()).then(dibujar).catch(e => console.warn("mapa", e));
+    document.head.appendChild(s);
+  }
+  function dibujar(gj){
+    const tactil = matchMedia("(pointer:coarse)").matches;
+    const map = L.map(cont, {scrollWheelZoom:false, dragging:!tactil, tap:true, zoomSnap:0.5, attributionControl:true});
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:18, maxZoom:20, attribution:"Imagen © Esri, Maxar, Earthstar Geographics"}).addTo(map);
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:18, maxZoom:20, opacity:.7}).addTo(map);
+    const capas = {}; let predio;
+    const etiquetas = L.layerGroup();
+    L.geoJSON(gj, {
+      style: f => {
+        const p = f.properties;
+        if (p.clase === "predio") return {color:"#E9D9AE", weight:3, fill:false, dashArray:"6 5"};
+        if (p.clase === "lote") { const t = p.tipo === "Comercial" ? "i" : "c"; return {color:"#fff", weight:1.5, fillColor:COLOR[t], fillOpacity:.5}; }
+        return {color:"#fff", weight:.8, fillColor:COLOR[p.clase] || "#ccc", fillOpacity:p.clase === "via" ? .55 : .5};
+      },
+      onEachFeature: (f, capa) => {
+        const p = f.properties;
+        if (p.clase === "predio") { predio = capa; return; }
+        if (p.clase !== "lote") { if (p.nombre) capa.bindTooltip(p.nombre + (p.clase === "verde" || p.clase === "comunal" ? " · solo propietarios" : ""), {sticky:true}); return; }
+        const l = LOTES.find(x => x.id === p.id); if (!l) return;
+        capas[l.id] = capa;
+        etiquetas.addLayer(L.tooltip({permanent:true, direction:"center", className:"lote-num"}).setLatLng(capa.getBounds().getCenter()).setContent(l.id.replace("LT-","")));
+        const texto = encodeURIComponent(`Hola, vengo de la página de Nuevo Horizonte y me interesa el lote ${l.id} (${m2(l.a)}). ¿Está disponible?`);
+        capa.bindPopup(`<div class="pop"><h4>${l.id}</h4><p class="t ${l.t}">${tipoTxt(l.t)}</p><dl><dt>Área</dt><dd>${m2(l.a)}</dd><dt>Precio</dt><dd>${pesos(l.p)}</dd><dt>Cuota inicial (30%)</dt><dd>${pesos(inicial(l))}</dd><dt>36 cuotas de</dt><dd>${pesos(cuota(l))}</dd><dt>De contado (−15%)</dt><dd>${pesos(l.pc)}</dd></dl><div class="b"><a href="https://wa.me/${WA}?text=${texto}" target="_blank" rel="noopener">Preguntar por WhatsApp</a><button type="button" data-ver="${l.id}">Ver en el plano</button></div></div>`, {maxWidth:280});
+        capa.on("mouseover", () => capa.setStyle({fillOpacity:.75, weight:2.5}));
+        capa.on("mouseout", () => capa.setStyle({fillOpacity:.5, weight:1.5}));
+      }
+    }).addTo(map);
+    map.fitBounds(predio.getBounds(), {padding:[18,18]});
+    const z0 = map.getZoom();
+    if (tactil) map.on("zoomend", () => map.getZoom() > z0 ? map.dragging.enable() : map.dragging.disable());
+    const ver = () => map.getZoom() >= 17.5 ? etiquetas.addTo(map) : etiquetas.remove();
+    map.on("zoomend", ver); ver();
+    map.on("popupopen", e => { const b = e.popup.getElement().querySelector("[data-ver]"); if (b) b.addEventListener("click", () => { const l = LOTES.find(x => x.id === b.dataset.ver); mostrar(l, true); document.getElementById("lotes").scrollIntoView({behavior:"smooth"}); }); });
+    window.__mapaLotes = {map, capas};
+  }
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); iniciar(); } }, {rootMargin:"600px"});
+    io.observe(cont);
+  } else iniciar();
+})();
+
+// En celular, sube la burbuja del chat para que no tape la barra fija
+(function(){
+  const css = "@media (max-width:760px){.overlay{bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;right:12px!important}}";
+  let intentos = 0;
+  const t = setInterval(() => {
+    const h = document.querySelector("elevenlabs-convai");
+    const sr = h && h.shadowRoot;
+    if (sr && sr.querySelector(".overlay")) {
+      const st = document.createElement("style"); st.textContent = css; sr.appendChild(st); clearInterval(t);
+    } else if (++intentos > 60) clearInterval(t);
+  }, 500);
+})();
+</script>
+<!-- Metricool: estadísticas anónimas de visitas, sin cookies -->
+<script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"2f713db302cece66c398623ebce4f600"})});</script>
+</body>
+</html>
