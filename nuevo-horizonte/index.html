@@ -293,7 +293,8 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pop .b a,.pop .b button{font:inherit;font-weight:700;font-size:.82rem;border-radius:999px;padding:8px 12px;text-decoration:none;border:0;cursor:pointer}
 .pop .b a{background:var(--wa);color:#04210F!important} .pop .b button{background:var(--noche);color:#fff}
 .ubic-info{background:var(--noche);color:#fff;border-radius:22px;padding:30px;display:grid;gap:18px;align-content:start}
-.ubic-info video.via{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block;background:#0D1D38}
+.ubic video.via{width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:22px;display:block;background:#0D1D38;margin-top:36px}
+@media (max-width:760px){.ubic video.via{aspect-ratio:16/10;margin-top:24px}}
 .ubic-info h3{color:var(--oro);font-size:1.02rem}
 .ubic-info p{margin:4px 0 0;color:#D6DEEA;font-size:.98rem}
 .ubic-info .btns{display:grid;gap:10px}
@@ -610,7 +611,8 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
   <section class="ubic" id="ubicacion">
     <div class="env">
       <h2>A 21 km de Yopal, con entrada directa desde la Marginal de la Selva.</h2>
-      <p class="lead" style="margin-top:14px">Vea cada lote sobre la imagen satelital del predio y toque el que le interese para conocer su área, su precio y sus cuotas.</p>
+      <video class="via" src="video/via-llegada.mp4" poster="img/via-marginal.jpg" muted loop playsinline preload="none" aria-label="Video de dron: llegada por la Vía Marginal de la Selva hasta el predio"></video>
+      <p class="lead" style="margin-top:28px">Vea cada lote sobre la imagen satelital del predio y toque el que le interese para conocer su área, su precio y sus cuotas.</p>
       <div class="ubic-grid">
         <figure class="mapa-ubic">
           <div id="mapa-sat" role="region" aria-label="Imagen satelital del predio con la división de lotes. Toque un lote para ver su precio."></div>
@@ -618,7 +620,6 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
           <p class="mapa-nota">Toque un lote para ver su precio. Trazado de referencia sobre la imagen satelital.</p>
         </figure>
         <div class="ubic-info">
-          <video class="via" src="video/via-llegada.mp4" poster="img/via-marginal.jpg" muted loop playsinline preload="none" aria-label="Video aéreo de la Vía Marginal de la Selva llegando al predio"></video>
           <div><h3>Cómo llegar</h3><p>Desde Yopal tome la vía a Paz de Ariporo (Marginal de la Selva) y recorra 21 km hasta el sector La Patimena. La entrada está sobre la vía, con carril propio para entrar sin frenar en la carretera.</p></div>
           <div><h3>Sala de ventas en Yopal</h3><p>Carrera 20 # 6-41, oficina 307, Parque Ramón Nonato Pérez.</p></div>
           <div class="btns">
