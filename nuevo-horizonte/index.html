@@ -8,7 +8,7 @@
 <meta property="og:title" content="Nuevo Horizonte · Lotes Yopal">
 <meta property="og:site_name" content="Nuevo Horizonte · Lotes Yopal">
 <meta property="og:description" content="Su patrimonio en Colombia, aunque viva lejos. Lotes a 21 km de Yopal desde $35.158.500, con 30% de cuota inicial y saldo a 3 años sin intereses.">
-<meta property="og:image" content="https://nuevo-horizonte-lotes-yopal.netlify.app/img/hero.jpg">
+<meta property="og:image" content="https://nuevo-horizonte-lotes-yopal.netlify.app/img/predio-panoramica.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#13284B">
 <link rel="icon" type="image/svg+xml" href="img/escudo.svg">
@@ -80,7 +80,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* portada */
 .portada{position:relative;color:#fff;background:var(--noche-2);overflow:hidden;padding-block:0}
 .portada .foto{position:absolute;inset:0}
-.portada .foto img{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.portada .foto img,.portada .foto video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%}
+.portada .foto video{opacity:0;transition:opacity 600ms ease}
+.portada .foto video.listo{opacity:1}
 .portada::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,29,56,.93) 0%,rgba(13,29,56,.74) 45%,rgba(13,29,56,.2) 78%),linear-gradient(0deg,rgba(13,29,56,.85) 0%,rgba(13,29,56,0) 40%)}
 .portada .env{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;padding-block:80px 72px;min-height:min(78vh,700px)}
 .portada h1{font-family:var(--serif);font-optical-sizing:none;font-variation-settings:"opsz" 40;font-weight:600;font-size:clamp(2.3rem,5.6vw,4.6rem);line-height:1.02;letter-spacing:-.015em;max-width:18ch}
@@ -285,6 +287,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pop .b a,.pop .b button{font:inherit;font-weight:700;font-size:.82rem;border-radius:999px;padding:8px 12px;text-decoration:none;border:0;cursor:pointer}
 .pop .b a{background:var(--wa);color:#04210F!important} .pop .b button{background:var(--noche);color:#fff}
 .ubic-info{background:var(--noche);color:#fff;border-radius:22px;padding:30px;display:grid;gap:18px;align-content:start}
+.ubic-info video.via{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block;background:#0D1D38}
 .ubic-info h3{color:var(--oro);font-size:1.02rem}
 .ubic-info p{margin:4px 0 0;color:#D6DEEA;font-size:.98rem}
 .ubic-info .btns{display:grid;gap:10px}
@@ -421,7 +424,7 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
 
 <main id="inicio">
   <section class="portada">
-    <div class="foto"><img src="img/hero.jpg" alt="Sabana llanera al atardecer, con palmas" fetchpriority="high"></div>
+    <div class="foto"><img src="img/predio-panoramica.jpg" alt="Vista aérea del predio de Nuevo Horizonte: potrero abierto con árboles y cerros al fondo" fetchpriority="high"><video src="video/predio-sobrevuelo.mp4" muted loop playsinline preload="none" aria-hidden="true"></video></div>
     <div class="env">
       <div>
         <h1>Lotes campestres<br> a 21&nbsp;km de Yopal.</h1>
@@ -441,7 +444,6 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
         <p class="nota-cur">* Precios de lanzamiento. Nuevo Horizonte solo sale a la venta cuando tenga la resolución de la curaduría urbana, que está en trámite.</p>
       </div>
     </div>
-    <span class="ref">Imagen ilustrativa</span>
   </section>
 
   <section class="respaldo" aria-label="Lo esencial del proyecto">
@@ -594,6 +596,7 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
           <p class="mapa-nota">Toque un lote para ver su precio. Trazado de referencia sobre la imagen satelital.</p>
         </figure>
         <div class="ubic-info">
+          <video class="via" src="video/via-llegada.mp4" poster="img/via-marginal.jpg" muted loop playsinline preload="none" aria-label="Video aéreo de la Vía Marginal de la Selva llegando al predio"></video>
           <div><h3>Cómo llegar</h3><p>Desde Yopal tome la vía a Paz de Ariporo (Marginal de la Selva) y recorra 21 km hasta el sector La Patimena. La entrada está sobre la vía, con carril propio para entrar sin frenar en la carretera.</p></div>
           <div><h3>Sala de ventas en Yopal</h3><p>Carrera 20 # 6-41, oficina 307, Parque Ramón Nonato Pérez.</p></div>
           <div class="btns">
@@ -867,6 +870,23 @@ form.addEventListener("submit", e => {
     const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); iniciar(); } }, {rootMargin:"600px"});
     io.observe(cont);
   } else iniciar();
+})();
+
+// Videos reales del predio: el de la portada solo en pantallas anchas; ninguno con "reducir movimiento" o ahorro de datos
+(function(){
+  const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches || (navigator.connection && navigator.connection.saveData);
+  if (quieto || !("IntersectionObserver" in window)) return;
+  const portada = document.querySelector(".portada video");
+  if (portada && matchMedia("(min-width: 901px)").matches) {
+    portada.preload = "auto";
+    portada.addEventListener("playing", () => portada.classList.add("listo"), {once:true});
+    portada.play().catch(() => {});
+    new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? portada.play().catch(() => {}) : portada.pause())).observe(portada);
+  }
+  const via = document.querySelector("video.via");
+  if (via) new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { via.preload = "auto"; via.play().catch(() => {}); } else via.pause();
+  }), {threshold:.4}).observe(via);
 })();
 
 // Video del render: solo se reproduce cuando está en pantalla, y nunca con "reducir movimiento" (queda la imagen fija)
