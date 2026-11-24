@@ -230,7 +230,8 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media (max-width:900px){.proy-grid{grid-template-columns:minmax(0,1fr);gap:28px}}
 .proy-foto{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5;background:#DDE2D8;margin:0}
 @media (max-width:900px){.proy-foto{aspect-ratio:16/10}}
-.proy-foto img{width:100%;height:100%;object-fit:cover;object-position:68% center}
+.proy-foto img,.proy-foto video{width:100%;height:100%;object-fit:cover;object-position:68% center;display:block}
+.proy-foto video{object-position:center}
 .proy-foto figcaption{position:absolute;left:14px;bottom:12px;background:rgba(13,29,56,.82);color:#fff;font-size:.75rem;padding:4px 10px;border-radius:999px}
 .proy-foto .sello{position:absolute;right:18px;top:18px;background:var(--papel);border-radius:18px;padding:14px 18px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.2)}
 .sello b{display:block;font-size:1.8rem;color:var(--morichal);line-height:1}
@@ -609,9 +610,9 @@ footer .legal{margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255
   <section id="proyecto">
     <div class="env proy-grid">
       <figure class="proy-foto">
-        <img src="img/bosque.jpg" alt="Sendero entre árboles frutales" loading="lazy">
+        <video class="render" src="video/render-urbanismo.mp4" poster="img/render-urbanismo.jpg" muted loop playsinline preload="none" aria-label="Render aéreo del proyecto: lotes residenciales, vías internas, zonas verdes y área dotacional"></video>
         <div class="sello"><b class="num">4.200 m²</b><small>de zonas verdes</small></div>
-        <figcaption>Imagen ilustrativa</figcaption>
+        <figcaption>Render del proyecto · imagen ilustrativa</figcaption>
       </figure>
       <div>
         <h2>Bosques comestibles, caballerizas y gimnasio solo para los propietarios.</h2>
@@ -866,6 +867,15 @@ form.addEventListener("submit", e => {
     const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); iniciar(); } }, {rootMargin:"600px"});
     io.observe(cont);
   } else iniciar();
+})();
+
+// Video del render: solo se reproduce cuando está en pantalla, y nunca con "reducir movimiento" (queda la imagen fija)
+(function(){
+  const v = document.querySelector("video.render"); if (!v) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { v.preload = "auto"; v.play().catch(() => {}); } else v.pause();
+  }), {threshold:.25}).observe(v);
 })();
 
 // En celular, sube la burbuja del chat para que no tape la barra fija
