@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  # Solo publica Nuevo Horizonte si cambió su carpeta: los cambios de otras herramientas del repositorio no gastan créditos.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
